@@ -2,11 +2,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import MainLayout from "@/components/MainLayout";
 import Auth from "./pages/Auth";
+import ChooseUsername from "./pages/ChooseUsername";
 import Home from "./pages/Home";
 import Album from "./pages/Album";
 import Requests from "./pages/Requests";
@@ -24,6 +25,14 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route
+              path="/onboarding"
+              element={
+                <ProtectedRoute>
+                  <ChooseUsername />
+                </ProtectedRoute>
+              }
+            />
             <Route
               element={
                 <ProtectedRoute>
