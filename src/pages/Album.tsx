@@ -2,9 +2,9 @@ import { useState, useMemo } from 'react';
 import { useStickers, useTeamsAndSections } from '@/hooks/useStickers';
 import {
   useUserStickers,
-  useSetStickerStatus,
-  useClearStickerStatus,
-  type StickerStatus,
+  useCycleStickerStatus,
+  getComputedStatus,
+  type ComputedStatus,
 } from '@/hooks/useUserStickers';
 import { Input } from '@/components/ui/input';
 import {
@@ -16,28 +16,19 @@ import {
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
 import { StickerCard } from '@/components/StickerCard';
-import { StickerStatusDrawer } from '@/components/StickerStatusDrawer';
 
-type StatusFilter = 'all' | 'unmarked' | 'HAVE' | 'NEED' | 'DUPLICATE';
+type StatusFilter = 'all' | 'HAVE' | 'NEED' | 'DUPLICATE';
 
 const Album = () => {
   const { data: stickers, isLoading, error } = useStickers();
   const { teams, sections } = useTeamsAndSections(stickers);
   const { data: userStickers = {} } = useUserStickers();
-  const setStickerStatus = useSetStickerStatus();
-  const clearStickerStatus = useClearStickerStatus();
+  const cycleStickerStatus = useCycleStickerStatus();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTeam, setSelectedTeam] = useState<string>('all');
   const [selectedSection, setSelectedSection] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all');
-
-  // Drawer state
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedSticker, setSelectedSticker] = useState<{
-    id: string;
-    code: string;
-  } | null>(null);
 
   const filteredStickers = useMemo(() => {
     if (!stickers) return [];
@@ -51,39 +42,16 @@ const Album = () => {
       const matchesSection =
         selectedSection === 'all' || sticker.section === selectedSection;
 
-      // Status filter
-      const userStatus = userStickers[sticker.id]?.status ?? null;
-      let matchesStatus = true;
-      if (selectedStatus === 'unmarked') {
-        matchesStatus = userStatus === null;
-      } else if (selectedStatus !== 'all') {
-        matchesStatus = userStatus === selectedStatus;
-      }
+      // Status filter using computed status
+      const computedStatus = getComputedStatus(userStickers, sticker.id);
+      const matchesStatus = selectedStatus === 'all' || computedStatus === selectedStatus;
 
       return matchesSearch && matchesTeam && matchesSection && matchesStatus;
     });
   }, [stickers, searchQuery, selectedTeam, selectedSection, selectedStatus, userStickers]);
 
-  const handleStickerClick = (sticker: { id: string; code: string }) => {
-    setSelectedSticker(sticker);
-    setDrawerOpen(true);
-  };
-
-  const handleSelectStatus = (status: StickerStatus) => {
-    if (selectedSticker) {
-      setStickerStatus.mutate(
-        { stickerId: selectedSticker.id, status },
-        { onSuccess: () => setDrawerOpen(false) }
-      );
-    }
-  };
-
-  const handleClearStatus = () => {
-    if (selectedSticker) {
-      clearStickerStatus.mutate(selectedSticker.id, {
-        onSuccess: () => setDrawerOpen(false),
-      });
-    }
+  const handleStickerClick = (stickerId: string, currentStatus: ComputedStatus) => {
+    cycleStickerStatus.mutate({ stickerId, currentStatus });
   };
 
   if (isLoading) {
@@ -101,10 +69,6 @@ const Album = () => {
       </div>
     );
   }
-
-  const currentStickerStatus = selectedSticker
-    ? userStickers[selectedSticker.id]?.status ?? null
-    : null;
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-5rem)] p-4 space-y-4">
@@ -162,9 +126,8 @@ const Album = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="unmarked">Unmarked</SelectItem>
-              <SelectItem value="HAVE">Have</SelectItem>
               <SelectItem value="NEED">Need</SelectItem>
+              <SelectItem value="HAVE">Have</SelectItem>
               <SelectItem value="DUPLICATE">Duplicate</SelectItem>
             </SelectContent>
           </Select>
@@ -178,28 +141,20 @@ const Album = () => {
         </div>
       ) : (
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-          {filteredStickers.map((sticker) => (
-            <StickerCard
-              key={sticker.id}
-              code={sticker.code}
-              team={sticker.team}
-              status={userStickers[sticker.id]?.status ?? null}
-              onClick={() => handleStickerClick({ id: sticker.id, code: sticker.code })}
-            />
-          ))}
+          {filteredStickers.map((sticker) => {
+            const computedStatus = getComputedStatus(userStickers, sticker.id);
+            return (
+              <StickerCard
+                key={sticker.id}
+                code={sticker.code}
+                team={sticker.team}
+                status={computedStatus}
+                onClick={() => handleStickerClick(sticker.id, computedStatus)}
+              />
+            );
+          })}
         </div>
       )}
-
-      {/* Status Drawer */}
-      <StickerStatusDrawer
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        stickerCode={selectedSticker?.code ?? ''}
-        currentStatus={currentStickerStatus}
-        onSelectStatus={handleSelectStatus}
-        onClear={handleClearStatus}
-        isLoading={setStickerStatus.isPending || clearStickerStatus.isPending}
-      />
     </div>
   );
 };

@@ -2,7 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
-export type StickerStatus = 'HAVE' | 'NEED' | 'DUPLICATE';
+export type StickerStatus = 'HAVE' | 'DUPLICATE';
+export type ComputedStatus = 'HAVE' | 'NEED' | 'DUPLICATE';
 
 export interface UserSticker {
   user_id: string;
@@ -36,27 +37,46 @@ export function useUserStickers() {
   });
 }
 
-export function useSetStickerStatus() {
+export function useCycleStickerStatus() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ stickerId, status }: { stickerId: string; status: StickerStatus }) => {
+    mutationFn: async ({ stickerId, currentStatus }: { stickerId: string; currentStatus: ComputedStatus }) => {
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
-        .from('user_stickers')
-        .upsert(
-          {
-            user_id: user.id,
-            sticker_id: stickerId,
-            status,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'user_id,sticker_id' }
-        );
-
-      if (error) throw error;
+      // Cycle: NEED -> HAVE -> DUPLICATE -> NEED
+      if (currentStatus === 'NEED') {
+        // Insert HAVE
+        const { error } = await supabase
+          .from('user_stickers')
+          .upsert(
+            {
+              user_id: user.id,
+              sticker_id: stickerId,
+              status: 'HAVE',
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'user_id,sticker_id' }
+          );
+        if (error) throw error;
+      } else if (currentStatus === 'HAVE') {
+        // Update to DUPLICATE
+        const { error } = await supabase
+          .from('user_stickers')
+          .update({ status: 'DUPLICATE', updated_at: new Date().toISOString() })
+          .eq('user_id', user.id)
+          .eq('sticker_id', stickerId);
+        if (error) throw error;
+      } else {
+        // DUPLICATE -> NEED: delete the row
+        const { error } = await supabase
+          .from('user_stickers')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('sticker_id', stickerId);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-stickers', user?.id] });
@@ -64,24 +84,12 @@ export function useSetStickerStatus() {
   });
 }
 
-export function useClearStickerStatus() {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (stickerId: string) => {
-      if (!user) throw new Error('Not authenticated');
-
-      const { error } = await supabase
-        .from('user_stickers')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('sticker_id', stickerId);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-stickers', user?.id] });
-    },
-  });
+// Helper to compute status from user_stickers data
+export function getComputedStatus(
+  userStickers: Record<string, UserSticker>,
+  stickerId: string
+): ComputedStatus {
+  const record = userStickers[stickerId];
+  if (!record) return 'NEED';
+  return record.status as ComputedStatus;
 }

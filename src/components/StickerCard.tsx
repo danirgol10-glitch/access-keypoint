@@ -1,21 +1,21 @@
 import { Badge } from '@/components/ui/badge';
-import type { StickerStatus } from '@/hooks/useUserStickers';
+import type { ComputedStatus } from '@/hooks/useUserStickers';
 
 interface StickerCardProps {
   code: string;
   team?: string | null;
-  status: StickerStatus | null;
+  status: ComputedStatus;
   onClick: () => void;
 }
 
-const statusConfig: Record<StickerStatus, { label: string; variant: 'default' | 'secondary' | 'outline' }> = {
+const statusConfig: Record<ComputedStatus, { label: string; variant: 'default' | 'secondary' | 'outline' }> = {
   HAVE: { label: 'Have', variant: 'default' },
   NEED: { label: 'Need', variant: 'secondary' },
   DUPLICATE: { label: 'Duplicate', variant: 'outline' },
 };
 
 export function StickerCard({ code, team, status, onClick }: StickerCardProps) {
-  const statusInfo = status ? statusConfig[status] : null;
+  const statusInfo = statusConfig[status];
 
   return (
     <button
@@ -29,10 +29,10 @@ export function StickerCard({ code, team, status, onClick }: StickerCardProps) {
         </span>
       )}
       <Badge
-        variant={statusInfo?.variant ?? 'outline'}
+        variant={statusInfo.variant}
         className="mt-2 text-[10px] px-1.5 py-0"
       >
-        {statusInfo?.label ?? 'Unmarked'}
+        {statusInfo.label}
       </Badge>
     </button>
   );
