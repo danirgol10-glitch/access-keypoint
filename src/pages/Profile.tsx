@@ -1,10 +1,12 @@
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogOut } from 'lucide-react';
 
 const Profile = () => {
-  const { user, signOut } = useAuth();
+  const { signOut } = useAuth();
+  const { profile, isLoading } = useUserProfile();
 
   const handleSignOut = async () => {
     await signOut();
@@ -17,9 +19,19 @@ const Profile = () => {
           <CardTitle className="text-xl">Profile</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <p className="text-sm text-muted-foreground">Email</p>
-            <p className="font-medium text-foreground">{user?.email}</p>
+          <div className="text-center space-y-1">
+            {isLoading ? (
+              <p className="text-muted-foreground animate-pulse">Loading...</p>
+            ) : (
+              <>
+                <p className="text-xl font-semibold text-foreground">
+                  @{profile?.username ?? 'unknown'}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {profile?.email}
+                </p>
+              </>
+            )}
           </div>
           <Button
             variant="outline"
