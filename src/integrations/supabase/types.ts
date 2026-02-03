@@ -59,6 +59,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_stickers: {
+        Row: {
+          status: string
+          sticker_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          status: string
+          sticker_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          status?: string
+          sticker_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_stickers_sticker_id_fkey"
+            columns: ["sticker_id"]
+            isOneToOne: false
+            referencedRelation: "stickers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_stickers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           created_at: string
