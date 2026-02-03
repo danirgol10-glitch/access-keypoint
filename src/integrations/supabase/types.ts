@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      album_config: {
+        Row: {
+          id: number
+          total_stickers: number
+        }
+        Insert: {
+          id: number
+          total_stickers: number
+        }
+        Update: {
+          id?: number
+          total_stickers?: number
+        }
+        Relationships: []
+      }
+      stickers: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          name: string | null
+          number: number | null
+          section: string | null
+          team: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          name?: string | null
+          number?: number | null
+          section?: string | null
+          team?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string | null
+          number?: number | null
+          section?: string | null
+          team?: string | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string
