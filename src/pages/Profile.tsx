@@ -1,27 +1,35 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useAlbumStats } from '@/hooks/useAlbumStats';
+import { AlbumStatsCard } from '@/components/AlbumStatsCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { LogOut } from 'lucide-react';
 
 const Profile = () => {
   const { signOut } = useAuth();
-  const { profile, isLoading } = useUserProfile();
+  const { profile, isLoading: profileLoading } = useUserProfile();
+  const { stats, isLoading: statsLoading } = useAlbumStats();
 
   const handleSignOut = async () => {
     await signOut();
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-5rem)] p-6">
+    <div className="flex flex-col items-center p-6 space-y-6 pb-24">
+      {/* User info card */}
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-xl">Profile</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center space-y-1">
-            {isLoading ? (
-              <p className="text-muted-foreground animate-pulse">Loading...</p>
+            {profileLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-32 mx-auto" />
+                <Skeleton className="h-4 w-48 mx-auto" />
+              </div>
             ) : (
               <>
                 <p className="text-xl font-semibold text-foreground">
@@ -43,6 +51,31 @@ const Profile = () => {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Album stats card */}
+      <div className="w-full max-w-md">
+        {statsLoading ? (
+          <Card className="w-full">
+            <CardHeader className="pb-2">
+              <Skeleton className="h-5 w-32" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center">
+                <Skeleton className="h-12 w-24 mx-auto" />
+                <Skeleton className="h-4 w-40 mx-auto mt-2" />
+              </div>
+              <Skeleton className="h-3 w-full" />
+              <div className="grid grid-cols-3 gap-3">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+        ) : stats ? (
+          <AlbumStatsCard stats={stats} />
+        ) : null}
+      </div>
     </div>
   );
 };
