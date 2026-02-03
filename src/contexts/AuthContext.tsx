@@ -31,12 +31,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Upsert user into public.users table
+    const upsertUser = async (user: User) => {
+      const { error } = await supabase
+        .from('users')
+        .upsert(
+          { id: user.id, email: user.email! },
+          { onConflict: 'id' }
+        );
+      if (error) {
+        console.error('Error upserting user:', error);
+      }
+    };
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Upsert user on sign in or sign up
+        if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+          upsertUser(session.user);
+        }
       }
     );
 
