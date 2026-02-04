@@ -3,25 +3,20 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useFriendHelpfulStickers } from '@/hooks/useFriendHelpfulStickers';
+import { useTradeRequests } from '@/hooks/useTradeRequests';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { ArrowLeft, Package } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { ArrowLeft, Package, Loader2 } from 'lucide-react';
 
 const FriendDetail = () => {
   const { friendId } = useParams<{ friendId: string }>();
   const navigate = useNavigate();
   const [selectedStickers, setSelectedStickers] = useState<Set<string>>(new Set());
-  const [showComingSoonDialog, setShowComingSoonDialog] = useState(false);
+  
+  const { createRequest, isCreating } = useTradeRequests();
 
   // Fetch friend's username
   const { data: friendProfile, isLoading: profileLoading } = useQuery({
@@ -61,8 +56,30 @@ const FriendDetail = () => {
     });
   };
 
-  const handleRequestClick = () => {
-    setShowComingSoonDialog(true);
+  const handleRequestClick = async () => {
+    if (!friendId || selectedStickers.size === 0) return;
+
+    try {
+      await createRequest({
+        toUserId: friendId,
+        stickerIds: Array.from(selectedStickers),
+      });
+
+      toast({
+        title: 'Request sent',
+        description: `Request sent to @${friendProfile?.username ?? 'friend'}`,
+      });
+
+      setSelectedStickers(new Set());
+      navigate('/requests');
+    } catch (error) {
+      console.error('Error creating request:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to send request. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const selectedCount = selectedStickers.size;
@@ -173,33 +190,23 @@ const FriendDetail = () => {
           <div className="max-w-2xl mx-auto">
             <Button
               className="w-full"
-              disabled={selectedCount === 0}
+              disabled={selectedCount === 0 || isCreating}
               onClick={handleRequestClick}
             >
-              {selectedCount === 0
-                ? 'Select stickers'
-                : `Request (${selectedCount})`}
+              {isCreating ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Sending...
+                </>
+              ) : selectedCount === 0 ? (
+                'Select stickers'
+              ) : (
+                `Request (${selectedCount})`
+              )}
             </Button>
           </div>
         </div>
       )}
-
-      {/* Coming Soon Dialog */}
-      <Dialog open={showComingSoonDialog} onOpenChange={setShowComingSoonDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Coming Soon</DialogTitle>
-            <DialogDescription>
-              Requests will be enabled in Day 7. Your selection of {selectedCount} sticker{selectedCount !== 1 ? 's' : ''} has been kept.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={() => setShowComingSoonDialog(false)}>
-              Got it
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
