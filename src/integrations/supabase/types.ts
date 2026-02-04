@@ -98,6 +98,81 @@ export type Database = {
         }
         Relationships: []
       }
+      trade_request_items: {
+        Row: {
+          id: string
+          sticker_id: string
+          trade_request_id: string
+        }
+        Insert: {
+          id?: string
+          sticker_id: string
+          trade_request_id: string
+        }
+        Update: {
+          id?: string
+          sticker_id?: string
+          trade_request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_request_items_sticker_id_fkey"
+            columns: ["sticker_id"]
+            isOneToOne: false
+            referencedRelation: "stickers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trade_request_items_trade_request_id_fkey"
+            columns: ["trade_request_id"]
+            isOneToOne: false
+            referencedRelation: "trade_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trade_requests: {
+        Row: {
+          created_at: string
+          from_user_id: string
+          id: string
+          status: string
+          to_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          from_user_id: string
+          id?: string
+          status?: string
+          to_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          from_user_id?: string
+          id?: string
+          status?: string
+          to_user_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_requests_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trade_requests_to_user_id_fkey"
+            columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_stickers: {
         Row: {
           status: string
