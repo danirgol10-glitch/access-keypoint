@@ -92,22 +92,8 @@ const FriendDetail = () => {
         </div>
       </header>
 
-      {/* DEBUG: Request bar at top */}
-      <div className="bg-red-500 p-6 mx-4 mt-4 rounded-lg">
-        <p className="text-white font-bold text-center mb-4">REQUEST BAR DEBUG</p>
-        <Button
-          className="w-full h-12 text-lg"
-          disabled={selectedCount === 0}
-          onClick={handleRequestClick}
-        >
-          {selectedCount === 0
-            ? 'Select stickers'
-            : `Request (${selectedCount})`}
-        </Button>
-      </div>
-
       {/* Main content */}
-      <main className="flex-1 p-4 pb-4">
+      <main className="flex-1 p-4 pb-40">
         <div className="max-w-2xl mx-auto space-y-4">
           {/* Summary */}
           <div className="text-center py-2">
@@ -181,7 +167,22 @@ const FriendDetail = () => {
         </div>
       </main>
 
-      {/* Original sticky footer removed for debug */}
+      {/* Sticky bottom action bar - above tab bar */}
+      {count > 0 && (
+        <div className="fixed left-0 right-0 bottom-16 z-20 bg-background border-t border-border shadow-[0_-2px_10px_rgba(0,0,0,0.1)] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          <div className="max-w-2xl mx-auto">
+            <Button
+              className="w-full"
+              disabled={selectedCount === 0}
+              onClick={handleRequestClick}
+            >
+              {selectedCount === 0
+                ? 'Select stickers'
+                : `Request (${selectedCount})`}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Coming Soon Dialog */}
       <Dialog open={showComingSoonDialog} onOpenChange={setShowComingSoonDialog}>
