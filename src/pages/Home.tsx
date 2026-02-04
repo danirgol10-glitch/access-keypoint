@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAlbumStats } from '@/hooks/useAlbumStats';
 import { useFriendMatches } from '@/hooks/useFriendMatches';
@@ -10,13 +11,13 @@ import { Link } from 'react-router-dom';
 import { Users, AlertCircle } from 'lucide-react';
 
 const Home = () => {
+  const navigate = useNavigate();
   const { profile, isLoading: profileLoading } = useUserProfile();
   const { stats, isLoading: statsLoading } = useAlbumStats();
   const { friendMatches, isLoading: matchesLoading, hasFriends, anyFriendHasDuplicates } = useFriendMatches();
 
   const handleViewFriend = (friendId: string) => {
-    // Day 6 will implement friend detail screen
-    console.log('View friend:', friendId);
+    navigate(`/friend/${friendId}`);
   };
 
   return (
