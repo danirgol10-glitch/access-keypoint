@@ -149,12 +149,41 @@ export function useTradeRequests() {
     },
   });
 
+  // Update trade request status mutation
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({
+      requestId,
+      newStatus,
+    }: {
+      requestId: string;
+      newStatus: 'ACCEPTED' | 'REJECTED' | 'CANCELLED';
+    }) => {
+      if (!user?.id) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('trade_requests')
+        .update({ status: newStatus })
+        .eq('id', requestId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trade-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['trade-request-detail'] });
+    },
+  });
+
   return {
     sentRequests,
     receivedRequests,
     isLoading: sentLoading || receivedLoading,
     createRequest: createRequestMutation.mutateAsync,
     isCreating: createRequestMutation.isPending,
+    updateStatus: updateStatusMutation.mutateAsync,
+    isUpdating: updateStatusMutation.isPending,
   };
 }
 

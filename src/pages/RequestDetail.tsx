@@ -1,17 +1,30 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTradeRequestDetail } from '@/hooks/useTradeRequests';
+import { useTradeRequestDetail, useTradeRequests } from '@/hooks/useTradeRequests';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Package } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { ArrowLeft, Package, Check, X } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'sonner';
 
 const statusConfig: Record<
   string,
   { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }
 > = {
-  SENT: { label: 'Sent', variant: 'default' },
+  SENT: { label: 'Pending', variant: 'default' },
   ACCEPTED: { label: 'Accepted', variant: 'secondary' },
   REJECTED: { label: 'Rejected', variant: 'destructive' },
   CANCELLED: { label: 'Cancelled', variant: 'outline' },
@@ -20,9 +33,53 @@ const statusConfig: Record<
 const RequestDetail = () => {
   const { requestId } = useParams<{ requestId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: request, isLoading } = useTradeRequestDetail(requestId);
+  const { updateStatus, isUpdating } = useTradeRequests();
+
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    type: 'reject' | 'cancel';
+  } | null>(null);
 
   const statusInfo = request ? statusConfig[request.status] : null;
+  const canAct = request?.status === 'SENT';
+  const isReceiver = request && request.to_user_id === user?.id;
+  const isSender = request && request.from_user_id === user?.id;
+
+  const handleAccept = async () => {
+    if (!requestId) return;
+    try {
+      await updateStatus({ requestId, newStatus: 'ACCEPTED' });
+      toast.success('Request accepted');
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      toast.error('Failed to accept request');
+    }
+  };
+
+  const handleReject = () => {
+    setConfirmDialog({ open: true, type: 'reject' });
+  };
+
+  const handleCancel = () => {
+    setConfirmDialog({ open: true, type: 'cancel' });
+  };
+
+  const confirmAction = async () => {
+    if (!confirmDialog || !requestId) return;
+
+    try {
+      const newStatus = confirmDialog.type === 'reject' ? 'REJECTED' : 'CANCELLED';
+      await updateStatus({ requestId, newStatus });
+      toast.success(confirmDialog.type === 'reject' ? 'Request rejected' : 'Request cancelled');
+    } catch (error) {
+      console.error('Error updating request:', error);
+      toast.error('Failed to update request');
+    } finally {
+      setConfirmDialog(null);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -86,6 +143,45 @@ const RequestDetail = () => {
                 </CardContent>
               </Card>
 
+              {/* Action buttons */}
+              {canAct && (
+                <Card>
+                  <CardContent className="p-4">
+                    {isReceiver && (
+                      <div className="flex gap-3">
+                        <Button
+                          className="flex-1"
+                          onClick={handleAccept}
+                          disabled={isUpdating}
+                        >
+                          <Check className="h-4 w-4 mr-2" />
+                          Accept
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="flex-1"
+                          onClick={handleReject}
+                          disabled={isUpdating}
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Reject
+                        </Button>
+                      </div>
+                    )}
+                    {isSender && (
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={handleCancel}
+                        disabled={isUpdating}
+                      >
+                        Cancel Request
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Requested stickers */}
               <div className="space-y-3">
                 <h2 className="text-sm font-medium text-muted-foreground">
@@ -123,17 +219,35 @@ const RequestDetail = () => {
                   </Card>
                 )}
               </div>
-
-              {/* Placeholder for future actions */}
-              <div className="pt-4 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Accept/Reject actions will be available in Day 8.
-                </p>
-              </div>
             </>
           )}
         </div>
       </main>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog
+        open={confirmDialog?.open ?? false}
+        onOpenChange={(open) => !open && setConfirmDialog(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmDialog?.type === 'reject' ? 'Reject Request?' : 'Cancel Request?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmDialog?.type === 'reject'
+                ? 'Are you sure you want to reject this trade request? This action cannot be undone.'
+                : 'Are you sure you want to cancel this trade request? This action cannot be undone.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No, go back</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmAction}>
+              Yes, {confirmDialog?.type === 'reject' ? 'reject' : 'cancel'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
