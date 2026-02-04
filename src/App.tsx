@@ -12,6 +12,7 @@ import Home from "./pages/Home";
 import Album from "./pages/Album";
 import Requests from "./pages/Requests";
 import Profile from "./pages/Profile";
+import FriendDetail from "./pages/FriendDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/album" element={<Album />} />
               <Route path="/requests" element={<Requests />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/friend/:friendId" element={<FriendDetail />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
