@@ -92,8 +92,22 @@ const FriendDetail = () => {
         </div>
       </header>
 
+      {/* DEBUG: Request bar at top */}
+      <div className="bg-red-500 p-6 mx-4 mt-4 rounded-lg">
+        <p className="text-white font-bold text-center mb-4">REQUEST BAR DEBUG</p>
+        <Button
+          className="w-full h-12 text-lg"
+          disabled={selectedCount === 0}
+          onClick={handleRequestClick}
+        >
+          {selectedCount === 0
+            ? 'Select stickers'
+            : `Request (${selectedCount})`}
+        </Button>
+      </div>
+
       {/* Main content */}
-      <main className="flex-1 p-4 pb-24">
+      <main className="flex-1 p-4 pb-4">
         <div className="max-w-2xl mx-auto space-y-4">
           {/* Summary */}
           <div className="text-center py-2">
@@ -167,22 +181,7 @@ const FriendDetail = () => {
         </div>
       </main>
 
-      {/* Sticky footer CTA */}
-      {count > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4">
-          <div className="max-w-2xl mx-auto">
-            <Button
-              className="w-full"
-              disabled={selectedCount === 0}
-              onClick={handleRequestClick}
-            >
-              {selectedCount === 0
-                ? 'Select stickers'
-                : `Request (${selectedCount})`}
-            </Button>
-          </div>
-        </div>
-      )}
+      {/* Original sticky footer removed for debug */}
 
       {/* Coming Soon Dialog */}
       <Dialog open={showComingSoonDialog} onOpenChange={setShowComingSoonDialog}>
