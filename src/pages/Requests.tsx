@@ -5,15 +5,65 @@ import { TradeRequestCard } from '@/components/TradeRequestCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Inbox, Send } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Requests = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
-  const { sentRequests, receivedRequests, isLoading } = useTradeRequests();
+  const { sentRequests, receivedRequests, isLoading, updateStatus, isUpdating } = useTradeRequests();
+
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    type: 'reject' | 'cancel';
+    requestId: string;
+  } | null>(null);
 
   const handleRequestClick = (requestId: string) => {
     navigate(`/request/${requestId}`);
+  };
+
+  const handleAccept = async (requestId: string) => {
+    try {
+      await updateStatus({ requestId, newStatus: 'ACCEPTED' });
+      toast.success('Request accepted');
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      toast.error('Failed to accept request');
+    }
+  };
+
+  const handleReject = (requestId: string) => {
+    setConfirmDialog({ open: true, type: 'reject', requestId });
+  };
+
+  const handleCancel = (requestId: string) => {
+    setConfirmDialog({ open: true, type: 'cancel', requestId });
+  };
+
+  const confirmAction = async () => {
+    if (!confirmDialog) return;
+
+    try {
+      const newStatus = confirmDialog.type === 'reject' ? 'REJECTED' : 'CANCELLED';
+      await updateStatus({ requestId: confirmDialog.requestId, newStatus });
+      toast.success(confirmDialog.type === 'reject' ? 'Request rejected' : 'Request cancelled');
+    } catch (error) {
+      console.error('Error updating request:', error);
+      toast.error('Failed to update request');
+    } finally {
+      setConfirmDialog(null);
+    }
   };
 
   return (
@@ -64,6 +114,9 @@ const Requests = () => {
                   request={request}
                   type="received"
                   onClick={() => handleRequestClick(request.id)}
+                  onAccept={() => handleAccept(request.id)}
+                  onReject={() => handleReject(request.id)}
+                  isUpdating={isUpdating}
                 />
               ))}
             </div>
@@ -94,12 +147,39 @@ const Requests = () => {
                   request={request}
                   type="sent"
                   onClick={() => handleRequestClick(request.id)}
+                  onCancel={() => handleCancel(request.id)}
+                  isUpdating={isUpdating}
                 />
               ))}
             </div>
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog
+        open={confirmDialog?.open ?? false}
+        onOpenChange={(open) => !open && setConfirmDialog(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmDialog?.type === 'reject' ? 'Reject Request?' : 'Cancel Request?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmDialog?.type === 'reject'
+                ? 'Are you sure you want to reject this trade request? This action cannot be undone.'
+                : 'Are you sure you want to cancel this trade request? This action cannot be undone.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No, go back</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmAction}>
+              Yes, {confirmDialog?.type === 'reject' ? 'reject' : 'cancel'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

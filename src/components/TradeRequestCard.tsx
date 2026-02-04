@@ -1,28 +1,47 @@
 import { formatDistanceToNow } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Check, X } from 'lucide-react';
 import type { TradeRequest } from '@/hooks/useTradeRequests';
 
 interface TradeRequestCardProps {
   request: TradeRequest;
   type: 'sent' | 'received';
   onClick: () => void;
+  onAccept?: () => void;
+  onReject?: () => void;
+  onCancel?: () => void;
+  isUpdating?: boolean;
 }
 
 const statusConfig: Record<
   TradeRequest['status'],
   { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }
 > = {
-  SENT: { label: 'Sent', variant: 'default' },
+  SENT: { label: 'Pending', variant: 'default' },
   ACCEPTED: { label: 'Accepted', variant: 'secondary' },
   REJECTED: { label: 'Rejected', variant: 'destructive' },
   CANCELLED: { label: 'Cancelled', variant: 'outline' },
 };
 
-export function TradeRequestCard({ request, type, onClick }: TradeRequestCardProps) {
+export function TradeRequestCard({
+  request,
+  type,
+  onClick,
+  onAccept,
+  onReject,
+  onCancel,
+  isUpdating,
+}: TradeRequestCardProps) {
   const statusInfo = statusConfig[request.status];
   const relativeTime = formatDistanceToNow(new Date(request.created_at), { addSuffix: true });
+  const canAct = request.status === 'SENT';
+
+  const handleAction = (e: React.MouseEvent, action: () => void) => {
+    e.stopPropagation();
+    action();
+  };
 
   return (
     <Card
@@ -45,6 +64,47 @@ export function TradeRequestCard({ request, type, onClick }: TradeRequestCardPro
             <span>{relativeTime}</span>
           </div>
         </div>
+
+        {canAct && (
+          <div className="flex items-center gap-2 mr-2">
+            {type === 'received' && onAccept && onReject && (
+              <>
+                <Button
+                  size="sm"
+                  variant="default"
+                  onClick={(e) => handleAction(e, onAccept)}
+                  disabled={isUpdating}
+                  className="h-8 px-3"
+                >
+                  <Check className="h-4 w-4 mr-1" />
+                  Accept
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={(e) => handleAction(e, onReject)}
+                  disabled={isUpdating}
+                  className="h-8 px-3"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Reject
+                </Button>
+              </>
+            )}
+            {type === 'sent' && onCancel && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={(e) => handleAction(e, onCancel)}
+                disabled={isUpdating}
+                className="h-8 px-3"
+              >
+                Cancel
+              </Button>
+            )}
+          </div>
+        )}
+
         <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
       </CardContent>
     </Card>
