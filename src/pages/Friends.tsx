@@ -202,35 +202,43 @@ const Friends = () => {
             </p>
           ) : (
             <div className="space-y-2">
-              {friendStats.map((friend) => (
-                <button
-                  key={friend.friendId}
-                  onClick={() => navigate(`/friend/${friend.friendId}`)}
-                  className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-left"
-                >
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                      <span className="font-medium truncate">
-                        @{friend.username}
-                      </span>
+              {friendStats.map((friend) => {
+                const isDev = import.meta.env.DEV;
+                return (
+                  <button
+                    key={friend.friendId}
+                    onClick={() => navigate(`/friend-profile/${friend.friendId}`)}
+                    className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-left"
+                  >
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <span className="font-medium truncate">
+                          @{friend.username}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Progress 
+                          value={friend.progressPercent} 
+                          className="h-2 flex-1"
+                        />
+                        <span className="text-xs text-muted-foreground w-12 text-right">
+                          {friend.progressPercent.toFixed(0)}%
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Owned {friend.ownedCount} • Duplicates {friend.duplicateCount} • Missing {friend.missingCount}
+                      </p>
+                      {isDev && (
+                        <p className="text-[10px] text-muted-foreground/50 font-mono">
+                          debug: friend_user_id={friend.friendId} owned={friend.ownedCount} dup={friend.duplicateCount}
+                        </p>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Progress 
-                        value={friend.progressPercent} 
-                        className="h-2 flex-1"
-                      />
-                      <span className="text-xs text-muted-foreground w-12 text-right">
-                        {friend.progressPercent.toFixed(0)}%
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Owned {friend.ownedCount} • Duplicates {friend.duplicateCount}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" />
-                </button>
-              ))}
+                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" />
+                  </button>
+                );
+              })}
             </div>
           )}
         </CardContent>
