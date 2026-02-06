@@ -12,6 +12,7 @@ import Home from "./pages/Home";
 import Album from "./pages/Album";
 import Requests from "./pages/Requests";
 import Profile from "./pages/Profile";
+import Friends from "./pages/Friends";
 import FriendDetail from "./pages/FriendDetail";
 import RequestDetail from "./pages/RequestDetail";
 import NotFound from "./pages/NotFound";
@@ -44,6 +45,7 @@ const App = () => (
             >
               <Route path="/" element={<Home />} />
               <Route path="/album" element={<Album />} />
+              <Route path="/friends" element={<Friends />} />
               <Route path="/requests" element={<Requests />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/friend/:friendId" element={<FriendDetail />} />

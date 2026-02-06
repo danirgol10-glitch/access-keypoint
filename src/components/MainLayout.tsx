@@ -1,11 +1,12 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Home, Image, MessageSquare, User } from 'lucide-react';
+import { Home, Image, Users, MessageSquare, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '@/hooks/useNotifications';
 
 const tabs = [
   { path: '/', label: 'Progress', icon: Home },
   { path: '/album', label: 'Album', icon: Image },
+  { path: '/friends', label: 'Friends', icon: Users },
   { path: '/requests', label: 'Requests', icon: MessageSquare },
   { path: '/profile', label: 'Profile', icon: User },
 ];

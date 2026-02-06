@@ -1,8 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { useAlbumStats } from '@/hooks/useAlbumStats';
-import { AlbumStatsCard } from '@/components/AlbumStatsCard';
-import { FriendsSection } from '@/components/FriendsSection';
 import { NotificationsSection } from '@/components/NotificationsSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +9,6 @@ import { LogOut } from 'lucide-react';
 const Profile = () => {
   const { signOut } = useAuth();
   const { profile, isLoading: profileLoading } = useUserProfile();
-  const { stats, isLoading: statsLoading } = useAlbumStats();
 
   const handleSignOut = async () => {
     await signOut();
@@ -54,39 +50,9 @@ const Profile = () => {
         </CardContent>
       </Card>
 
-      {/* Album stats card */}
-      <div className="w-full max-w-md">
-        {statsLoading ? (
-          <Card className="w-full">
-            <CardHeader className="pb-2">
-              <Skeleton className="h-5 w-32" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-center">
-                <Skeleton className="h-12 w-24 mx-auto" />
-                <Skeleton className="h-4 w-40 mx-auto mt-2" />
-              </div>
-              <Skeleton className="h-3 w-full" />
-              <div className="grid grid-cols-3 gap-3">
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-              </div>
-            </CardContent>
-          </Card>
-        ) : stats ? (
-          <AlbumStatsCard stats={stats} />
-        ) : null}
-      </div>
-
       {/* Notifications section */}
       <div className="w-full max-w-md">
         <NotificationsSection />
-      </div>
-
-      {/* Friends section */}
-      <div className="w-full max-w-md">
-        <FriendsSection />
       </div>
     </div>
   );
