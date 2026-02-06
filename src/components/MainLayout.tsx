@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { useNotifications } from '@/hooks/useNotifications';
 
 const tabs = [
-  { path: '/', label: 'Home', icon: Home },
+  { path: '/', label: 'Progress', icon: Home },
   { path: '/album', label: 'Album', icon: Image },
   { path: '/requests', label: 'Requests', icon: MessageSquare },
   { path: '/profile', label: 'Profile', icon: User },
