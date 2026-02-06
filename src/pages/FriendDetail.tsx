@@ -61,10 +61,26 @@ const FriendDetail = () => {
   const handleRequestClick = async () => {
     if (!friendId || selectedStickers.size === 0) return;
 
+    // Validate: cannot request 0 items (already checked above)
+    // Re-validate selected stickers are still in helpful list
+    const validStickers = Array.from(selectedStickers).filter(id =>
+      helpfulStickers.some(s => s.id === id)
+    );
+
+    if (validStickers.length === 0) {
+      toast({
+        title: 'No valid stickers',
+        description: 'The selected stickers are no longer available.',
+        variant: 'destructive',
+      });
+      setSelectedStickers(new Set());
+      return;
+    }
+
     try {
       await createRequest({
         toUserId: friendId,
-        stickerIds: Array.from(selectedStickers),
+        stickerIds: validStickers,
         fromUsername: myProfile?.username ?? undefined,
       });
 
@@ -137,8 +153,11 @@ const FriendDetail = () => {
             <Card className="w-full">
               <CardContent className="flex flex-col items-center py-8 text-center">
                 <Package className="h-12 w-12 text-muted-foreground mb-3" />
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground mb-2">
                   No duplicates from this friend match your needs yet.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Ask @{friendProfile?.username ?? 'your friend'} to mark their duplicate stickers in the Album tab.
                 </p>
               </CardContent>
             </Card>

@@ -134,6 +134,29 @@ export function useTradeRequests() {
       fromUsername?: string;
     }) => {
       if (!user?.id) throw new Error('Not authenticated');
+      
+      // Validate: cannot send to yourself
+      if (toUserId === user.id) {
+        throw new Error('Cannot send a trade request to yourself');
+      }
+
+      // Validate: must have at least one sticker
+      if (stickerIds.length === 0) {
+        throw new Error('Must select at least one sticker');
+      }
+
+      // Validate: must be an accepted friend
+      const { data: friendship, error: friendshipError } = await supabase
+        .from('friendships')
+        .select('status')
+        .or(`and(requester_id.eq.${user.id},addressee_id.eq.${toUserId}),and(requester_id.eq.${toUserId},addressee_id.eq.${user.id})`)
+        .eq('status', 'ACCEPTED')
+        .maybeSingle();
+
+      if (friendshipError) throw friendshipError;
+      if (!friendship) {
+        throw new Error('You can only send trade requests to accepted friends');
+      }
 
       // Create the trade request
       const { data: request, error: requestError } = await supabase

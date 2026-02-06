@@ -97,17 +97,32 @@ const Home = () => {
               </p>
             </CardContent>
           </Card>
+        ) : friendMatches.every(f => f.matchCount === 0) ? (
+          // All friends have 0 matches
+          <Card className="w-full">
+            <CardContent className="flex flex-col items-center py-8 text-center">
+              <AlertCircle className="h-12 w-12 text-muted-foreground mb-3" />
+              <p className="text-muted-foreground mb-2">
+                No matches yet.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Your friends haven't marked duplicates that match what you need.
+              </p>
+            </CardContent>
+          </Card>
         ) : (
-          // Show ranked friend list
+          // Show ranked friend list (filter out 0-match friends for cleaner display)
           <div className="space-y-3">
-            {friendMatches.map((friend) => (
-              <FriendMatchCard
-                key={friend.friendId}
-                username={friend.username}
-                matchCount={friend.matchCount}
-                onView={() => handleViewFriend(friend.friendId)}
-              />
-            ))}
+            {friendMatches
+              .filter(friend => friend.matchCount > 0)
+              .map((friend) => (
+                <FriendMatchCard
+                  key={friend.friendId}
+                  username={friend.username}
+                  matchCount={friend.matchCount}
+                  onView={() => handleViewFriend(friend.friendId)}
+                />
+              ))}
           </div>
         )}
       </div>
