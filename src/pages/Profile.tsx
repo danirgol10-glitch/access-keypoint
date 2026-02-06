@@ -3,6 +3,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAlbumStats } from '@/hooks/useAlbumStats';
 import { AlbumStatsCard } from '@/components/AlbumStatsCard';
 import { FriendsSection } from '@/components/FriendsSection';
+import { NotificationsSection } from '@/components/NotificationsSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -76,6 +77,11 @@ const Profile = () => {
         ) : stats ? (
           <AlbumStatsCard stats={stats} />
         ) : null}
+      </div>
+
+      {/* Notifications section */}
+      <div className="w-full max-w-md">
+        <NotificationsSection />
       </div>
 
       {/* Friends section */}
