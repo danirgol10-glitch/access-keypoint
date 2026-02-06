@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTradeRequestDetail, useTradeRequests } from '@/hooks/useTradeRequests';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -34,6 +35,7 @@ const RequestDetail = () => {
   const { requestId } = useParams<{ requestId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { profile: myProfile } = useUserProfile();
   const { data: request, isLoading } = useTradeRequestDetail(requestId);
   const { updateStatus, isUpdating } = useTradeRequests();
 
@@ -47,10 +49,19 @@ const RequestDetail = () => {
   const isReceiver = request && request.to_user_id === user?.id;
   const isSender = request && request.from_user_id === user?.id;
 
+  // Determine other user ID for notifications
+  const otherUserId = request?.isFromMe ? request.to_user_id : request?.from_user_id;
+
   const handleAccept = async () => {
-    if (!requestId) return;
+    if (!requestId || !otherUserId) return;
     try {
-      await updateStatus({ requestId, newStatus: 'ACCEPTED' });
+      await updateStatus({
+        requestId,
+        newStatus: 'ACCEPTED',
+        otherUserId,
+        otherUsername: request?.other_user?.username ?? undefined,
+        myUsername: myProfile?.username ?? undefined,
+      });
       toast.success('Request accepted');
     } catch (error) {
       console.error('Error accepting request:', error);
@@ -67,11 +78,17 @@ const RequestDetail = () => {
   };
 
   const confirmAction = async () => {
-    if (!confirmDialog || !requestId) return;
+    if (!confirmDialog || !requestId || !otherUserId) return;
 
     try {
       const newStatus = confirmDialog.type === 'reject' ? 'REJECTED' : 'CANCELLED';
-      await updateStatus({ requestId, newStatus });
+      await updateStatus({
+        requestId,
+        newStatus,
+        otherUserId,
+        otherUsername: request?.other_user?.username ?? undefined,
+        myUsername: myProfile?.username ?? undefined,
+      });
       toast.success(confirmDialog.type === 'reject' ? 'Request rejected' : 'Request cancelled');
     } catch (error) {
       console.error('Error updating request:', error);

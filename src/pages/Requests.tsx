@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { TradeRequestCard } from '@/components/TradeRequestCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -22,20 +23,29 @@ const Requests = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
   const { sentRequests, receivedRequests, isLoading, updateStatus, isUpdating } = useTradeRequests();
+  const { profile: myProfile } = useUserProfile();
 
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     type: 'reject' | 'cancel';
     requestId: string;
+    otherUserId: string;
+    otherUsername?: string;
   } | null>(null);
 
   const handleRequestClick = (requestId: string) => {
     navigate(`/request/${requestId}`);
   };
 
-  const handleAccept = async (requestId: string) => {
+  const handleAccept = async (requestId: string, request: typeof receivedRequests[0]) => {
     try {
-      await updateStatus({ requestId, newStatus: 'ACCEPTED' });
+      await updateStatus({
+        requestId,
+        newStatus: 'ACCEPTED',
+        otherUserId: request.from_user_id,
+        otherUsername: request.other_user?.username ?? undefined,
+        myUsername: myProfile?.username ?? undefined,
+      });
       toast.success('Request accepted');
     } catch (error) {
       console.error('Error accepting request:', error);
@@ -43,12 +53,24 @@ const Requests = () => {
     }
   };
 
-  const handleReject = (requestId: string) => {
-    setConfirmDialog({ open: true, type: 'reject', requestId });
+  const handleReject = (requestId: string, request: typeof receivedRequests[0]) => {
+    setConfirmDialog({
+      open: true,
+      type: 'reject',
+      requestId,
+      otherUserId: request.from_user_id,
+      otherUsername: request.other_user?.username ?? undefined,
+    });
   };
 
-  const handleCancel = (requestId: string) => {
-    setConfirmDialog({ open: true, type: 'cancel', requestId });
+  const handleCancel = (requestId: string, request: typeof sentRequests[0]) => {
+    setConfirmDialog({
+      open: true,
+      type: 'cancel',
+      requestId,
+      otherUserId: request.to_user_id,
+      otherUsername: request.other_user?.username ?? undefined,
+    });
   };
 
   const confirmAction = async () => {
@@ -56,7 +78,13 @@ const Requests = () => {
 
     try {
       const newStatus = confirmDialog.type === 'reject' ? 'REJECTED' : 'CANCELLED';
-      await updateStatus({ requestId: confirmDialog.requestId, newStatus });
+      await updateStatus({
+        requestId: confirmDialog.requestId,
+        newStatus,
+        otherUserId: confirmDialog.otherUserId,
+        otherUsername: confirmDialog.otherUsername,
+        myUsername: myProfile?.username ?? undefined,
+      });
       toast.success(confirmDialog.type === 'reject' ? 'Request rejected' : 'Request cancelled');
     } catch (error) {
       console.error('Error updating request:', error);
@@ -114,8 +142,8 @@ const Requests = () => {
                   request={request}
                   type="received"
                   onClick={() => handleRequestClick(request.id)}
-                  onAccept={() => handleAccept(request.id)}
-                  onReject={() => handleReject(request.id)}
+                  onAccept={() => handleAccept(request.id, request)}
+                  onReject={() => handleReject(request.id, request)}
                   isUpdating={isUpdating}
                 />
               ))}
@@ -147,7 +175,7 @@ const Requests = () => {
                   request={request}
                   type="sent"
                   onClick={() => handleRequestClick(request.id)}
-                  onCancel={() => handleCancel(request.id)}
+                  onCancel={() => handleCancel(request.id, request)}
                   isUpdating={isUpdating}
                 />
               ))}

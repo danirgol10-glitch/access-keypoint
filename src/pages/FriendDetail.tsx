@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useFriendHelpfulStickers } from '@/hooks/useFriendHelpfulStickers';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -17,6 +18,7 @@ const FriendDetail = () => {
   const [selectedStickers, setSelectedStickers] = useState<Set<string>>(new Set());
   
   const { createRequest, isCreating } = useTradeRequests();
+  const { profile: myProfile } = useUserProfile();
 
   // Fetch friend's username
   const { data: friendProfile, isLoading: profileLoading } = useQuery({
@@ -63,6 +65,7 @@ const FriendDetail = () => {
       await createRequest({
         toUserId: friendId,
         stickerIds: Array.from(selectedStickers),
+        fromUsername: myProfile?.username ?? undefined,
       });
 
       toast({

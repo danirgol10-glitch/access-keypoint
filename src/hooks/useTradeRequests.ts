@@ -26,6 +26,22 @@ export interface TradeRequestItem {
   };
 }
 
+// Helper to create notification
+async function createNotification(params: {
+  userId: string;
+  type: 'TRADE_RECEIVED' | 'TRADE_ACCEPTED' | 'TRADE_REJECTED' | 'TRADE_CANCELLED';
+  tradeRequestId: string;
+  message: string;
+}) {
+  const { error } = await supabase.from('notifications').insert({
+    user_id: params.userId,
+    type: params.type,
+    trade_request_id: params.tradeRequestId,
+    message: params.message,
+  });
+  if (error) console.error('Failed to create notification:', error);
+}
+
 export function useTradeRequests() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -111,9 +127,11 @@ export function useTradeRequests() {
     mutationFn: async ({
       toUserId,
       stickerIds,
+      fromUsername,
     }: {
       toUserId: string;
       stickerIds: string[];
+      fromUsername?: string;
     }) => {
       if (!user?.id) throw new Error('Not authenticated');
 
@@ -142,10 +160,19 @@ export function useTradeRequests() {
 
       if (itemsError) throw itemsError;
 
+      // Create notification for receiver (TRADE_RECEIVED)
+      await createNotification({
+        userId: toUserId,
+        type: 'TRADE_RECEIVED',
+        tradeRequestId: request.id,
+        message: `@${fromUsername ?? 'Someone'} requested ${stickerIds.length} sticker${stickerIds.length !== 1 ? 's' : ''}`,
+      });
+
       return request;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trade-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 
@@ -154,9 +181,15 @@ export function useTradeRequests() {
     mutationFn: async ({
       requestId,
       newStatus,
+      otherUserId,
+      otherUsername,
+      myUsername,
     }: {
       requestId: string;
       newStatus: 'ACCEPTED' | 'REJECTED' | 'CANCELLED';
+      otherUserId: string;
+      otherUsername?: string;
+      myUsername?: string;
     }) => {
       if (!user?.id) throw new Error('Not authenticated');
 
@@ -168,11 +201,37 @@ export function useTradeRequests() {
         .single();
 
       if (error) throw error;
+
+      // Create notification based on status change
+      const notificationMap = {
+        ACCEPTED: {
+          type: 'TRADE_ACCEPTED' as const,
+          message: `@${myUsername ?? 'Someone'} accepted your request`,
+        },
+        REJECTED: {
+          type: 'TRADE_REJECTED' as const,
+          message: `@${myUsername ?? 'Someone'} rejected your request`,
+        },
+        CANCELLED: {
+          type: 'TRADE_CANCELLED' as const,
+          message: `@${myUsername ?? 'Someone'} cancelled the request`,
+        },
+      };
+
+      const notif = notificationMap[newStatus];
+      await createNotification({
+        userId: otherUserId,
+        type: notif.type,
+        tradeRequestId: requestId,
+        message: notif.message,
+      });
+
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trade-requests'] });
       queryClient.invalidateQueries({ queryKey: ['trade-request-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 
