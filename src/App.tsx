@@ -14,6 +14,7 @@ import Requests from "./pages/Requests";
 import Profile from "./pages/Profile";
 import Friends from "./pages/Friends";
 import FriendDetail from "./pages/FriendDetail";
+import FriendProfile from "./pages/FriendProfile";
 import RequestDetail from "./pages/RequestDetail";
 import NotFound from "./pages/NotFound";
 
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/requests" element={<Requests />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/friend/:friendId" element={<FriendDetail />} />
+              <Route path="/friend-profile/:friendId" element={<FriendProfile />} />
               <Route path="/request/:requestId" element={<RequestDetail />} />
             </Route>
             <Route path="*" element={<NotFound />} />

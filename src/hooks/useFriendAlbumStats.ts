@@ -8,6 +8,7 @@ export interface FriendAlbumStats {
   username: string;
   ownedCount: number;
   duplicateCount: number;
+  haveCount: number;
   missingCount: number;
   progressPercent: number;
 }
@@ -23,18 +24,7 @@ export function useFriendAlbumStats() {
     queryFn: async () => {
       if (friendIds.length === 0) return {};
 
-      // Fetch all user_stickers for friends (we can see DUPLICATE via RLS)
-      // We need to count HAVE + DUPLICATE for owned
-      // But RLS only allows us to see DUPLICATE stickers for friends
-      // So we'll use a different approach - count from what we can access
-      
-      // Actually, we need to think about this differently
-      // The RLS policy only lets us see DUPLICATE stickers for friends
-      // So we can't compute their full progress client-side
-      
-      // For now, let's show what we CAN see: their duplicates
-      // And explain that we need a server function for full stats
-      
+      // With updated RLS, we can now see ALL friend stickers (HAVE + DUPLICATE)
       const { data, error } = await supabase
         .from('user_stickers')
         .select('user_id, status')
@@ -45,7 +35,7 @@ export function useFriendAlbumStats() {
         throw error;
       }
 
-      // Group by friend
+      // Group by friend - count owned (all rows) and duplicate (status=DUPLICATE)
       const statsByFriend: Record<string, { owned: number; duplicate: number }> = {};
       
       for (const sticker of data ?? []) {
@@ -73,6 +63,7 @@ export function useFriendAlbumStats() {
     const stats = friendStickers?.[friend.friendId] ?? { owned: 0, duplicate: 0 };
     const ownedCount = stats.owned;
     const duplicateCount = stats.duplicate;
+    const haveCount = ownedCount - duplicateCount;
     const missingCount = totalStickers - ownedCount;
     const progressPercent = (ownedCount / totalStickers) * 100;
 
@@ -81,6 +72,7 @@ export function useFriendAlbumStats() {
       username: friend.username ?? 'unknown',
       ownedCount,
       duplicateCount,
+      haveCount,
       missingCount,
       progressPercent,
     };
