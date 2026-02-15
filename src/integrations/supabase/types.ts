@@ -256,18 +256,21 @@ export type Database = {
       }
       users: {
         Row: {
+          city: string | null
           created_at: string
           email: string
           id: string
           username: string | null
         }
         Insert: {
+          city?: string | null
           created_at?: string
           email: string
           id: string
           username?: string | null
         }
         Update: {
+          city?: string | null
           created_at?: string
           email?: string
           id?: string
