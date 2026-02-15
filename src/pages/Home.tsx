@@ -2,30 +2,28 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAlbumStats } from '@/hooks/useAlbumStats';
-import { useFriendMatches } from '@/hooks/useFriendMatches';
+import { useCityMatches } from '@/hooks/useCityMatches';
 import { FriendMatchCard } from '@/components/FriendMatchCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Users, Check, Copy, Search } from 'lucide-react';
+import { Users, Check, Copy, Search, MapPin } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const Home = () => {
   const navigate = useNavigate();
   const { profile, isLoading: profileLoading } = useUserProfile();
   const { stats, isLoading: statsLoading } = useAlbumStats();
-  const { friendMatches, isLoading: matchesLoading, hasFriends, anyFriendHasDuplicates } = useFriendMatches();
+  const { usersWithMatches, isLoading: matchesLoading, city, hasCityUsers } = useCityMatches();
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const handleViewFriend = (friendId: string) => {
+  const handleViewUser = (userId: string) => {
     setSheetOpen(false);
-    navigate(`/friend/${friendId}`);
+    navigate(`/friend/${userId}`);
   };
 
-  // Calculate friends with matches for badge
-  const friendsWithMatches = friendMatches.filter(f => f.matchCount > 0);
-  const badgeCount = friendsWithMatches.length;
+  const badgeCount = usersWithMatches.length;
 
   // Pie chart data
   const pieData = stats ? [
@@ -35,7 +33,7 @@ const Home = () => {
 
   return (
     <div className="flex flex-col items-center p-6 space-y-6 relative">
-      {/* Friends Button - Top Right */}
+      {/* City Matches Button - Top Right */}
       <div className="absolute top-4 right-4">
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger asChild>
@@ -44,7 +42,7 @@ const Home = () => {
               size="icon"
               className="rounded-full h-12 w-12 relative"
             >
-              <Users className="h-5 w-5" />
+              <MapPin className="h-5 w-5" />
               {badgeCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
                   {badgeCount > 99 ? '99+' : badgeCount}
@@ -54,7 +52,9 @@ const Home = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-full sm:max-w-md">
             <SheetHeader>
-              <SheetTitle>Friends Who Can Help</SheetTitle>
+              <SheetTitle>
+                {city ? `People in ${city} Who Can Help` : 'Local Matches'}
+              </SheetTitle>
             </SheetHeader>
             <div className="mt-6 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
               {matchesLoading ? (
@@ -72,40 +72,40 @@ const Home = () => {
                     </Card>
                   ))}
                 </div>
-              ) : !hasFriends ? (
+              ) : !city ? (
                 <div className="flex flex-col items-center py-8 text-center">
-                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
+                  <MapPin className="h-12 w-12 text-muted-foreground mb-3" />
                   <p className="text-muted-foreground mb-4">
-                    Add friends to see who can help complete your album!
+                    Set your city in your profile to find local collectors!
                   </p>
                   <Button onClick={() => { setSheetOpen(false); navigate('/profile'); }}>
-                    Add Friends
+                    Set City
                   </Button>
                 </div>
-              ) : !anyFriendHasDuplicates ? (
+              ) : !hasCityUsers ? (
                 <div className="flex flex-col items-center py-8 text-center">
-                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
+                  <MapPin className="h-12 w-12 text-muted-foreground mb-3" />
                   <p className="text-muted-foreground">
-                    No friend duplicates yet. Tell your friends to mark their duplicate stickers!
+                    No other collectors in {city} yet. Spread the word!
                   </p>
                 </div>
-              ) : friendsWithMatches.length === 0 ? (
+              ) : usersWithMatches.length === 0 ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-12 w-12 text-muted-foreground mb-3" />
                   <p className="text-muted-foreground mb-2">
-                    No matches yet.
+                    No matches yet in {city}.
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Your friends haven't marked duplicates that match what you need.
+                    Collectors in your city haven't marked duplicates that match what you need.
                   </p>
                 </div>
               ) : (
-                friendsWithMatches.map((friend) => (
+                usersWithMatches.map((match) => (
                   <FriendMatchCard
-                    key={friend.friendId}
-                    username={friend.username}
-                    matchCount={friend.matchCount}
-                    onView={() => handleViewFriend(friend.friendId)}
+                    key={match.userId}
+                    username={match.username}
+                    matchCount={match.matchCount}
+                    onView={() => handleViewUser(match.userId)}
                   />
                 ))
               )}
@@ -153,7 +153,6 @@ const Home = () => {
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
-            {/* Center text */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               <span className="text-3xl font-bold text-foreground">
                 {stats.completionPercent.toFixed(1)}%
