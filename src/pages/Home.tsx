@@ -1,16 +1,23 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAlbumStats } from '@/hooks/useAlbumStats';
-import { useCityMatches } from '@/hooks/useCityMatches';
+import { useCityMatches, sortMatches, type SortMode } from '@/hooks/useCityMatches';
 import { useFriendMatches } from '@/hooks/useFriendMatches';
 import { FriendMatchCard } from '@/components/FriendMatchCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Users, Check, Copy, Search, MapPin } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+
+const SORT_OPTIONS: { value: SortMode; label: string }[] = [
+  { value: 'best_match', label: 'Best match' },
+  { value: 'most_duplicates', label: 'Most duplicates' },
+  { value: 'most_active', label: 'Most active' },
+];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -20,6 +27,18 @@ const Home = () => {
   const { friendsWithMatches, isLoading: friendsMatchesLoading, hasFriends } = useFriendMatches();
   const [citySheetOpen, setCitySheetOpen] = useState(false);
   const [friendsSheetOpen, setFriendsSheetOpen] = useState(false);
+  const [citySortMode, setCitySortMode] = useState<SortMode>('best_match');
+  const [friendsSortMode, setFriendsSortMode] = useState<SortMode>('best_match');
+
+  const sortedCityMatches = useMemo(
+    () => sortMatches(usersWithMatches, citySortMode),
+    [usersWithMatches, citySortMode]
+  );
+
+  const sortedFriendMatches = useMemo(
+    () => sortMatches(friendsWithMatches, friendsSortMode),
+    [friendsWithMatches, friendsSortMode]
+  );
 
   const handleViewCityUser = (userId: string) => {
     setCitySheetOpen(false);
@@ -39,6 +58,26 @@ const Home = () => {
     { name: 'Owned', value: stats.ownedCount, color: 'hsl(var(--primary))' },
     { name: 'Missing', value: stats.missingCount, color: 'hsl(var(--muted))' },
   ] : [];
+
+  const SortToggle = ({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) => (
+    <ToggleGroup
+      type="single"
+      value={value}
+      onValueChange={(v) => { if (v) onChange(v as SortMode); }}
+      className="justify-start gap-1"
+    >
+      {SORT_OPTIONS.map((opt) => (
+        <ToggleGroupItem
+          key={opt.value}
+          value={opt.value}
+          size="sm"
+          className="text-xs px-2.5 h-7 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+        >
+          {opt.label}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
+  );
 
   return (
     <div className="flex flex-col items-center p-6 space-y-6 relative">
@@ -60,7 +99,7 @@ const Home = () => {
             <SheetHeader>
               <SheetTitle>Friends Who Can Help</SheetTitle>
             </SheetHeader>
-            <div className="mt-6 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
+            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
               {friendsMatchesLoading ? (
                 <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
@@ -94,14 +133,20 @@ const Home = () => {
                   </p>
                 </div>
               ) : (
-                friendsWithMatches.map((match) => (
-                  <FriendMatchCard
-                    key={match.friendId}
-                    username={match.username}
-                    matchCount={match.matchCount}
-                    onView={() => handleViewFriend(match.friendId)}
-                  />
-                ))
+                <>
+                  <SortToggle value={friendsSortMode} onChange={setFriendsSortMode} />
+                  {sortedFriendMatches.map((match, idx) => (
+                    <FriendMatchCard
+                      key={match.friendId}
+                      username={match.username}
+                      matchCount={match.matchCount}
+                      duplicateTotal={match.duplicateTotal}
+                      lastActiveAt={match.lastActiveAt}
+                      isTopMatch={idx === 0}
+                      onView={() => handleViewFriend(match.friendId)}
+                    />
+                  ))}
+                </>
               )}
             </div>
           </SheetContent>
@@ -125,7 +170,7 @@ const Home = () => {
                 {city ? `People in ${city} Who Can Help` : 'Local Matches'}
               </SheetTitle>
             </SheetHeader>
-            <div className="mt-6 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
+            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
               {matchesLoading ? (
                 <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
@@ -169,15 +214,20 @@ const Home = () => {
                   </p>
                 </div>
               ) : (
-                usersWithMatches.map((match) => (
-                  <FriendMatchCard
-                    key={match.userId}
-                    username={match.username}
-                    matchCount={match.matchCount}
-                    lastActiveAt={match.lastActiveAt}
-                    onView={() => handleViewCityUser(match.userId)}
-                  />
-                ))
+                <>
+                  <SortToggle value={citySortMode} onChange={setCitySortMode} />
+                  {sortedCityMatches.map((match, idx) => (
+                    <FriendMatchCard
+                      key={match.userId}
+                      username={match.username}
+                      matchCount={match.matchCount}
+                      duplicateTotal={match.duplicateTotal}
+                      lastActiveAt={match.lastActiveAt}
+                      isTopMatch={idx === 0}
+                      onView={() => handleViewCityUser(match.userId)}
+                    />
+                  ))}
+                </>
               )}
             </div>
           </SheetContent>
