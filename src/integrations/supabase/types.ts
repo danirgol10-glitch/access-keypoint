@@ -29,6 +29,42 @@ export type Database = {
         }
         Relationships: []
       }
+      blocked_users: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocked_users_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blocked_users_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           created_at: string
@@ -351,6 +387,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          last_active_at: string | null
           username: string | null
         }
         Insert: {
@@ -358,6 +395,7 @@ export type Database = {
           created_at?: string
           email: string
           id: string
+          last_active_at?: string | null
           username?: string | null
         }
         Update: {
@@ -365,6 +403,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          last_active_at?: string | null
           username?: string | null
         }
         Relationships: []

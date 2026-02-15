@@ -1,8 +1,10 @@
+import { useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Home, Image, Users, MessageSquare, User, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useConversations } from '@/hooks/useConversations';
+import { useLastActive } from '@/hooks/useLastActive';
 
 const tabs = [
   { path: '/', label: 'Progress', icon: Home },
@@ -18,6 +20,12 @@ const MainLayout = () => {
   const { unreadCount } = useNotifications();
   const { data: conversations = [] } = useConversations();
   const chatUnreadCount = conversations.reduce((sum, c) => sum + c.unread_count, 0);
+  const { touch } = useLastActive();
+
+  // Update last_active on tab switch
+  useEffect(() => {
+    touch();
+  }, [location.pathname, touch]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

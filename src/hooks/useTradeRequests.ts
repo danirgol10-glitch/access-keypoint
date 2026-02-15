@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBlockedUsers } from './useBlockedUsers';
 
 export interface TradeRequest {
   id: string;
@@ -45,10 +46,11 @@ async function createNotification(params: {
 export function useTradeRequests() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { blockedIds } = useBlockedUsers();
 
   // Fetch sent requests
   const { data: sentRequests = [], isLoading: sentLoading } = useQuery({
-    queryKey: ['trade-requests', 'sent', user?.id],
+    queryKey: ['trade-requests', 'sent', user?.id, blockedIds],
     queryFn: async () => {
       if (!user?.id) return [];
 
@@ -63,9 +65,10 @@ export function useTradeRequests() {
         return [];
       }
 
-      // Get other user info and item counts
+      // Get other user info and item counts, filter blocked
+      const blockedSet = new Set(blockedIds);
       const enrichedRequests = await Promise.all(
-        requests.map(async (req) => {
+        requests.filter(req => !blockedSet.has(req.to_user_id)).map(async (req) => {
           const [userRes, itemRes] = await Promise.all([
             supabase.from('users').select('username').eq('id', req.to_user_id).single(),
             supabase.from('trade_request_items').select('id').eq('trade_request_id', req.id),
@@ -86,7 +89,7 @@ export function useTradeRequests() {
 
   // Fetch received requests
   const { data: receivedRequests = [], isLoading: receivedLoading } = useQuery({
-    queryKey: ['trade-requests', 'received', user?.id],
+    queryKey: ['trade-requests', 'received', user?.id, blockedIds],
     queryFn: async () => {
       if (!user?.id) return [];
 
@@ -101,9 +104,10 @@ export function useTradeRequests() {
         return [];
       }
 
-      // Get other user info and item counts
+      // Get other user info and item counts, filter blocked
+      const blockedSet = new Set(blockedIds);
       const enrichedRequests = await Promise.all(
-        requests.map(async (req) => {
+        requests.filter(req => !blockedSet.has(req.from_user_id)).map(async (req) => {
           const [userRes, itemRes] = await Promise.all([
             supabase.from('users').select('username').eq('id', req.from_user_id).single(),
             supabase.from('trade_request_items').select('id').eq('trade_request_id', req.id),

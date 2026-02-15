@@ -1,3 +1,4 @@
+import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { User } from 'lucide-react';
@@ -5,10 +6,15 @@ import { User } from 'lucide-react';
 interface FriendMatchCardProps {
   username: string | null;
   matchCount: number;
+  lastActiveAt?: string | null;
   onView: () => void;
 }
 
-export function FriendMatchCard({ username, matchCount, onView }: FriendMatchCardProps) {
+export function FriendMatchCard({ username, matchCount, lastActiveAt, onView }: FriendMatchCardProps) {
+  const activeLabel = lastActiveAt
+    ? `Active ${formatDistanceToNow(new Date(lastActiveAt), { addSuffix: true })}`
+    : null;
+
   return (
     <Card className="w-full">
       <CardContent className="flex items-center justify-between py-4 px-4">
@@ -24,6 +30,9 @@ export function FriendMatchCard({ username, matchCount, onView }: FriendMatchCar
                 : 'No matching stickers'
               }
             </p>
+            {activeLabel && (
+              <p className="text-xs text-muted-foreground/70">{activeLabel}</p>
+            )}
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={onView}>

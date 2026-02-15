@@ -54,6 +54,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Upsert user on sign in or sign up
         if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
           upsertUser(session.user);
+          // Update last_active_at
+          supabase
+            .from('users')
+            .update({ last_active_at: new Date().toISOString() })
+            .eq('id', session.user.id)
+            .then();
         }
       }
     );

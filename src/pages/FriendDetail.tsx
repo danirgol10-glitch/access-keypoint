@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { formatDistanceToNow } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useFriendHelpfulStickers } from '@/hooks/useFriendHelpfulStickers';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { BlockUserMenu } from '@/components/BlockUserMenu';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -28,7 +30,7 @@ const FriendDetail = () => {
 
       const { data, error } = await supabase
         .from('users')
-        .select('username')
+        .select('username, last_active_at')
         .eq('id', friendId)
         .single();
 
@@ -120,11 +122,21 @@ const FriendDetail = () => {
             {profileLoading ? (
               <Skeleton className="h-6 w-32" />
             ) : (
-              <h1 className="text-lg font-semibold text-foreground">
-                @{friendProfile?.username ?? 'Unknown'}
-              </h1>
+              <div>
+                <h1 className="text-lg font-semibold text-foreground">
+                  @{friendProfile?.username ?? 'Unknown'}
+                </h1>
+                {friendProfile?.last_active_at && (
+                  <p className="text-xs text-muted-foreground">
+                    Active {formatDistanceToNow(new Date(friendProfile.last_active_at), { addSuffix: true })}
+                  </p>
+                )}
+              </div>
             )}
           </div>
+          {friendId && (
+            <BlockUserMenu userId={friendId} username={friendProfile?.username ?? null} />
+          )}
         </div>
       </header>
 
