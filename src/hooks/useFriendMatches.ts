@@ -85,9 +85,11 @@ export function useFriendMatches() {
 
   // Check if any friend has duplicates at all
   const anyFriendHasDuplicates = Object.values(friendDuplicates ?? {}).some(set => set.size > 0);
+  const friendsWithMatches = friendMatches.filter(m => m.matchCount > 0);
 
   return {
     friendMatches,
+    friendsWithMatches,
     isLoading,
     hasFriends: friends.length > 0,
     anyFriendHasDuplicates,
