@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAlbumStats } from '@/hooks/useAlbumStats';
 import { useCityMatches } from '@/hooks/useCityMatches';
+import { useFriendMatches } from '@/hooks/useFriendMatches';
 import { FriendMatchCard } from '@/components/FriendMatchCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,14 +17,22 @@ const Home = () => {
   const { profile, isLoading: profileLoading } = useUserProfile();
   const { stats, isLoading: statsLoading } = useAlbumStats();
   const { usersWithMatches, isLoading: matchesLoading, city, hasCityUsers } = useCityMatches();
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const { friendsWithMatches, isLoading: friendsMatchesLoading, hasFriends } = useFriendMatches();
+  const [citySheetOpen, setCitySheetOpen] = useState(false);
+  const [friendsSheetOpen, setFriendsSheetOpen] = useState(false);
 
-  const handleViewUser = (userId: string) => {
-    setSheetOpen(false);
+  const handleViewCityUser = (userId: string) => {
+    setCitySheetOpen(false);
     navigate(`/friend/${userId}`);
   };
 
-  const badgeCount = usersWithMatches.length;
+  const handleViewFriend = (friendId: string) => {
+    setFriendsSheetOpen(false);
+    navigate(`/friend/${friendId}`);
+  };
+
+  const cityBadgeCount = usersWithMatches.length;
+  const friendsBadgeCount = friendsWithMatches.length;
 
   // Pie chart data
   const pieData = stats ? [
@@ -33,19 +42,79 @@ const Home = () => {
 
   return (
     <div className="flex flex-col items-center p-6 space-y-6 relative">
-      {/* City Matches Button - Top Right */}
-      <div className="absolute top-4 right-4">
-        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+      {/* Top Right Overlay Buttons */}
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        {/* Friends Helpers Button */}
+        <Sheet open={friendsSheetOpen} onOpenChange={setFriendsSheetOpen}>
           <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full h-12 w-12 relative"
-            >
-              <MapPin className="h-5 w-5" />
-              {badgeCount > 0 && (
+            <Button variant="outline" size="icon" className="rounded-full h-12 w-12 relative">
+              <Users className="h-5 w-5" />
+              {friendsBadgeCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
-                  {badgeCount > 99 ? '99+' : badgeCount}
+                  {friendsBadgeCount > 99 ? '99+' : friendsBadgeCount}
+                </span>
+              )}
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-full sm:max-w-md">
+            <SheetHeader>
+              <SheetTitle>Friends Who Can Help</SheetTitle>
+            </SheetHeader>
+            <div className="mt-6 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
+              {friendsMatchesLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="w-full">
+                      <CardContent className="flex items-center gap-3 py-4 px-4">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-3 w-32" />
+                        </div>
+                        <Skeleton className="h-8 w-16" />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : !hasFriends ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground mb-4">
+                    Add friends to discover who can help!
+                  </p>
+                  <Button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }}>
+                    Add Friends
+                  </Button>
+                </div>
+              ) : friendsBadgeCount === 0 ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">
+                    No friend duplicates match your needs yet.
+                  </p>
+                </div>
+              ) : (
+                friendsWithMatches.map((match) => (
+                  <FriendMatchCard
+                    key={match.friendId}
+                    username={match.username}
+                    matchCount={match.matchCount}
+                    onView={() => handleViewFriend(match.friendId)}
+                  />
+                ))
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        {/* City Helpers Button */}
+        <Sheet open={citySheetOpen} onOpenChange={setCitySheetOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon" className="rounded-full h-12 w-12 relative">
+              <MapPin className="h-5 w-5" />
+              {cityBadgeCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+                  {cityBadgeCount > 99 ? '99+' : cityBadgeCount}
                 </span>
               )}
             </Button>
@@ -78,7 +147,7 @@ const Home = () => {
                   <p className="text-muted-foreground mb-4">
                     Set your city in your profile to find local collectors!
                   </p>
-                  <Button onClick={() => { setSheetOpen(false); navigate('/profile'); }}>
+                  <Button onClick={() => { setCitySheetOpen(false); navigate('/profile'); }}>
                     Set City
                   </Button>
                 </div>
@@ -106,7 +175,7 @@ const Home = () => {
                     username={match.username}
                     matchCount={match.matchCount}
                     lastActiveAt={match.lastActiveAt}
-                    onView={() => handleViewUser(match.userId)}
+                    onView={() => handleViewCityUser(match.userId)}
                   />
                 ))
               )}
