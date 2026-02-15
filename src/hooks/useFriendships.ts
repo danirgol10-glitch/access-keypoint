@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useBlockedUsers } from './useBlockedUsers';
 
 export interface Friendship {
   id: string;
@@ -66,16 +67,17 @@ export const useOutgoingRequests = () => {
 export const useAcceptedFriends = () => {
   const { data: friendships, isLoading } = useFriendships();
   const { user } = useAuth();
+  const { blockedIds } = useBlockedUsers();
 
+  const blockedSet = new Set(blockedIds);
   const friends = friendships?.filter((f) => f.status === 'ACCEPTED').map((f) => {
-    // Return the friend's info (the other person)
     const isRequester = f.requester_id === user?.id;
     return {
       friendshipId: f.id,
       friendId: isRequester ? f.addressee_id : f.requester_id,
       username: isRequester ? f.addressee?.username : f.requester?.username,
     };
-  }) ?? [];
+  }).filter(f => !blockedSet.has(f.friendId)) ?? [];
 
   return { friends, isLoading };
 };

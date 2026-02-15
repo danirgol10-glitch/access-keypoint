@@ -4,11 +4,13 @@ import { useUserProfile } from './useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserStickers } from './useUserStickers';
 import { useStickers } from './useStickers';
+import { useBlockedUsers } from './useBlockedUsers';
 
 export interface CityMatch {
   userId: string;
   username: string | null;
   matchCount: number;
+  lastActiveAt: string | null;
 }
 
 export function useCityMatches() {
@@ -16,6 +18,7 @@ export function useCityMatches() {
   const { profile, isLoading: profileLoading } = useUserProfile();
   const { data: myStickers, isLoading: myStickersLoading } = useUserStickers();
   const { data: allStickers, isLoading: allStickersLoading } = useStickers();
+  const { blockedIds, isLoading: blockedLoading } = useBlockedUsers();
 
   const city = profile?.city ?? null;
 
@@ -27,7 +30,7 @@ export function useCityMatches() {
 
       const { data, error } = await supabase
         .from('users')
-        .select('id, username')
+        .select('id, username, last_active_at')
         .eq('city', city)
         .neq('id', user!.id);
 
@@ -74,15 +77,18 @@ export function useCityMatches() {
   // Compute matches
   const cityMatches: CityMatch[] = [];
 
-  const allLoaded = !profileLoading && !myStickersLoading && !allStickersLoading && !cityUsersLoading && !duplicatesLoading;
+  const allLoaded = !profileLoading && !myStickersLoading && !allStickersLoading && !cityUsersLoading && !duplicatesLoading && !blockedLoading;
 
   if (allLoaded && allStickers && myStickers && cityUsers) {
     const myOwnedStickerIds = new Set(Object.keys(myStickers));
     const myNeedStickerIds = new Set(
       allStickers.filter(s => !myOwnedStickerIds.has(s.id)).map(s => s.id)
     );
+    const blockedSet = new Set(blockedIds);
 
     for (const cityUser of cityUsers) {
+      if (blockedSet.has(cityUser.id)) continue;
+
       const dupSet = cityDuplicates?.[cityUser.id] ?? new Set();
 
       let matchCount = 0;
@@ -96,13 +102,14 @@ export function useCityMatches() {
         userId: cityUser.id,
         username: cityUser.username ?? null,
         matchCount,
+        lastActiveAt: cityUser.last_active_at ?? null,
       });
     }
 
     cityMatches.sort((a, b) => b.matchCount - a.matchCount);
   }
 
-  const isLoading = profileLoading || myStickersLoading || allStickersLoading || cityUsersLoading || duplicatesLoading;
+  const isLoading = profileLoading || myStickersLoading || allStickersLoading || cityUsersLoading || duplicatesLoading || blockedLoading;
   const usersWithMatches = cityMatches.filter(m => m.matchCount > 0);
 
   return {

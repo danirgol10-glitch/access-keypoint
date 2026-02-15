@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useBlockedUsers } from './useBlockedUsers';
 
 export interface Conversation {
   id: string;
@@ -16,9 +17,10 @@ export interface Conversation {
 
 export function useConversations() {
   const { user } = useAuth();
+  const { blockedIds } = useBlockedUsers();
 
   return useQuery({
-    queryKey: ['conversations', user?.id],
+    queryKey: ['conversations', user?.id, blockedIds],
     queryFn: async (): Promise<Conversation[]> => {
       if (!user?.id) return [];
 
@@ -33,9 +35,15 @@ export function useConversations() {
         return [];
       }
 
-      // Enrich each conversation
+      // Enrich each conversation, filter out blocked users
+      const blockedSet = new Set(blockedIds);
       const enriched = await Promise.all(
-        convos.map(async (c) => {
+        convos
+          .filter((c) => {
+            const otherUserId = c.user_a_id === user.id ? c.user_b_id : c.user_a_id;
+            return !blockedSet.has(otherUserId);
+          })
+          .map(async (c) => {
           const otherUserId = c.user_a_id === user.id ? c.user_b_id : c.user_a_id;
 
           const [userRes, lastMsgRes, unreadRes] = await Promise.all([

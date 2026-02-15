@@ -105,6 +105,7 @@ const Home = () => {
                     key={match.userId}
                     username={match.username}
                     matchCount={match.matchCount}
+                    lastActiveAt={match.lastActiveAt}
                     onView={() => handleViewUser(match.userId)}
                   />
                 ))

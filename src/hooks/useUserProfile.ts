@@ -8,6 +8,7 @@ export interface UserProfile {
   username: string | null;
   city: string | null;
   created_at: string;
+  last_active_at: string | null;
 }
 
 export const useUserProfile = () => {
