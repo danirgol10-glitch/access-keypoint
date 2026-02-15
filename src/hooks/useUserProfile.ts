@@ -9,6 +9,7 @@ export interface UserProfile {
   city: string | null;
   created_at: string;
   last_active_at: string | null;
+  first_login_flag: boolean;
 }
 
 export const useUserProfile = () => {

@@ -386,6 +386,7 @@ export type Database = {
           city: string | null
           created_at: string
           email: string
+          first_login_flag: boolean
           id: string
           last_active_at: string | null
           username: string | null
@@ -394,6 +395,7 @@ export type Database = {
           city?: string | null
           created_at?: string
           email: string
+          first_login_flag?: boolean
           id: string
           last_active_at?: string | null
           username?: string | null
@@ -402,6 +404,7 @@ export type Database = {
           city?: string | null
           created_at?: string
           email?: string
+          first_login_flag?: boolean
           id?: string
           last_active_at?: string | null
           username?: string | null
