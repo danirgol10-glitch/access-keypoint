@@ -10,7 +10,35 @@ export interface CityMatch {
   userId: string;
   username: string | null;
   matchCount: number;
+  duplicateTotal: number;
   lastActiveAt: string | null;
+}
+
+export type SortMode = 'best_match' | 'most_duplicates' | 'most_active';
+
+export function sortMatches<T extends { matchCount: number; duplicateTotal: number; lastActiveAt: string | null }>(
+  items: T[],
+  mode: SortMode,
+): T[] {
+  const sorted = [...items];
+  sorted.sort((a, b) => {
+    if (mode === 'most_duplicates') {
+      if (b.duplicateTotal !== a.duplicateTotal) return b.duplicateTotal - a.duplicateTotal;
+      if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+      return (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
+    }
+    if (mode === 'most_active') {
+      const cmp = (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
+      if (cmp !== 0) return cmp;
+      if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+      return b.duplicateTotal - a.duplicateTotal;
+    }
+    // best_match (default)
+    if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+    if (b.duplicateTotal !== a.duplicateTotal) return b.duplicateTotal - a.duplicateTotal;
+    return (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
+  });
+  return sorted;
 }
 
 export function useCityMatches() {
@@ -22,22 +50,16 @@ export function useCityMatches() {
 
   const city = profile?.city ?? null;
 
-  // Fetch users in the same city (excluding self)
   const { data: cityUsers, isLoading: cityUsersLoading } = useQuery({
     queryKey: ['city-users', city],
     queryFn: async () => {
       if (!city) return [];
-
       const { data, error } = await supabase
         .from('users')
         .select('id, username, last_active_at')
         .eq('city', city)
         .neq('id', user!.id);
-
-      if (error) {
-        console.error('Error fetching city users:', error);
-        throw error;
-      }
+      if (error) { console.error('Error fetching city users:', error); throw error; }
       return data ?? [];
     },
     enabled: !!user && !!city,
@@ -45,28 +67,19 @@ export function useCityMatches() {
 
   const cityUserIds = cityUsers?.map(u => u.id) ?? [];
 
-  // Fetch DUPLICATE stickers from all city users
   const { data: cityDuplicates, isLoading: duplicatesLoading } = useQuery({
     queryKey: ['city-duplicates', cityUserIds],
     queryFn: async () => {
       if (cityUserIds.length === 0) return {};
-
       const { data, error } = await supabase
         .from('user_stickers')
         .select('user_id, sticker_id')
         .in('user_id', cityUserIds)
         .eq('status', 'DUPLICATE');
-
-      if (error) {
-        console.error('Error fetching city duplicates:', error);
-        throw error;
-      }
-
+      if (error) { console.error('Error fetching city duplicates:', error); throw error; }
       const grouped: Record<string, Set<string>> = {};
       for (const row of data ?? []) {
-        if (!grouped[row.user_id]) {
-          grouped[row.user_id] = new Set();
-        }
+        if (!grouped[row.user_id]) grouped[row.user_id] = new Set();
         grouped[row.user_id].add(row.sticker_id);
       }
       return grouped;
@@ -74,9 +87,7 @@ export function useCityMatches() {
     enabled: !!user && cityUserIds.length > 0,
   });
 
-  // Compute matches
   const cityMatches: CityMatch[] = [];
-
   const allLoaded = !profileLoading && !myStickersLoading && !allStickersLoading && !cityUsersLoading && !duplicatesLoading && !blockedLoading;
 
   if (allLoaded && allStickers && myStickers && cityUsers) {
@@ -88,25 +99,26 @@ export function useCityMatches() {
 
     for (const cityUser of cityUsers) {
       if (blockedSet.has(cityUser.id)) continue;
-
       const dupSet = cityDuplicates?.[cityUser.id] ?? new Set();
-
       let matchCount = 0;
       for (const stickerId of dupSet) {
-        if (myNeedStickerIds.has(stickerId)) {
-          matchCount++;
-        }
+        if (myNeedStickerIds.has(stickerId)) matchCount++;
       }
-
       cityMatches.push({
         userId: cityUser.id,
         username: cityUser.username ?? null,
         matchCount,
+        duplicateTotal: dupSet.size,
         lastActiveAt: cityUser.last_active_at ?? null,
       });
     }
 
-    cityMatches.sort((a, b) => b.matchCount - a.matchCount);
+    // Default sort: best_match
+    cityMatches.sort((a, b) => {
+      if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+      if (b.duplicateTotal !== a.duplicateTotal) return b.duplicateTotal - a.duplicateTotal;
+      return (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
+    });
   }
 
   const isLoading = profileLoading || myStickersLoading || allStickersLoading || cityUsersLoading || duplicatesLoading || blockedLoading;
