@@ -9,15 +9,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Users, Check, Copy, Search, MapPin } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-
-const SORT_OPTIONS: { value: SortMode; label: string }[] = [
-  { value: 'best_match', label: 'Best match' },
-  { value: 'most_duplicates', label: 'Most duplicates' },
-  { value: 'most_active', label: 'Most active' },
-];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -27,8 +21,8 @@ const Home = () => {
   const { friendsWithMatches, isLoading: friendsMatchesLoading, hasFriends } = useFriendMatches();
   const [citySheetOpen, setCitySheetOpen] = useState(false);
   const [friendsSheetOpen, setFriendsSheetOpen] = useState(false);
-  const [citySortMode, setCitySortMode] = useState<SortMode>('best_match');
-  const [friendsSortMode, setFriendsSortMode] = useState<SortMode>('best_match');
+  const [citySortMode, setCitySortMode] = useState<SortMode>('default');
+  const [friendsSortMode, setFriendsSortMode] = useState<SortMode>('default');
 
   const sortedCityMatches = useMemo(
     () => sortMatches(usersWithMatches, citySortMode),
@@ -53,30 +47,21 @@ const Home = () => {
   const cityBadgeCount = usersWithMatches.length;
   const friendsBadgeCount = friendsWithMatches.length;
 
-  // Pie chart data
   const pieData = stats ? [
     { name: 'Owned', value: stats.ownedCount, color: 'hsl(var(--primary))' },
     { name: 'Missing', value: stats.missingCount, color: 'hsl(var(--muted))' },
   ] : [];
 
-  const SortToggle = ({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) => (
-    <ToggleGroup
-      type="single"
-      value={value}
-      onValueChange={(v) => { if (v) onChange(v as SortMode); }}
-      className="justify-start gap-1"
-    >
-      {SORT_OPTIONS.map((opt) => (
-        <ToggleGroupItem
-          key={opt.value}
-          value={opt.value}
-          size="sm"
-          className="text-xs px-2.5 h-7 rounded-full data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-        >
-          {opt.label}
-        </ToggleGroupItem>
-      ))}
-    </ToggleGroup>
+  const SortDropdown = ({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) => (
+    <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
+      <SelectTrigger className="w-auto h-7 text-xs px-2.5 gap-1 border-none bg-muted/50">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="default">Default</SelectItem>
+        <SelectItem value="most_active">Most active</SelectItem>
+      </SelectContent>
+    </Select>
   );
 
   return (
@@ -118,31 +103,27 @@ const Home = () => {
               ) : !hasFriends ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-4">
-                    Add friends to discover who can help!
-                  </p>
-                  <Button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }}>
-                    Add Friends
-                  </Button>
+                  <p className="text-muted-foreground mb-4">Add friends to discover who can help!</p>
+                  <Button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }}>Add Friends</Button>
                 </div>
               ) : friendsBadgeCount === 0 ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">
-                    No friend duplicates match your needs yet.
-                  </p>
+                  <p className="text-muted-foreground">No friend duplicates match your needs yet.</p>
                 </div>
               ) : (
                 <>
-                  <SortToggle value={friendsSortMode} onChange={setFriendsSortMode} />
-                  {sortedFriendMatches.map((match, idx) => (
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span>Sort by:</span>
+                    <SortDropdown value={friendsSortMode} onChange={setFriendsSortMode} />
+                  </div>
+                  {sortedFriendMatches.map((match) => (
                     <FriendMatchCard
                       key={match.friendId}
                       username={match.username}
                       matchCount={match.matchCount}
                       duplicateTotal={match.duplicateTotal}
                       lastActiveAt={match.lastActiveAt}
-                      isTopMatch={idx === 0}
                       onView={() => handleViewFriend(match.friendId)}
                     />
                   ))}
@@ -166,9 +147,7 @@ const Home = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-full sm:max-w-md">
             <SheetHeader>
-              <SheetTitle>
-                {city ? `People in ${city} Who Can Help` : 'Local Matches'}
-              </SheetTitle>
+              <SheetTitle>{city ? `People in ${city} Who Can Help` : 'Local Matches'}</SheetTitle>
             </SheetHeader>
             <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
               {matchesLoading ? (
@@ -189,41 +168,33 @@ const Home = () => {
               ) : !city ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <MapPin className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-4">
-                    Set your city in your profile to find local collectors!
-                  </p>
-                  <Button onClick={() => { setCitySheetOpen(false); navigate('/profile'); }}>
-                    Set City
-                  </Button>
+                  <p className="text-muted-foreground mb-4">Set your city in your profile to find local collectors!</p>
+                  <Button onClick={() => { setCitySheetOpen(false); navigate('/profile'); }}>Set City</Button>
                 </div>
               ) : !hasCityUsers ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <MapPin className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">
-                    No other collectors in {city} yet. Spread the word!
-                  </p>
+                  <p className="text-muted-foreground">No other collectors in {city} yet. Spread the word!</p>
                 </div>
               ) : usersWithMatches.length === 0 ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-2">
-                    No matches yet in {city}.
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Collectors in your city haven't marked duplicates that match what you need.
-                  </p>
+                  <p className="text-muted-foreground mb-2">No matches yet in {city}.</p>
+                  <p className="text-sm text-muted-foreground">Collectors in your city haven't marked duplicates that match what you need.</p>
                 </div>
               ) : (
                 <>
-                  <SortToggle value={citySortMode} onChange={setCitySortMode} />
-                  {sortedCityMatches.map((match, idx) => (
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span>Sort by:</span>
+                    <SortDropdown value={citySortMode} onChange={setCitySortMode} />
+                  </div>
+                  {sortedCityMatches.map((match) => (
                     <FriendMatchCard
                       key={match.userId}
                       username={match.username}
                       matchCount={match.matchCount}
                       duplicateTotal={match.duplicateTotal}
                       lastActiveAt={match.lastActiveAt}
-                      isTopMatch={idx === 0}
                       onView={() => handleViewCityUser(match.userId)}
                     />
                   ))}
@@ -257,16 +228,7 @@ const Home = () => {
           <div className="relative">
             <ResponsiveContainer width="100%" height={200}>
               <PieChart>
-                <Pie
-                  data={pieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={2}
-                  dataKey="value"
-                  strokeWidth={0}
-                >
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" strokeWidth={0}>
                   {pieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
@@ -274,9 +236,7 @@ const Home = () => {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-3xl font-bold text-foreground">
-                {stats.completionPercent.toFixed(1)}%
-              </span>
+              <span className="text-3xl font-bold text-foreground">{stats.completionPercent.toFixed(1)}%</span>
               <span className="text-xs text-muted-foreground">Complete</span>
             </div>
           </div>

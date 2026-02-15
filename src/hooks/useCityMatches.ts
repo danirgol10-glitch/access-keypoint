@@ -14,7 +14,7 @@ export interface CityMatch {
   lastActiveAt: string | null;
 }
 
-export type SortMode = 'best_match' | 'most_duplicates' | 'most_active';
+export type SortMode = 'default' | 'most_active';
 
 export function sortMatches<T extends { matchCount: number; duplicateTotal: number; lastActiveAt: string | null }>(
   items: T[],
@@ -22,21 +22,14 @@ export function sortMatches<T extends { matchCount: number; duplicateTotal: numb
 ): T[] {
   const sorted = [...items];
   sorted.sort((a, b) => {
-    if (mode === 'most_duplicates') {
-      if (b.duplicateTotal !== a.duplicateTotal) return b.duplicateTotal - a.duplicateTotal;
-      if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+    if (mode === 'most_active') {
       return (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
     }
-    if (mode === 'most_active') {
-      const cmp = (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
-      if (cmp !== 0) return cmp;
-      if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-      return b.duplicateTotal - a.duplicateTotal;
-    }
-    // best_match (default)
+    // default: match_count → last_active_at → duplicate_total
     if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-    if (b.duplicateTotal !== a.duplicateTotal) return b.duplicateTotal - a.duplicateTotal;
-    return (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
+    const cmp = (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
+    if (cmp !== 0) return cmp;
+    return b.duplicateTotal - a.duplicateTotal;
   });
   return sorted;
 }
