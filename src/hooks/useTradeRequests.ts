@@ -145,17 +145,28 @@ export function useTradeRequests() {
         throw new Error('Must select at least one sticker');
       }
 
-      // Validate: must be an accepted friend
-      const { data: friendship, error: friendshipError } = await supabase
-        .from('friendships')
-        .select('status')
-        .or(`and(requester_id.eq.${user.id},addressee_id.eq.${toUserId}),and(requester_id.eq.${toUserId},addressee_id.eq.${user.id})`)
-        .eq('status', 'ACCEPTED')
-        .maybeSingle();
+      // Validate: must be in same city
+      const [{ data: myUser }, { data: theirUser }] = await Promise.all([
+        supabase.from('users').select('city').eq('id', user.id).single(),
+        supabase.from('users').select('city').eq('id', toUserId).single(),
+      ]);
 
-      if (friendshipError) throw friendshipError;
-      if (!friendship) {
-        throw new Error('You can only send trade requests to accepted friends');
+      if (!myUser?.city || !theirUser?.city || myUser.city !== theirUser.city) {
+        throw new Error('You can only send requests to users in your city');
+      }
+
+      // Validate: each requested sticker is currently DUPLICATE for receiver
+      const { data: receiverDuplicates } = await supabase
+        .from('user_stickers')
+        .select('sticker_id')
+        .eq('user_id', toUserId)
+        .eq('status', 'DUPLICATE')
+        .in('sticker_id', stickerIds);
+
+      const validIds = new Set(receiverDuplicates?.map(d => d.sticker_id) ?? []);
+      const invalidStickers = stickerIds.filter(id => !validIds.has(id));
+      if (invalidStickers.length > 0) {
+        throw new Error(`${invalidStickers.length} sticker(s) are no longer available as duplicates`);
       }
 
       // Create the trade request
@@ -225,11 +236,40 @@ export function useTradeRequests() {
 
       if (error) throw error;
 
+      // If ACCEPTED, create or fetch conversation and link it
+      if (newStatus === 'ACCEPTED') {
+        const [idA, idB] = [user.id, otherUserId].sort();
+
+        // Try to find existing conversation
+        let { data: convo } = await supabase
+          .from('conversations')
+          .select('id')
+          .eq('user_a_id', idA)
+          .eq('user_b_id', idB)
+          .maybeSingle();
+
+        if (!convo) {
+          const { data: newConvo, error: convoErr } = await supabase
+            .from('conversations')
+            .insert({ user_a_id: idA, user_b_id: idB })
+            .select('id')
+            .single();
+          if (convoErr) throw convoErr;
+          convo = newConvo;
+        }
+
+        // Link conversation to trade request
+        await supabase
+          .from('trade_requests')
+          .update({ conversation_id: convo.id })
+          .eq('id', requestId);
+      }
+
       // Create notification based on status change
       const notificationMap = {
         ACCEPTED: {
           type: 'TRADE_ACCEPTED' as const,
-          message: `@${myUsername ?? 'Someone'} accepted your request`,
+          message: `@${myUsername ?? 'Someone'} accepted your request — Chat is now available`,
         },
         REJECTED: {
           type: 'TRADE_REJECTED' as const,
@@ -255,6 +295,7 @@ export function useTradeRequests() {
       queryClient.invalidateQueries({ queryKey: ['trade-requests'] });
       queryClient.invalidateQueries({ queryKey: ['trade-request-detail'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
   });
 

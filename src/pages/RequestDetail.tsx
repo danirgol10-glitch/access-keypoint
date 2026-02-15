@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Package, Check, X } from 'lucide-react';
+import { ArrowLeft, Package, Check, X, MessageCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -195,6 +195,21 @@ const RequestDetail = () => {
                         Cancel Request
                       </Button>
                     )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Open Chat button when ACCEPTED */}
+              {request.status === 'ACCEPTED' && request.conversation_id && (
+                <Card>
+                  <CardContent className="p-4">
+                    <Button
+                      className="w-full"
+                      onClick={() => navigate(`/chat/${request.conversation_id}`)}
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Open Chat
+                    </Button>
                   </CardContent>
                 </Card>
               )}
