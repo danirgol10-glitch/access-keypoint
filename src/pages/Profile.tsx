@@ -1,22 +1,59 @@
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { supabase } from '@/integrations/supabase/client';
+import { COLOMBIAN_CITIES } from '@/constants/cities';
 import { NotificationsSection } from '@/components/NotificationsSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LogOut } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { LogOut, MapPin } from 'lucide-react';
 
 const Profile = () => {
-  const { signOut } = useAuth();
-  const { profile, isLoading: profileLoading } = useUserProfile();
+  const { user, signOut } = useAuth();
+  const { profile, isLoading: profileLoading, refetchProfile } = useUserProfile();
+  const { toast } = useToast();
+  const [editingCity, setEditingCity] = useState(false);
+  const [newCity, setNewCity] = useState('');
+  const [savingCity, setSavingCity] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
   };
 
+  const handleEditCity = () => {
+    setNewCity(profile?.city ?? '');
+    setEditingCity(true);
+  };
+
+  const handleSaveCity = async () => {
+    if (!newCity || !user) return;
+    setSavingCity(true);
+    const { error } = await supabase
+      .from('users')
+      .update({ city: newCity })
+      .eq('id', user.id);
+
+    if (error) {
+      toast({ variant: 'destructive', title: 'Error', description: error.message });
+    } else {
+      await refetchProfile();
+      toast({ title: 'City updated!' });
+      setEditingCity(false);
+    }
+    setSavingCity(false);
+  };
+
   return (
     <div className="flex flex-col items-center p-6 space-y-6 pb-24">
-      {/* User info card */}
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-xl">Profile</CardTitle>
@@ -36,6 +73,37 @@ const Profile = () => {
                 <p className="text-sm text-muted-foreground">
                   {profile?.email}
                 </p>
+                {/* City display / edit */}
+                <div className="flex items-center justify-center gap-1 pt-1">
+                  <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                  {editingCity ? (
+                    <div className="flex items-center gap-2">
+                      <Select value={newCity} onValueChange={setNewCity}>
+                        <SelectTrigger className="h-8 w-40 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {COLOMBIAN_CITIES.map((c) => (
+                            <SelectItem key={c} value={c}>{c}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button size="sm" variant="outline" className="h-8 text-xs" onClick={handleSaveCity} disabled={savingCity || !newCity}>
+                        {savingCity ? '...' : 'Save'}
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => setEditingCity(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleEditCity}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {profile?.city ?? 'No city set'}
+                    </button>
+                  )}
+                </div>
               </>
             )}
           </div>
@@ -50,7 +118,6 @@ const Profile = () => {
         </CardContent>
       </Card>
 
-      {/* Notifications section */}
       <div className="w-full max-w-md">
         <NotificationsSection />
       </div>

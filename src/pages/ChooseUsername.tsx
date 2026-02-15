@@ -3,10 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { COLOMBIAN_CITIES } from '@/constants/cities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
@@ -18,8 +26,8 @@ const usernameSchema = z
 
 const ChooseUsername = () => {
   const [username, setUsername] = useState('');
+  const [city, setCity] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [debugValue, setDebugValue] = useState<string | null>(null);
   const { user } = useAuth();
   const { profile, refetchProfile } = useUserProfile();
   const { toast } = useToast();
@@ -28,7 +36,6 @@ const ChooseUsername = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate username
     const trimmedUsername = username.trim().toLowerCase();
     const validation = usernameSchema.safeParse(trimmedUsername);
 
@@ -37,6 +44,15 @@ const ChooseUsername = () => {
         variant: 'destructive',
         title: 'Invalid username',
         description: validation.error.errors[0].message,
+      });
+      return;
+    }
+
+    if (!city) {
+      toast({
+        variant: 'destructive',
+        title: 'City required',
+        description: 'Please select your city.',
       });
       return;
     }
@@ -53,7 +69,6 @@ const ChooseUsername = () => {
     setIsSubmitting(true);
 
     try {
-      // Upsert user record with username
       const { error } = await supabase
         .from('users')
         .upsert(
@@ -61,6 +76,7 @@ const ChooseUsername = () => {
             id: user.id,
             email: user.email!,
             username: trimmedUsername,
+            city,
           },
           { onConflict: 'id' }
         );
@@ -83,18 +99,13 @@ const ChooseUsername = () => {
         return;
       }
 
-      // Re-fetch the user profile from database
-      const { data: refetchedData } = await refetchProfile();
-      
-      // Set debug value to show current DB state
-      setDebugValue(refetchedData?.username ?? 'null');
+      await refetchProfile();
 
       toast({
         title: 'Welcome!',
         description: `Your username @${trimmedUsername} is set.`,
       });
 
-      // Small delay to show debug value, then navigate
       setTimeout(() => {
         navigate('/', { replace: true });
       }, 500);
@@ -113,10 +124,10 @@ const ChooseUsername = () => {
       <Card className="w-full max-w-md shadow-xl border-0">
         <CardHeader className="space-y-1 text-center pb-2">
           <CardTitle className="text-2xl font-bold tracking-tight">
-            Choose your username
+            Set up your profile
           </CardTitle>
           <CardDescription className="text-muted-foreground">
-            Pick a unique username to get started
+            Pick a username and city to get started
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4">
@@ -142,24 +153,29 @@ const ChooseUsername = () => {
                 Letters, numbers, and underscores only. 3-20 characters.
               </p>
             </div>
+            <div className="space-y-2">
+              <Label>City</Label>
+              <Select value={city} onValueChange={setCity}>
+                <SelectTrigger className="h-11">
+                  <SelectValue placeholder="Select your city" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COLOMBIAN_CITIES.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <Button
               type="submit"
               className="w-full h-11 font-medium"
-              disabled={isSubmitting || username.length < 3}
+              disabled={isSubmitting || username.length < 3 || !city}
             >
               {isSubmitting ? 'Saving...' : 'Continue'}
             </Button>
           </form>
-
-          {/* Debug: Show current DB username value */}
-          <div className="mt-4 p-3 bg-muted/50 rounded-lg text-xs font-mono">
-            <p className="text-muted-foreground">
-              <strong>Debug:</strong> DB users.username = {' '}
-              <span className="text-foreground">
-                {debugValue !== null ? `"${debugValue}"` : profile?.username !== undefined ? `"${profile.username}"` : 'loading...'}
-              </span>
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
