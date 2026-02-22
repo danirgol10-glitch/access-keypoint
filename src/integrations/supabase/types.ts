@@ -242,6 +242,10 @@ export type Database = {
           number_in_team: number | null
           scope: string | null
           section: string | null
+          sort_group: number | null
+          sort_number: number | null
+          sort_scope: number | null
+          sort_team: number | null
           team: string | null
           team_code: string | null
           team_name: string | null
@@ -257,6 +261,10 @@ export type Database = {
           number_in_team?: number | null
           scope?: string | null
           section?: string | null
+          sort_group?: number | null
+          sort_number?: number | null
+          sort_scope?: number | null
+          sort_team?: number | null
           team?: string | null
           team_code?: string | null
           team_name?: string | null
@@ -272,6 +280,10 @@ export type Database = {
           number_in_team?: number | null
           scope?: string | null
           section?: string | null
+          sort_group?: number | null
+          sort_number?: number | null
+          sort_scope?: number | null
+          sort_team?: number | null
           team?: string | null
           team_code?: string | null
           team_name?: string | null
@@ -282,6 +294,7 @@ export type Database = {
         Row: {
           code: string
           group_letter: string
+          group_team_order: number | null
           id: string
           is_placeholder: boolean
           name: string
@@ -289,6 +302,7 @@ export type Database = {
         Insert: {
           code: string
           group_letter: string
+          group_team_order?: number | null
           id?: string
           is_placeholder?: boolean
           name: string
@@ -296,6 +310,7 @@ export type Database = {
         Update: {
           code?: string
           group_letter?: string
+          group_team_order?: number | null
           id?: string
           is_placeholder?: boolean
           name?: string
