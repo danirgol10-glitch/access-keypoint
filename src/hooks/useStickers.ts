@@ -24,8 +24,11 @@ export function useStickers() {
       while (true) {
         const { data, error } = await supabase
           .from('stickers')
-          .select('id, code, scope, team_code, team_name, group_letter, number_in_team, display_name')
-          .order('code')
+          .select('id, code, scope, team_code, team_name, group_letter, number_in_team, display_name, sort_scope, sort_group, sort_team, sort_number')
+          .order('sort_scope')
+          .order('sort_group', { ascending: true, nullsFirst: false })
+          .order('sort_team', { ascending: true, nullsFirst: false })
+          .order('sort_number')
           .range(from, from + batchSize - 1);
 
         if (error) throw error;

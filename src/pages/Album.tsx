@@ -149,7 +149,9 @@ const Album = () => {
         byGroup[s.group_letter] = (byGroup[s.group_letter] || 0) + 1;
       }
     }
-    return { total, fwcCount, teamCount, byGroup };
+    const first10 = stickers.slice(0, 10).map(s => s.code).join(', ');
+    const afterFwc = stickers.slice(68, 70).map(s => s.code).join(', ');
+    return { total, fwcCount, teamCount, byGroup, first10, afterFwc };
   }, [stickers]);
 
   if (isLoading) {
@@ -269,6 +271,8 @@ const Album = () => {
             <p>Total: {debugStats.total} (expected 980)</p>
             <p>FWC: {debugStats.fwcCount} (expected 68)</p>
             <p>TEAM: {debugStats.teamCount} (expected 912)</p>
+            <p>First 10: {debugStats.first10}</p>
+            <p>After FWC 67: {debugStats.afterFwc}</p>
             <p>By group: {Object.entries(debugStats.byGroup).sort(([a], [b]) => a.localeCompare(b)).map(([g, c]) => `${g}=${c}`).join(', ')}</p>
           </div>
         </details>
