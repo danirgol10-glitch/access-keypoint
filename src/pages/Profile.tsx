@@ -21,7 +21,7 @@ import { LogOut, MapPin, GraduationCap } from 'lucide-react';
 const Profile = () => {
   const { user, signOut } = useAuth();
   const { profile, isLoading: profileLoading, refetchProfile } = useUserProfile();
-  const { universities, isLoading: uniLoading } = useUniversities();
+  const { universities, isLoading: uniLoading } = useUniversities(profile?.city ?? null);
   const { toast } = useToast();
   const [editingCity, setEditingCity] = useState(false);
   const [newCity, setNewCity] = useState('');
@@ -40,20 +40,35 @@ const Profile = () => {
   const handleSaveCity = async () => {
     if (!newCity || !user) return;
     setSavingCity(true);
+
+    // Check if university needs to be reset (city changed and uni belongs to old city)
+    const oldCity = profile?.city;
+    const needsUniReset = oldCity !== newCity && profile?.university_id;
+
+    const updateData: Record<string, unknown> = { city: newCity };
+    if (needsUniReset) {
+      updateData.university_id = null;
+    }
+
     const { error } = await supabase
       .from('users')
-      .update({ city: newCity })
+      .update(updateData)
       .eq('id', user.id);
 
     if (error) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
     } else {
       await refetchProfile();
-      toast({ title: 'City updated!' });
+      if (needsUniReset) {
+        toast({ title: 'City updated!', description: 'University reset because you changed city.' });
+      } else {
+        toast({ title: 'City updated!' });
+      }
       setEditingCity(false);
     }
     setSavingCity(false);
   };
+
   const handleUniversityChange = async (value: string) => {
     if (!user) return;
     setSavingUni(true);
@@ -144,18 +159,21 @@ const Profile = () => {
             <Select
               value={profile?.university_id ?? 'none'}
               onValueChange={handleUniversityChange}
-              disabled={savingUni || uniLoading}
+              disabled={savingUni || uniLoading || !profile?.city}
             >
               <SelectTrigger className="w-full text-sm">
-                <SelectValue placeholder="Select university" />
+                <SelectValue placeholder={!profile?.city ? 'Set a city first' : 'Select university'} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">None / Prefer not to say</SelectItem>
+                <SelectItem value="none">None / Not a student</SelectItem>
                 {universities.map((u) => (
                   <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {!profile?.city && (
+              <p className="text-xs text-muted-foreground">Set your city first to see universities.</p>
+            )}
           </div>
 
           <Button

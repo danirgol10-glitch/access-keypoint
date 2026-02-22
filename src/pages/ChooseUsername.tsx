@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useUniversities } from '@/hooks/useUniversities';
 import { COLOMBIAN_CITIES } from '@/constants/cities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,11 +28,19 @@ const usernameSchema = z
 const ChooseUsername = () => {
   const [username, setUsername] = useState('');
   const [city, setCity] = useState('');
+  const [universityId, setUniversityId] = useState<string>('none');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
   const { profile, refetchProfile } = useUserProfile();
+  const { universities, isLoading: uniLoading } = useUniversities(city || null);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Reset university when city changes
+  const handleCityChange = (newCity: string) => {
+    setCity(newCity);
+    setUniversityId('none');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +86,7 @@ const ChooseUsername = () => {
             email: user.email!,
             username: trimmedUsername,
             city,
+            university_id: universityId === 'none' ? null : universityId,
           },
           { onConflict: 'id' }
         );
@@ -127,7 +137,7 @@ const ChooseUsername = () => {
             Set up your profile
           </CardTitle>
           <CardDescription className="text-muted-foreground">
-            Pick a username and city to get started
+            Pick a username, city, and university to get started
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4">
@@ -155,7 +165,7 @@ const ChooseUsername = () => {
             </div>
             <div className="space-y-2">
               <Label>City</Label>
-              <Select value={city} onValueChange={setCity}>
+              <Select value={city} onValueChange={handleCityChange}>
                 <SelectTrigger className="h-11">
                   <SelectValue placeholder="Select your city" />
                 </SelectTrigger>
@@ -167,6 +177,29 @@ const ChooseUsername = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>University</Label>
+              <Select
+                value={universityId}
+                onValueChange={setUniversityId}
+                disabled={!city || uniLoading}
+              >
+                <SelectTrigger className="h-11">
+                  <SelectValue placeholder={!city ? 'Select a city first' : 'Select your university'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None / Not a student</SelectItem>
+                  {universities.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {!city && (
+                <p className="text-xs text-muted-foreground">
+                  Choose a city first to see available universities.
+                </p>
+              )}
             </div>
             <Button
               type="submit"
