@@ -11,7 +11,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Check, Copy, Search, MapPin, GraduationCap } from 'lucide-react';
+import { Users, Check, Copy, Search, MapPin, GraduationCap, User } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const Home = () => {
@@ -80,8 +80,23 @@ const Home = () => {
 
   return (
     <div className="flex flex-col items-center p-6 space-y-6 relative">
-      {/* Top Right Overlay Buttons */}
-      <div className="absolute top-4 right-4 flex items-center gap-2">
+      {/* Header Row */}
+      <div className="w-full flex items-center justify-between pt-2">
+        {/* Profile Button - Top Left */}
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full h-12 w-12"
+          onClick={() => navigate('/profile')}
+        >
+          <User className="h-5 w-5" />
+        </Button>
+
+        {/* Center Title */}
+        <h1 className="text-lg font-semibold text-foreground">Progress</h1>
+
+        {/* Right Helper Buttons */}
+        <div className="flex items-center gap-2">
         {/* Friends Helpers Button */}
         <Sheet open={friendsSheetOpen} onOpenChange={setFriendsSheetOpen}>
           <SheetTrigger asChild>
@@ -287,19 +302,16 @@ const Home = () => {
             </div>
           </SheetContent>
         </Sheet>
+        </div>
       </div>
 
-      {/* Welcome Header */}
-      <div className="text-center space-y-2 pt-8">
-        <h1 className="text-2xl font-bold text-foreground">
-          {profileLoading ? (
-            <Skeleton className="h-8 w-40 mx-auto" />
-          ) : profile?.username ? (
-            `@${profile.username}`
-          ) : (
-            'Your Progress'
-          )}
-        </h1>
+      {/* Username */}
+      <div className="text-center">
+        {profileLoading ? (
+          <Skeleton className="h-6 w-32 mx-auto" />
+        ) : profile?.username ? (
+          <p className="text-sm text-muted-foreground">@{profile.username}</p>
+        ) : null}
       </div>
 
       {/* Pie Chart */}

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Home, Image, Users, MessageSquare, User, MessageCircle } from 'lucide-react';
+import { Home, Image, Users, MessageSquare, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useConversations } from '@/hooks/useConversations';
@@ -12,7 +12,6 @@ const tabs = [
   { path: '/friends', label: 'Friends', icon: Users },
   { path: '/requests', label: 'Requests', icon: MessageSquare },
   { path: '/chats', label: 'Chats', icon: MessageCircle },
-  { path: '/profile', label: 'Profile', icon: User },
 ];
 
 const MainLayout = () => {
