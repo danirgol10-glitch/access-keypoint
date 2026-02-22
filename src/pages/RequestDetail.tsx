@@ -229,14 +229,9 @@ const RequestDetail = () => {
                         <span className="font-semibold text-foreground text-sm">
                           {item.sticker?.code ?? 'Unknown'}
                         </span>
-                        {item.sticker?.team && (
+                        {item.sticker?.team_name && (
                           <span className="text-xs text-muted-foreground mt-1 truncate w-full px-1">
-                            {item.sticker.team}
-                          </span>
-                        )}
-                        {item.sticker?.section && !item.sticker?.team && (
-                          <span className="text-xs text-muted-foreground mt-1 truncate w-full px-1">
-                            {item.sticker.section}
+                            {item.sticker.team_name}
                           </span>
                         )}
                       </div>

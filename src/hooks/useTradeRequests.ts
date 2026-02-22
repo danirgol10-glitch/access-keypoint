@@ -22,8 +22,7 @@ export interface TradeRequestItem {
   sticker_id: string;
   sticker?: {
     code: string;
-    team: string | null;
-    section: string | null;
+    team_name: string | null;
   };
 }
 
@@ -359,7 +358,7 @@ export function useTradeRequestDetail(requestId: string | undefined) {
       const stickerIds = items.map((item) => item.sticker_id);
       const { data: stickers } = await supabase
         .from('stickers')
-        .select('id, code, team, section')
+        .select('id, code, team_name')
         .in('id', stickerIds);
 
       const stickersMap = new Map(stickers?.map((s) => [s.id, s]) ?? []);

@@ -6,9 +6,10 @@ export interface FriendSticker {
   sticker_id: string;
   status: 'HAVE' | 'DUPLICATE';
   code: string;
-  name: string | null;
-  team: string | null;
-  section: string | null;
+  display_name: string | null;
+  team_code: string | null;
+  team_name: string | null;
+  group_letter: string | null;
 }
 
 export function useFriendStickers(friendId: string | undefined) {
@@ -17,7 +18,6 @@ export function useFriendStickers(friendId: string | undefined) {
     queryFn: async (): Promise<FriendSticker[]> => {
       if (!friendId) return [];
 
-      // Fetch friend's stickers with sticker details
       const { data: userStickers, error: stickersError } = await supabase
         .from('user_stickers')
         .select(`
@@ -26,9 +26,10 @@ export function useFriendStickers(friendId: string | undefined) {
           stickers (
             id,
             code,
-            name,
-            team,
-            section
+            display_name,
+            team_code,
+            team_name,
+            group_letter
           )
         `)
         .eq('user_id', friendId);
@@ -42,18 +43,20 @@ export function useFriendStickers(friendId: string | undefined) {
         const sticker = item.stickers as unknown as {
           id: string;
           code: string;
-          name: string | null;
-          team: string | null;
-          section: string | null;
+          display_name: string | null;
+          team_code: string | null;
+          team_name: string | null;
+          group_letter: string | null;
         };
         return {
           id: sticker.id,
           sticker_id: item.sticker_id,
           status: item.status as 'HAVE' | 'DUPLICATE',
           code: sticker.code,
-          name: sticker.name,
-          team: sticker.team,
-          section: sticker.section,
+          display_name: sticker.display_name,
+          team_code: sticker.team_code,
+          team_name: sticker.team_name,
+          group_letter: sticker.group_letter,
         };
       });
     },

@@ -4,29 +4,55 @@ import { supabase } from '@/integrations/supabase/client';
 export interface Sticker {
   id: string;
   code: string;
-  team: string | null;
-  section: string | null;
-  number: number | null;
-  name: string | null;
+  scope: string | null;
+  team_code: string | null;
+  team_name: string | null;
+  group_letter: string | null;
+  number_in_team: number | null;
+  display_name: string | null;
 }
 
 export function useStickers() {
   return useQuery({
     queryKey: ['stickers'],
     queryFn: async (): Promise<Sticker[]> => {
-      const { data, error } = await supabase
-        .from('stickers')
-        .select('id, code, team, section, number, name')
-        .order('code');
+      // Fetch all 980 stickers in batches to avoid 1000-row limit
+      const allStickers: Sticker[] = [];
+      let from = 0;
+      const batchSize = 500;
 
-      if (error) throw error;
-      return data ?? [];
+      while (true) {
+        const { data, error } = await supabase
+          .from('stickers')
+          .select('id, code, scope, team_code, team_name, group_letter, number_in_team, display_name')
+          .order('code')
+          .range(from, from + batchSize - 1);
+
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allStickers.push(...(data as Sticker[]));
+        if (data.length < batchSize) break;
+        from += batchSize;
+      }
+
+      return allStickers;
     },
   });
 }
 
-export function useTeamsAndSections(stickers: Sticker[] | undefined) {
-  const teams = [...new Set(stickers?.map(s => s.team).filter(Boolean) ?? [])].sort();
-  const sections = [...new Set(stickers?.map(s => s.section).filter(Boolean) ?? [])].sort();
-  return { teams, sections };
+export function useGroupsAndTeams(stickers: Sticker[] | undefined) {
+  const groups = [...new Set(stickers?.filter(s => s.scope === 'TEAM').map(s => s.group_letter).filter(Boolean) ?? [])].sort() as string[];
+
+  const teamsByGroup = (group: string) => {
+    const teamEntries = stickers?.filter(s => s.scope === 'TEAM' && s.group_letter === group) ?? [];
+    const uniqueTeams = new Map<string, string>();
+    for (const s of teamEntries) {
+      if (s.team_code && !uniqueTeams.has(s.team_code)) {
+        uniqueTeams.set(s.team_code, s.team_name ?? s.team_code);
+      }
+    }
+    return [...uniqueTeams.entries()].map(([code, name]) => ({ code, name }));
+  };
+
+  return { groups, teamsByGroup };
 }

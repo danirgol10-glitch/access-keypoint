@@ -200,14 +200,9 @@ const FriendDetail = () => {
                     <span className="font-semibold text-foreground text-sm">
                       {sticker.code}
                     </span>
-                    {sticker.team && (
+                    {sticker.team_name && (
                       <span className="text-xs text-muted-foreground mt-1 truncate w-full px-1">
-                        {sticker.team}
-                      </span>
-                    )}
-                    {sticker.section && !sticker.team && (
-                      <span className="text-xs text-muted-foreground mt-1 truncate w-full px-1">
-                        {sticker.section}
+                        {sticker.team_name}
                       </span>
                     )}
                   </button>
