@@ -347,18 +347,21 @@ export type Database = {
       }
       universities: {
         Row: {
+          city: string
           country: string
           id: string
           is_active: boolean
           name: string
         }
         Insert: {
+          city?: string
           country?: string
           id?: string
           is_active?: boolean
           name: string
         }
         Update: {
+          city?: string
           country?: string
           id?: string
           is_active?: boolean
