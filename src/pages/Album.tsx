@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { useStickers, useTeamsAndSections } from '@/hooks/useStickers';
+import { useStickers, useGroupsAndTeams } from '@/hooks/useStickers';
 import {
   useUserStickers,
   useCycleStickerStatus,
@@ -24,19 +24,21 @@ import { QuickDuplicateOnboarding } from '@/components/QuickDuplicateOnboarding'
 import { Button } from '@/components/ui/button';
 
 type StatusFilter = 'all' | 'HAVE' | 'NEED' | 'DUPLICATE';
+type ScopeFilter = 'all' | 'FWC' | 'TEAM';
 
 const Album = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { data: stickers, isLoading, error } = useStickers();
-  const { teams, sections } = useTeamsAndSections(stickers);
+  const { groups, teamsByGroup } = useGroupsAndTeams(stickers);
   const { data: userStickers = {} } = useUserStickers();
   const cycleStickerStatus = useCycleStickerStatus();
   const { profile } = useUserProfile();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedScope, setSelectedScope] = useState<ScopeFilter>('all');
+  const [selectedGroup, setSelectedGroup] = useState<string>('all');
   const [selectedTeam, setSelectedTeam] = useState<string>('all');
-  const [selectedSection, setSelectedSection] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all');
 
   // Quick Duplicate Mode state
@@ -55,31 +57,20 @@ const Album = () => {
     queryClient.invalidateQueries({ queryKey: ['user-profile', user.id] });
   }, [user, queryClient]);
 
-  const handleStartQuickMode = () => {
-    setQuickMode(true);
-  };
-
-  const handleSkip = () => {
-    dismissFlag();
-  };
-
+  const handleStartQuickMode = () => setQuickMode(true);
+  const handleSkip = () => dismissFlag();
   const handleDoneQuickMode = () => {
     setQuickMode(false);
     dismissFlag();
   };
 
-  // In quick mode: tap cycles Not owned → Owned → Duplicate → Owned (no delete)
   const handleQuickTap = (stickerId: string) => {
     const status = getComputedStatus(userStickers, stickerId);
     if (status === 'NEED') {
-      // NEED → HAVE
       cycleStickerStatus.mutate({ stickerId, currentStatus: 'NEED' });
     } else if (status === 'HAVE') {
-      // HAVE → DUPLICATE
       cycleStickerStatus.mutate({ stickerId, currentStatus: 'HAVE' });
     } else {
-      // DUPLICATE → HAVE (back to owned, not delete)
-      // We need to update directly since the normal cycle goes DUPLICATE → NEED
       supabase
         .from('user_stickers')
         .update({ status: 'HAVE', updated_at: new Date().toISOString() })
@@ -99,31 +90,67 @@ const Album = () => {
     }
   };
 
+  // Teams available for the selected group
+  const teamsForGroup = useMemo(() => {
+    if (selectedGroup === 'all') return [];
+    return teamsByGroup(selectedGroup);
+  }, [selectedGroup, teamsByGroup]);
+
+  // Reset team when group changes
+  const handleGroupChange = (value: string) => {
+    setSelectedGroup(value);
+    setSelectedTeam('all');
+  };
+
+  // Reset group/team when scope changes
+  const handleScopeChange = (value: string) => {
+    setSelectedScope(value as ScopeFilter);
+    setSelectedGroup('all');
+    setSelectedTeam('all');
+  };
+
   const filteredStickers = useMemo(() => {
     if (!stickers) return [];
-
-    // In quick mode, disable filters
     if (quickMode) return stickers;
 
     return stickers.filter((sticker) => {
-      const matchesSearch = sticker.code
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
+      const q = searchQuery.toLowerCase();
+      const matchesSearch =
+        !q ||
+        sticker.code.toLowerCase().includes(q) ||
+        (sticker.team_name && sticker.team_name.toLowerCase().includes(q));
+      const matchesScope =
+        selectedScope === 'all' || sticker.scope === selectedScope;
+      const matchesGroup =
+        selectedGroup === 'all' || sticker.group_letter === selectedGroup;
       const matchesTeam =
-        selectedTeam === 'all' || sticker.team === selectedTeam;
-      const matchesSection =
-        selectedSection === 'all' || sticker.section === selectedSection;
+        selectedTeam === 'all' || sticker.team_code === selectedTeam;
       const computedStatus = getComputedStatus(userStickers, sticker.id);
       const matchesStatus = selectedStatus === 'all' || computedStatus === selectedStatus;
 
-      return matchesSearch && matchesTeam && matchesSection && matchesStatus;
+      return matchesSearch && matchesScope && matchesGroup && matchesTeam && matchesStatus;
     });
-  }, [stickers, searchQuery, selectedTeam, selectedSection, selectedStatus, userStickers, quickMode]);
+  }, [stickers, searchQuery, selectedScope, selectedGroup, selectedTeam, selectedStatus, userStickers, quickMode]);
 
   const quickDuplicateCount = useMemo(
     () => Object.values(userStickers).filter((s) => s.status === 'DUPLICATE').length,
     [userStickers]
   );
+
+  // Debug stats (dev only)
+  const debugStats = useMemo(() => {
+    if (!stickers || import.meta.env.PROD) return null;
+    const total = stickers.length;
+    const fwcCount = stickers.filter(s => s.scope === 'FWC').length;
+    const teamCount = stickers.filter(s => s.scope === 'TEAM').length;
+    const byGroup: Record<string, number> = {};
+    for (const s of stickers) {
+      if (s.group_letter) {
+        byGroup[s.group_letter] = (byGroup[s.group_letter] || 0) + 1;
+      }
+    }
+    return { total, fwcCount, teamCount, byGroup };
+  }, [stickers]);
 
   if (isLoading) {
     return (
@@ -143,16 +170,14 @@ const Album = () => {
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-5rem)] p-4 space-y-4">
-      {/* Onboarding Modal */}
       <QuickDuplicateOnboarding
         open={showOnboarding}
         onStart={handleStartQuickMode}
         onSkip={handleSkip}
       />
 
-      {/* Quick Mode Header */}
       {quickMode && (
-        <div className="sticky top-0 z-10 flex items-center justify-between bg-background/95 backdrop-blur py-2 px-1 border-b border-border -mx-4 -mt-4 mb-0 px-4">
+        <div className="sticky top-0 z-10 flex items-center justify-between bg-background/95 backdrop-blur py-2 border-b border-border -mx-4 -mt-4 mb-0 px-4">
           <span className="text-sm font-medium text-foreground">
             {quickDuplicateCount} duplicate{quickDuplicateCount !== 1 ? 's' : ''} selected
           </span>
@@ -162,13 +187,12 @@ const Album = () => {
         </div>
       )}
 
-      {/* Search and Filters (hidden in quick mode) */}
       {!quickMode && (
         <div className="space-y-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by code..."
+              placeholder="Search by code or team name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -176,43 +200,54 @@ const Album = () => {
           </div>
 
           <div className="flex gap-2 flex-wrap">
-            {teams.length > 0 && (
+            {/* Scope filter */}
+            <Select value={selectedScope} onValueChange={handleScopeChange}>
+              <SelectTrigger className="flex-1 min-w-[100px]">
+                <SelectValue placeholder="Scope" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Scopes</SelectItem>
+                <SelectItem value="FWC">FWC</SelectItem>
+                <SelectItem value="TEAM">Teams</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Group filter (only when TEAM or all) */}
+            {selectedScope !== 'FWC' && groups.length > 0 && (
+              <Select value={selectedGroup} onValueChange={handleGroupChange}>
+                <SelectTrigger className="flex-1 min-w-[100px]">
+                  <SelectValue placeholder="Group" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Groups</SelectItem>
+                  {groups.map((g) => (
+                    <SelectItem key={g} value={g}>Group {g}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {/* Team filter (only when a group is selected) */}
+            {selectedGroup !== 'all' && teamsForGroup.length > 0 && (
               <Select value={selectedTeam} onValueChange={setSelectedTeam}>
                 <SelectTrigger className="flex-1 min-w-[120px]">
                   <SelectValue placeholder="Team" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Teams</SelectItem>
-                  {teams.map((team) => (
-                    <SelectItem key={team} value={team!}>
-                      {team}
-                    </SelectItem>
+                  {teamsForGroup.map((t) => (
+                    <SelectItem key={t.code} value={t.code}>{t.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             )}
 
-            {sections.length > 0 && (
-              <Select value={selectedSection} onValueChange={setSelectedSection}>
-                <SelectTrigger className="flex-1 min-w-[120px]">
-                  <SelectValue placeholder="Section" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Sections</SelectItem>
-                  {sections.map((section) => (
-                    <SelectItem key={section} value={section!}>
-                      {section}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
+            {/* Status filter */}
             <Select
               value={selectedStatus}
               onValueChange={(v) => setSelectedStatus(v as StatusFilter)}
             >
-              <SelectTrigger className="flex-1 min-w-[120px]">
+              <SelectTrigger className="flex-1 min-w-[100px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -226,7 +261,19 @@ const Album = () => {
         </div>
       )}
 
-      {/* Sticker Grid */}
+      {/* Dev debug stats */}
+      {debugStats && (
+        <details className="text-xs text-muted-foreground border border-border rounded p-2">
+          <summary className="cursor-pointer font-medium">Debug: Sticker Stats</summary>
+          <div className="mt-1 space-y-1">
+            <p>Total: {debugStats.total} (expected 980)</p>
+            <p>FWC: {debugStats.fwcCount} (expected 68)</p>
+            <p>TEAM: {debugStats.teamCount} (expected 912)</p>
+            <p>By group: {Object.entries(debugStats.byGroup).sort(([a], [b]) => a.localeCompare(b)).map(([g, c]) => `${g}=${c}`).join(', ')}</p>
+          </div>
+        </details>
+      )}
+
       {filteredStickers.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
           <p className="text-muted-foreground">No stickers found.</p>
@@ -239,7 +286,7 @@ const Album = () => {
               <StickerCard
                 key={sticker.id}
                 code={sticker.code}
-                team={sticker.team}
+                teamName={sticker.team_name}
                 status={computedStatus}
                 onClick={() => handleStickerClick(sticker.id, computedStatus)}
               />

@@ -69,9 +69,8 @@ const FriendProfile = () => {
       result = result.filter(
         (s) =>
           s.code.toLowerCase().includes(query) ||
-          s.name?.toLowerCase().includes(query) ||
-          s.team?.toLowerCase().includes(query) ||
-          s.section?.toLowerCase().includes(query)
+          s.display_name?.toLowerCase().includes(query) ||
+          s.team_name?.toLowerCase().includes(query)
       );
     }
 
@@ -211,14 +210,9 @@ const FriendProfile = () => {
                   <span className="font-semibold text-foreground text-sm">
                     {sticker.code}
                   </span>
-                  {sticker.team && (
+                  {sticker.team_name && (
                     <span className="text-xs text-muted-foreground mt-1 truncate w-full px-1">
-                      {sticker.team}
-                    </span>
-                  )}
-                  {sticker.section && !sticker.team && (
-                    <span className="text-xs text-muted-foreground mt-1 truncate w-full px-1">
-                      {sticker.section}
+                      {sticker.team_name}
                     </span>
                   )}
                 </div>

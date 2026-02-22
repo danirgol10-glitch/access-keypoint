@@ -234,29 +234,71 @@ export type Database = {
         Row: {
           code: string
           created_at: string
+          display_name: string | null
+          group_letter: string | null
           id: string
           name: string | null
           number: number | null
+          number_in_team: number | null
+          scope: string | null
           section: string | null
           team: string | null
+          team_code: string | null
+          team_name: string | null
         }
         Insert: {
           code: string
           created_at?: string
+          display_name?: string | null
+          group_letter?: string | null
           id?: string
           name?: string | null
           number?: number | null
+          number_in_team?: number | null
+          scope?: string | null
           section?: string | null
           team?: string | null
+          team_code?: string | null
+          team_name?: string | null
         }
         Update: {
           code?: string
           created_at?: string
+          display_name?: string | null
+          group_letter?: string | null
           id?: string
           name?: string | null
           number?: number | null
+          number_in_team?: number | null
+          scope?: string | null
           section?: string | null
           team?: string | null
+          team_code?: string | null
+          team_name?: string | null
+        }
+        Relationships: []
+      }
+      teams: {
+        Row: {
+          code: string
+          group_letter: string
+          id: string
+          is_placeholder: boolean
+          name: string
+        }
+        Insert: {
+          code: string
+          group_letter: string
+          id?: string
+          is_placeholder?: boolean
+          name: string
+        }
+        Update: {
+          code?: string
+          group_letter?: string
+          id?: string
+          is_placeholder?: boolean
+          name?: string
         }
         Relationships: []
       }

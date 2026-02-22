@@ -3,7 +3,7 @@ import type { ComputedStatus } from '@/hooks/useUserStickers';
 
 interface StickerCardProps {
   code: string;
-  team?: string | null;
+  teamName?: string | null;
   status: ComputedStatus;
   onClick: () => void;
 }
@@ -14,7 +14,7 @@ const statusConfig: Record<ComputedStatus, { label: string; variant: 'default' |
   DUPLICATE: { label: 'Duplicate', variant: 'outline' },
 };
 
-export function StickerCard({ code, team, status, onClick }: StickerCardProps) {
+export function StickerCard({ code, teamName, status, onClick }: StickerCardProps) {
   const statusInfo = statusConfig[status];
 
   return (
@@ -23,9 +23,9 @@ export function StickerCard({ code, team, status, onClick }: StickerCardProps) {
       className="aspect-[3/4] rounded-lg border border-border bg-card p-2 flex flex-col items-center justify-center text-center hover:bg-accent/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
     >
       <span className="font-semibold text-foreground text-sm">{code}</span>
-      {team && (
+      {teamName && (
         <span className="text-xs text-muted-foreground mt-1 truncate w-full">
-          {team}
+          {teamName}
         </span>
       )}
       <Badge
