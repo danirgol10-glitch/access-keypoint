@@ -345,6 +345,27 @@ export type Database = {
           },
         ]
       }
+      universities: {
+        Row: {
+          country: string
+          id: string
+          is_active: boolean
+          name: string
+        }
+        Insert: {
+          country?: string
+          id?: string
+          is_active?: boolean
+          name: string
+        }
+        Update: {
+          country?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+        }
+        Relationships: []
+      }
       user_stickers: {
         Row: {
           status: string
@@ -389,6 +410,7 @@ export type Database = {
           first_login_flag: boolean
           id: string
           last_active_at: string | null
+          university_id: string | null
           username: string | null
         }
         Insert: {
@@ -398,6 +420,7 @@ export type Database = {
           first_login_flag?: boolean
           id: string
           last_active_at?: string | null
+          university_id?: string | null
           username?: string | null
         }
         Update: {
@@ -407,9 +430,18 @@ export type Database = {
           first_login_flag?: boolean
           id?: string
           last_active_at?: string | null
+          university_id?: string | null
           username?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "users_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

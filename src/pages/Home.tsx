@@ -4,13 +4,14 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAlbumStats } from '@/hooks/useAlbumStats';
 import { useCityMatches, sortMatches, type SortMode } from '@/hooks/useCityMatches';
 import { useFriendMatches } from '@/hooks/useFriendMatches';
+import { useUniversityMatches } from '@/hooks/useUniversityMatches';
 import { FriendMatchCard } from '@/components/FriendMatchCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Check, Copy, Search, MapPin } from 'lucide-react';
+import { Users, Check, Copy, Search, MapPin, GraduationCap } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const Home = () => {
@@ -19,10 +20,13 @@ const Home = () => {
   const { stats, isLoading: statsLoading } = useAlbumStats();
   const { usersWithMatches, isLoading: matchesLoading, city, hasCityUsers } = useCityMatches();
   const { friendsWithMatches, isLoading: friendsMatchesLoading, hasFriends } = useFriendMatches();
+  const { usersWithMatches: uniUsersWithMatches, isLoading: uniMatchesLoading, universityId } = useUniversityMatches();
   const [citySheetOpen, setCitySheetOpen] = useState(false);
   const [friendsSheetOpen, setFriendsSheetOpen] = useState(false);
+  const [uniSheetOpen, setUniSheetOpen] = useState(false);
   const [citySortMode, setCitySortMode] = useState<SortMode>('default');
   const [friendsSortMode, setFriendsSortMode] = useState<SortMode>('default');
+  const [uniSortMode, setUniSortMode] = useState<SortMode>('default');
 
   const sortedCityMatches = useMemo(
     () => sortMatches(usersWithMatches, citySortMode),
@@ -32,6 +36,11 @@ const Home = () => {
   const sortedFriendMatches = useMemo(
     () => sortMatches(friendsWithMatches, friendsSortMode),
     [friendsWithMatches, friendsSortMode]
+  );
+
+  const sortedUniMatches = useMemo(
+    () => sortMatches(uniUsersWithMatches.map(m => ({ ...m, sameUniversity: true as const })), uniSortMode),
+    [uniUsersWithMatches, uniSortMode]
   );
 
   const handleViewCityUser = (userId: string) => {
@@ -44,9 +53,14 @@ const Home = () => {
     navigate(`/friend/${friendId}`);
   };
 
+  const handleViewUniUser = (userId: string) => {
+    setUniSheetOpen(false);
+    navigate(`/friend/${userId}`);
+  };
+
   const cityBadgeCount = usersWithMatches.length;
   const friendsBadgeCount = friendsWithMatches.length;
-
+  const uniBadgeCount = uniUsersWithMatches.length;
   const pieData = stats ? [
     { name: 'Owned', value: stats.ownedCount, color: 'hsl(var(--primary))' },
     { name: 'Missing', value: stats.missingCount, color: 'hsl(var(--muted))' },
@@ -196,6 +210,76 @@ const Home = () => {
                       duplicateTotal={match.duplicateTotal}
                       lastActiveAt={match.lastActiveAt}
                       onView={() => handleViewCityUser(match.userId)}
+                    />
+                  ))}
+                </>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
+        {/* University Helpers Button */}
+        <Sheet open={uniSheetOpen} onOpenChange={setUniSheetOpen}>
+          <SheetTrigger asChild>
+            {universityId ? (
+              <Button variant="outline" size="icon" className="rounded-full h-12 w-12 relative">
+                <GraduationCap className="h-5 w-5" />
+                {uniBadgeCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+                    {uniBadgeCount > 99 ? '99+' : uniBadgeCount}
+                  </span>
+                )}
+              </Button>
+            ) : (
+              <Button variant="outline" size="icon" className="rounded-full h-12 w-12 opacity-50">
+                <GraduationCap className="h-5 w-5" />
+              </Button>
+            )}
+          </SheetTrigger>
+          <SheetContent side="right" className="w-full sm:max-w-md">
+            <SheetHeader>
+              <SheetTitle>People at Your University Who Can Help</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
+              {!universityId ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <GraduationCap className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground mb-4">Set your university in your profile to find classmates!</p>
+                  <Button onClick={() => { setUniSheetOpen(false); navigate('/profile'); }}>Set University</Button>
+                </div>
+              ) : uniMatchesLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="w-full">
+                      <CardContent className="flex items-center gap-3 py-4 px-4">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-4 w-24" />
+                          <Skeleton className="h-3 w-32" />
+                        </div>
+                        <Skeleton className="h-8 w-16" />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : uniBadgeCount === 0 ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <GraduationCap className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">No university matches yet. Spread the word!</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span>Sort by:</span>
+                    <SortDropdown value={uniSortMode} onChange={setUniSortMode} />
+                  </div>
+                  {sortedUniMatches.map((match) => (
+                    <FriendMatchCard
+                      key={match.userId}
+                      username={match.username}
+                      matchCount={match.matchCount}
+                      duplicateTotal={match.duplicateTotal}
+                      lastActiveAt={match.lastActiveAt}
+                      onView={() => handleViewUniUser(match.userId)}
                     />
                   ))}
                 </>

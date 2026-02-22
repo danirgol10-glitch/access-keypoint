@@ -10,6 +10,7 @@ export interface UserProfile {
   created_at: string;
   last_active_at: string | null;
   first_login_flag: boolean;
+  university_id: string | null;
 }
 
 export const useUserProfile = () => {

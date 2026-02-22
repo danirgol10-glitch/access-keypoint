@@ -12,11 +12,12 @@ export interface CityMatch {
   matchCount: number;
   duplicateTotal: number;
   lastActiveAt: string | null;
+  sameUniversity: boolean;
 }
 
 export type SortMode = 'default' | 'most_active';
 
-export function sortMatches<T extends { matchCount: number; duplicateTotal: number; lastActiveAt: string | null }>(
+export function sortMatches<T extends { matchCount: number; duplicateTotal: number; lastActiveAt: string | null; sameUniversity?: boolean }>(
   items: T[],
   mode: SortMode,
 ): T[] {
@@ -25,8 +26,11 @@ export function sortMatches<T extends { matchCount: number; duplicateTotal: numb
     if (mode === 'most_active') {
       return (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
     }
-    // default: match_count → last_active_at → duplicate_total
+    // default: match_count → same_university → last_active_at → duplicate_total
     if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+    const aUni = a.sameUniversity ? 1 : 0;
+    const bUni = b.sameUniversity ? 1 : 0;
+    if (bUni !== aUni) return bUni - aUni;
     const cmp = (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
     if (cmp !== 0) return cmp;
     return b.duplicateTotal - a.duplicateTotal;
@@ -49,7 +53,7 @@ export function useCityMatches() {
       if (!city) return [];
       const { data, error } = await supabase
         .from('users')
-        .select('id, username, last_active_at')
+        .select('id, username, last_active_at, university_id')
         .eq('city', city)
         .neq('id', user!.id);
       if (error) { console.error('Error fetching city users:', error); throw error; }
@@ -89,6 +93,7 @@ export function useCityMatches() {
       allStickers.filter(s => !myOwnedStickerIds.has(s.id)).map(s => s.id)
     );
     const blockedSet = new Set(blockedIds);
+    const myUniId = profile?.university_id ?? null;
 
     for (const cityUser of cityUsers) {
       if (blockedSet.has(cityUser.id)) continue;
@@ -103,14 +108,19 @@ export function useCityMatches() {
         matchCount,
         duplicateTotal: dupSet.size,
         lastActiveAt: cityUser.last_active_at ?? null,
+        sameUniversity: !!(myUniId && cityUser.university_id === myUniId),
       });
     }
 
-    // Default sort: best_match
+    // Default sort: match_count → same_university → last_active_at → duplicate_total
     cityMatches.sort((a, b) => {
       if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-      if (b.duplicateTotal !== a.duplicateTotal) return b.duplicateTotal - a.duplicateTotal;
-      return (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
+      const aUni = a.sameUniversity ? 1 : 0;
+      const bUni = b.sameUniversity ? 1 : 0;
+      if (bUni !== aUni) return bUni - aUni;
+      const cmp = (b.lastActiveAt ?? '').localeCompare(a.lastActiveAt ?? '');
+      if (cmp !== 0) return cmp;
+      return b.duplicateTotal - a.duplicateTotal;
     });
   }
 
