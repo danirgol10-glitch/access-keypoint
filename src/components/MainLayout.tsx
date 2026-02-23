@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Home, Image, Users, MessageSquare, MessageCircle } from 'lucide-react';
+import { Home, Image, Handshake } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useConversations } from '@/hooks/useConversations';
@@ -9,9 +9,7 @@ import { useLastActive } from '@/hooks/useLastActive';
 const tabs = [
   { path: '/', label: 'Progress', icon: Home },
   { path: '/album', label: 'Album', icon: Image },
-  { path: '/friends', label: 'Friends', icon: Users },
-  { path: '/requests', label: 'Requests', icon: MessageSquare },
-  { path: '/chats', label: 'Chats', icon: MessageCircle },
+  { path: '/trading', label: 'Trading', icon: Handshake },
 ];
 
 const MainLayout = () => {
@@ -19,6 +17,7 @@ const MainLayout = () => {
   const { unreadCount } = useNotifications();
   const { data: conversations = [] } = useConversations();
   const chatUnreadCount = conversations.reduce((sum, c) => sum + c.unread_count, 0);
+  const tradingBadge = unreadCount + chatUnreadCount;
   const { touch } = useLastActive();
 
   // Update last_active on tab switch
@@ -37,10 +36,8 @@ const MainLayout = () => {
           {tabs.map((tab) => {
             const isActive = location.pathname === tab.path;
             const Icon = tab.icon;
-            const showBadge =
-              (tab.path === '/profile' && unreadCount > 0) ||
-              (tab.path === '/chats' && chatUnreadCount > 0);
-            const badgeNum = tab.path === '/chats' ? chatUnreadCount : unreadCount;
+            const showBadge = tab.path === '/trading' && tradingBadge > 0;
+            const badgeNum = tradingBadge;
 
             return (
               <NavLink
