@@ -14,6 +14,7 @@ import Album from "./pages/Album";
 import Requests from "./pages/Requests";
 import Profile from "./pages/Profile";
 import Friends from "./pages/Friends";
+import Trading from "./pages/Trading";
 import FriendDetail from "./pages/FriendDetail";
 import FriendProfile from "./pages/FriendProfile";
 import RequestDetail from "./pages/RequestDetail";
@@ -50,6 +51,7 @@ const App = () => (
             >
               <Route path="/" element={<Home />} />
               <Route path="/album" element={<Album />} />
+              <Route path="/trading" element={<Trading />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/requests" element={<Requests />} />
               <Route path="/chats" element={<Chats />} />
