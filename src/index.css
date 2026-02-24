@@ -66,6 +66,7 @@
 
     /* Hero card */
     --hero-bg: 237 35% 14%;
+    --hero-bg-end: 245 40% 18%;
     --hero-glow: 263 70% 55%;
   }
 
@@ -122,6 +123,7 @@
     --header-gradient-end: 263 84% 50%;
 
     --hero-bg: 237 35% 11%;
+    --hero-bg-end: 245 40% 15%;
     --hero-glow: 263 70% 45%;
   }
 }
@@ -155,7 +157,11 @@
   }
 
   .hero-gradient {
-    background: hsl(var(--hero-bg));
+    background: linear-gradient(
+      135deg,
+      hsl(var(--hero-bg)) 0%,
+      hsl(var(--hero-bg-end)) 100%
+    );
     position: relative;
     overflow: hidden;
   }
@@ -166,10 +172,15 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 280px;
-    height: 280px;
+    width: 260px;
+    height: 260px;
     border-radius: 50%;
-    background: radial-gradient(circle, hsl(var(--hero-glow) / 0.35) 0%, transparent 70%);
+    background: radial-gradient(circle, hsl(var(--hero-glow) / 0.25) 0%, transparent 70%);
     pointer-events: none;
+  }
+
+  @keyframes ring-draw {
+    from { stroke-dashoffset: 999; }
+    to { stroke-dashoffset: 0; }
   }
 }
