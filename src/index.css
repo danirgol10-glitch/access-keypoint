@@ -8,13 +8,13 @@
 
 @layer base {
   :root {
-    --background: 234 52% 9%;
+    --background: 230 60% 8%;
     --foreground: 210 40% 98%;
 
-    --card: 237 35% 22%;
+    --card: 232 45% 16%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 237 35% 22%;
+    --popover: 232 45% 16%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 263 70% 58%;
@@ -22,10 +22,10 @@
     --primary-hover: 263 84% 50%;
     --primary-soft: 263 40% 25%;
 
-    --secondary: 237 35% 16%;
+    --secondary: 230 45% 13%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 237 35% 16%;
+    --muted: 230 45% 13%;
     --muted-foreground: 240 4% 66%;
 
     --accent: 263 70% 58%;
@@ -34,25 +34,25 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 237 30% 26%;
-    --input: 237 30% 26%;
+    --border: 232 35% 22%;
+    --input: 232 35% 22%;
     --ring: 263 70% 58%;
 
     --radius: 1rem;
 
-    --sidebar-background: 237 35% 12%;
+    --sidebar-background: 230 55% 10%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 263 70% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 237 35% 18%;
+    --sidebar-accent: 230 45% 15%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 237 30% 22%;
+    --sidebar-border: 232 35% 20%;
     --sidebar-ring: 263 70% 58%;
 
     /* Custom tokens */
     --tab-active: 263 70% 58%;
     --tab-inactive: 240 4% 66%;
-    --auth-gradient-start: 234 52% 9%;
+    --auth-gradient-start: 230 60% 8%;
     --auth-gradient-end: 263 40% 18%;
 
     /* Status tokens */
@@ -61,23 +61,24 @@
     --error: 0 84% 60%;
 
     /* Header gradient */
-    --header-gradient-start: 263 69% 42%;
-    --header-gradient-end: 263 84% 50%;
+    --header-gradient-start: 225 65% 18%;
+    --header-gradient-end: 255 55% 28%;
 
-    /* Hero card */
-    --hero-bg: 237 35% 14%;
-    --hero-bg-end: 245 40% 18%;
-    --hero-glow: 263 70% 55%;
+    /* Hero card - FIFA tournament feel */
+    --hero-bg: 225 65% 12%;
+    --hero-bg-end: 255 50% 20%;
+    --hero-glow: 45 80% 55%;
+    --hero-accent: 45 85% 60%;
   }
 
   .dark {
-    --background: 234 52% 7%;
+    --background: 230 60% 6%;
     --foreground: 210 40% 98%;
 
-    --card: 237 35% 18%;
+    --card: 232 45% 14%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 237 35% 18%;
+    --popover: 232 45% 14%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 263 70% 58%;
@@ -85,10 +86,10 @@
     --primary-hover: 263 84% 55%;
     --primary-soft: 263 40% 22%;
 
-    --secondary: 237 35% 14%;
+    --secondary: 230 45% 11%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 237 35% 14%;
+    --muted: 230 45% 11%;
     --muted-foreground: 240 4% 60%;
 
     --accent: 263 70% 58%;
@@ -97,34 +98,35 @@
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 237 30% 22%;
-    --input: 237 30% 22%;
+    --border: 232 35% 18%;
+    --input: 232 35% 18%;
     --ring: 263 70% 58%;
 
-    --sidebar-background: 234 52% 7%;
+    --sidebar-background: 230 60% 6%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 263 70% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 237 35% 14%;
+    --sidebar-accent: 230 45% 12%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 237 30% 18%;
+    --sidebar-border: 232 35% 16%;
     --sidebar-ring: 263 70% 58%;
 
     --tab-active: 263 70% 58%;
     --tab-inactive: 240 4% 55%;
-    --auth-gradient-start: 234 52% 7%;
+    --auth-gradient-start: 230 60% 6%;
     --auth-gradient-end: 263 40% 14%;
 
     --pending: 38 92% 50%;
     --success: 142 72% 46%;
     --error: 0 84% 60%;
 
-    --header-gradient-start: 263 69% 42%;
-    --header-gradient-end: 263 84% 50%;
+    --header-gradient-start: 225 65% 14%;
+    --header-gradient-end: 255 55% 24%;
 
-    --hero-bg: 237 35% 11%;
-    --hero-bg-end: 245 40% 15%;
-    --hero-glow: 263 70% 45%;
+    --hero-bg: 225 65% 9%;
+    --hero-bg-end: 255 50% 16%;
+    --hero-glow: 45 80% 50%;
+    --hero-accent: 45 85% 55%;
   }
 }
 
@@ -158,9 +160,10 @@
 
   .hero-gradient {
     background: linear-gradient(
-      135deg,
+      145deg,
       hsl(var(--hero-bg)) 0%,
-      hsl(var(--hero-bg-end)) 100%
+      hsl(var(--hero-bg-end)) 60%,
+      hsl(var(--hero-bg)) 100%
     );
     position: relative;
     overflow: hidden;
@@ -172,10 +175,21 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 260px;
-    height: 260px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
-    background: radial-gradient(circle, hsl(var(--hero-glow) / 0.25) 0%, transparent 70%);
+    background: radial-gradient(circle, hsl(var(--hero-glow) / 0.15) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .hero-gradient::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 10%, hsl(var(--hero-accent) / 0.6) 50%, transparent 90%);
     pointer-events: none;
   }
 
