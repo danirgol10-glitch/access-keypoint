@@ -75,8 +75,8 @@ export default {
         sm: "calc(var(--radius) - 8px)",
       },
       boxShadow: {
-        'card': '0 2px 8px -2px rgb(0 0 0 / 0.06), 0 1px 3px -1px rgb(0 0 0 / 0.04)',
-        'card-hover': '0 8px 16px -4px rgb(0 0 0 / 0.08), 0 4px 6px -2px rgb(0 0 0 / 0.04)',
+        'card': '0 2px 12px -2px rgb(0 0 0 / 0.25), 0 1px 4px -1px rgb(0 0 0 / 0.15)',
+        'card-hover': '0 8px 24px -4px rgb(0 0 0 / 0.35), 0 4px 8px -2px rgb(0 0 0 / 0.2)',
       },
       keyframes: {
         "accordion-down": {
