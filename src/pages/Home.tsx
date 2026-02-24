@@ -326,9 +326,9 @@ const Home = () => {
               <div className="relative">
                 <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
-                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={72} outerRadius={110} paddingAngle={3} dataKey="value" strokeWidth={2} stroke="hsl(45 80% 55% / 0.15)" animationBegin={0} animationDuration={900} animationEasing="ease-out">
+                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={72} outerRadius={110} paddingAngle={3} dataKey="value" strokeWidth={2} stroke="hsl(45 90% 62% / 0.2)" animationBegin={0} animationDuration={900} animationEasing="ease-out">
                       {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 0 ? '#B794F4' : 'rgba(255,255,255,0.06)'} />
+                        <Cell key={`cell-${index}`} fill={index === 0 ? '#1E5BFF' : 'rgba(255,255,255,0.06)'} />
                       ))}
                     </Pie>
                   </PieChart>
