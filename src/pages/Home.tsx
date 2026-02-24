@@ -79,9 +79,9 @@ const Home = () => {
   );
 
   return (
-    <div className="flex flex-col items-center p-6 space-y-6 relative">
+    <div className="flex flex-col p-4 space-y-4 relative">
       {/* Header Row */}
-      <div className="w-full flex items-center justify-between pt-2">
+      <div className="w-full flex items-center justify-between">
         {/* Profile Button - Top Left */}
         <Button
           variant="outline"
@@ -305,46 +305,53 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Username */}
-      <div className="text-center">
-        {profileLoading ? (
-          <Skeleton className="h-6 w-32 mx-auto" />
-        ) : profile?.username ? (
-          <p className="text-sm text-muted-foreground">@{profile.username}</p>
-        ) : null}
-      </div>
-
-      {/* Pie Chart */}
-      <div className="w-full max-w-xs">
+      {/* Hero Card with Pie Chart */}
+      <div className="w-full">
         {statsLoading ? (
-          <div className="flex items-center justify-center h-48">
-            <Skeleton className="h-40 w-40 rounded-full" />
-          </div>
+          <Card className="w-full header-gradient border-0">
+            <CardContent className="py-8">
+              <div className="flex flex-col items-center">
+                <Skeleton className="h-48 w-48 rounded-full bg-white/20" />
+              </div>
+            </CardContent>
+          </Card>
         ) : stats ? (
-          <div className="relative">
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" strokeWidth={0}>
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-3xl font-bold text-foreground">{stats.completionPercent.toFixed(1)}%</span>
-              <span className="text-xs text-muted-foreground">Complete</span>
-            </div>
-          </div>
+          <Card className="w-full header-gradient border-0 shadow-card">
+            <CardContent className="pt-6 pb-5">
+              {profileLoading ? (
+                <Skeleton className="h-4 w-24 mx-auto mb-2 bg-white/20" />
+              ) : profile?.username ? (
+                <p className="text-sm text-white/70 text-center mb-2">@{profile.username}</p>
+              ) : null}
+              <div className="relative">
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={70} outerRadius={95} paddingAngle={2} dataKey="value" strokeWidth={0}>
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={index === 0 ? '#FFFFFF' : 'rgba(255,255,255,0.2)'} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-4xl font-bold text-white">{stats.completionPercent.toFixed(1)}%</span>
+                  <span className="text-sm text-white/70">Complete</span>
+                </div>
+              </div>
+              <p className="text-center text-sm text-white/60 mt-1">
+                {stats.ownedCount} of {stats.totalStickers} stickers
+              </p>
+            </CardContent>
+          </Card>
         ) : null}
       </div>
 
-      {/* Stats Row */}
-      <div className="w-full max-w-md">
+      {/* Stats Row Card */}
+      <div className="w-full">
         {statsLoading ? (
           <Card className="w-full">
-            <CardContent className="py-4">
-              <div className="grid grid-cols-3 gap-3">
+            <CardContent className="py-5">
+              <div className="grid grid-cols-3 gap-4">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex flex-col items-center">
                     <Skeleton className="h-6 w-12 mb-1" />
@@ -356,20 +363,20 @@ const Home = () => {
           </Card>
         ) : stats ? (
           <Card className="w-full">
-            <CardContent className="py-4">
-              <div className="grid grid-cols-3 gap-3">
-                <div className="flex flex-col items-center p-3 rounded-lg bg-secondary/50">
-                  <Check className="w-5 h-5 text-green-600 mb-1" />
+            <CardContent className="py-5">
+              <div className="grid grid-cols-3 divide-x divide-border">
+                <div className="flex flex-col items-center gap-1 px-2">
+                  <Check className="w-5 h-5 text-green-600" />
                   <span className="text-2xl font-bold text-foreground">{stats.ownedCount}</span>
                   <span className="text-xs text-muted-foreground">Have</span>
                 </div>
-                <div className="flex flex-col items-center p-3 rounded-lg bg-secondary/50">
-                  <Search className="w-5 h-5 text-orange-600 mb-1" />
+                <div className="flex flex-col items-center gap-1 px-2">
+                  <Search className="w-5 h-5 text-orange-600" />
                   <span className="text-2xl font-bold text-foreground">{stats.missingCount}</span>
                   <span className="text-xs text-muted-foreground">Missing</span>
                 </div>
-                <div className="flex flex-col items-center p-3 rounded-lg bg-secondary/50">
-                  <Copy className="w-5 h-5 text-blue-600 mb-1" />
+                <div className="flex flex-col items-center gap-1 px-2">
+                  <Copy className="w-5 h-5 text-blue-600" />
                   <span className="text-2xl font-bold text-foreground">{stats.duplicateCount}</span>
                   <span className="text-xs text-muted-foreground">Duplicates</span>
                 </div>
@@ -378,20 +385,6 @@ const Home = () => {
           </Card>
         ) : null}
       </div>
-
-      {/* Legend */}
-      {stats && (
-        <div className="flex items-center gap-6 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-primary" />
-            <span>Owned ({stats.ownedCount})</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-muted" />
-            <span>Missing ({stats.missingCount})</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
