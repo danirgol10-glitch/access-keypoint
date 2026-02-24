@@ -326,9 +326,9 @@ const Home = () => {
               <div className="relative">
                 <ResponsiveContainer width="100%" height={240}>
                   <PieChart>
-                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={75} outerRadius={100} paddingAngle={3} dataKey="value" strokeWidth={0}>
+                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={68} outerRadius={105} paddingAngle={2} dataKey="value" strokeWidth={0} animationBegin={0} animationDuration={800} animationEasing="ease-out">
                       {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 0 ? '#A78BFA' : 'rgba(255,255,255,0.12)'} />
+                        <Cell key={`cell-${index}`} fill={index === 0 ? '#A78BFA' : 'rgba(255,255,255,0.08)'} />
                       ))}
                     </Pie>
                   </PieChart>
@@ -338,7 +338,7 @@ const Home = () => {
                   <span className="text-sm text-white/60 mt-0.5">Complete</span>
                 </div>
               </div>
-              <p className="text-center text-sm text-white/50 mt-1">
+              <p className="text-center text-[11px] uppercase tracking-wider text-white/40 mt-1">
                 {stats.ownedCount} of {stats.totalStickers} stickers
               </p>
             </CardContent>
@@ -364,21 +364,21 @@ const Home = () => {
         ) : stats ? (
           <Card className="w-full">
             <CardContent className="py-5">
-              <div className="grid grid-cols-3 divide-x divide-border">
-                <div className="flex flex-col items-center gap-1 px-2">
-                  <Check className="w-5 h-5 text-green-600" />
-                  <span className="text-2xl font-bold text-foreground">{stats.ownedCount}</span>
-                  <span className="text-xs text-muted-foreground">Have</span>
+              <div className="grid grid-cols-3 divide-x divide-border/60">
+                <div className="flex flex-col items-center gap-1.5 px-2">
+                  <Check className="w-5 h-5 text-emerald-500" />
+                  <span className="text-2xl font-extrabold text-emerald-400">{stats.ownedCount}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Owned</span>
                 </div>
-                <div className="flex flex-col items-center gap-1 px-2">
-                  <Search className="w-5 h-5 text-orange-600" />
-                  <span className="text-2xl font-bold text-foreground">{stats.missingCount}</span>
-                  <span className="text-xs text-muted-foreground">Missing</span>
+                <div className="flex flex-col items-center gap-1.5 px-2">
+                  <Search className="w-5 h-5 text-orange-500" />
+                  <span className="text-2xl font-extrabold text-foreground">{stats.missingCount}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Missing</span>
                 </div>
-                <div className="flex flex-col items-center gap-1 px-2">
-                  <Copy className="w-5 h-5 text-blue-600" />
-                  <span className="text-2xl font-bold text-foreground">{stats.duplicateCount}</span>
-                  <span className="text-xs text-muted-foreground">Duplicates</span>
+                <div className="flex flex-col items-center gap-1.5 px-2">
+                  <Copy className="w-5 h-5 text-primary" />
+                  <span className="text-2xl font-extrabold text-primary">{stats.duplicateCount}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Dupes</span>
                 </div>
               </div>
             </CardContent>
