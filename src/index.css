@@ -8,125 +8,125 @@
 
 @layer base {
   :root {
-    --background: 230 60% 8%;
+    --background: 224 80% 8%;
     --foreground: 210 40% 98%;
 
-    --card: 232 45% 16%;
+    --card: 224 55% 14%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 232 45% 16%;
+    --popover: 224 55% 14%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 263 70% 58%;
+    --primary: 222 100% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 263 84% 50%;
-    --primary-soft: 263 40% 25%;
+    --primary-hover: 222 100% 48%;
+    --primary-soft: 222 60% 22%;
 
-    --secondary: 230 45% 13%;
+    --secondary: 224 60% 11%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 230 45% 13%;
-    --muted-foreground: 240 4% 66%;
+    --muted: 224 60% 11%;
+    --muted-foreground: 220 10% 62%;
 
-    --accent: 263 70% 58%;
+    --accent: 222 100% 56%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 232 35% 22%;
-    --input: 232 35% 22%;
-    --ring: 263 70% 58%;
+    --border: 224 45% 20%;
+    --input: 224 45% 20%;
+    --ring: 222 100% 56%;
 
     --radius: 1rem;
 
-    --sidebar-background: 230 55% 10%;
+    --sidebar-background: 224 75% 9%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 263 70% 58%;
+    --sidebar-primary: 222 100% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 45% 15%;
+    --sidebar-accent: 224 55% 14%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 232 35% 20%;
-    --sidebar-ring: 263 70% 58%;
+    --sidebar-border: 224 45% 18%;
+    --sidebar-ring: 222 100% 56%;
 
     /* Custom tokens */
-    --tab-active: 263 70% 58%;
-    --tab-inactive: 240 4% 66%;
-    --auth-gradient-start: 230 60% 8%;
-    --auth-gradient-end: 263 40% 18%;
+    --tab-active: 222 100% 56%;
+    --tab-inactive: 220 10% 62%;
+    --auth-gradient-start: 224 80% 8%;
+    --auth-gradient-end: 222 70% 18%;
 
     /* Status tokens */
-    --pending: 38 92% 50%;
+    --pending: 45 93% 58%;
     --success: 142 72% 46%;
     --error: 0 84% 60%;
 
     /* Header gradient */
-    --header-gradient-start: 225 65% 18%;
-    --header-gradient-end: 255 55% 28%;
+    --header-gradient-start: 224 80% 14%;
+    --header-gradient-end: 222 75% 24%;
 
-    /* Hero card - FIFA tournament feel */
-    --hero-bg: 225 65% 12%;
-    --hero-bg-end: 255 50% 20%;
-    --hero-glow: 45 80% 55%;
-    --hero-accent: 45 85% 60%;
+    /* Hero card - FIFA classic blue */
+    --hero-bg: 228 85% 12%;
+    --hero-bg-end: 224 75% 28%;
+    --hero-glow: 45 90% 62%;
+    --hero-accent: 45 90% 62%;
   }
 
   .dark {
-    --background: 230 60% 6%;
+    --background: 224 80% 6%;
     --foreground: 210 40% 98%;
 
-    --card: 232 45% 14%;
+    --card: 224 55% 12%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 232 45% 14%;
+    --popover: 224 55% 12%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 263 70% 58%;
+    --primary: 222 100% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 263 84% 55%;
-    --primary-soft: 263 40% 22%;
+    --primary-hover: 222 100% 48%;
+    --primary-soft: 222 60% 20%;
 
-    --secondary: 230 45% 11%;
+    --secondary: 224 60% 9%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 230 45% 11%;
-    --muted-foreground: 240 4% 60%;
+    --muted: 224 60% 9%;
+    --muted-foreground: 220 10% 55%;
 
-    --accent: 263 70% 58%;
+    --accent: 222 100% 56%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 232 35% 18%;
-    --input: 232 35% 18%;
-    --ring: 263 70% 58%;
+    --border: 224 45% 16%;
+    --input: 224 45% 16%;
+    --ring: 222 100% 56%;
 
-    --sidebar-background: 230 60% 6%;
+    --sidebar-background: 224 80% 6%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 263 70% 58%;
+    --sidebar-primary: 222 100% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 45% 12%;
+    --sidebar-accent: 224 55% 11%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 232 35% 16%;
-    --sidebar-ring: 263 70% 58%;
+    --sidebar-border: 224 45% 14%;
+    --sidebar-ring: 222 100% 56%;
 
-    --tab-active: 263 70% 58%;
-    --tab-inactive: 240 4% 55%;
-    --auth-gradient-start: 230 60% 6%;
-    --auth-gradient-end: 263 40% 14%;
+    --tab-active: 222 100% 56%;
+    --tab-inactive: 220 10% 50%;
+    --auth-gradient-start: 224 80% 6%;
+    --auth-gradient-end: 222 70% 14%;
 
-    --pending: 38 92% 50%;
+    --pending: 45 93% 58%;
     --success: 142 72% 46%;
     --error: 0 84% 60%;
 
-    --header-gradient-start: 225 65% 14%;
-    --header-gradient-end: 255 55% 24%;
+    --header-gradient-start: 224 80% 10%;
+    --header-gradient-end: 222 75% 20%;
 
-    --hero-bg: 225 65% 9%;
-    --hero-bg-end: 255 50% 16%;
-    --hero-glow: 45 80% 50%;
-    --hero-accent: 45 85% 55%;
+    --hero-bg: 228 85% 9%;
+    --hero-bg-end: 224 75% 22%;
+    --hero-glow: 45 90% 55%;
+    --hero-accent: 45 90% 55%;
   }
 }
 
