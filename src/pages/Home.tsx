@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAlbumStats } from '@/hooks/useAlbumStats';
@@ -6,13 +6,14 @@ import { useCityMatches, sortMatches, type SortMode } from '@/hooks/useCityMatch
 import { useFriendMatches } from '@/hooks/useFriendMatches';
 import { useUniversityMatches } from '@/hooks/useUniversityMatches';
 import { FriendMatchCard } from '@/components/FriendMatchCard';
+import { ProgressRing } from '@/components/ProgressRing';
+import { CompletionCelebration } from '@/components/CompletionCelebration';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Users, Check, Copy, Search, MapPin, GraduationCap, User } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -58,13 +59,22 @@ const Home = () => {
     navigate(`/friend/${userId}`);
   };
 
+  const [celebrating, setCelebrating] = useState(false);
+
   const cityBadgeCount = usersWithMatches.length;
   const friendsBadgeCount = friendsWithMatches.length;
   const uniBadgeCount = uniUsersWithMatches.length;
-  const pieData = stats ? [
-    { name: 'Owned', value: stats.ownedCount, color: 'hsl(var(--primary))' },
-    { name: 'Missing', value: stats.missingCount, color: 'hsl(var(--muted))' },
-  ] : [];
+
+  const handleCompletion = useCallback(() => {
+    const key = `album_completed_${profile?.username || 'user'}`;
+    if (localStorage.getItem(key)) return;
+    localStorage.setItem(key, 'true');
+    setCelebrating(true);
+  }, [profile?.username]);
+
+  const handleCelebrationFinished = useCallback(() => {
+    setCelebrating(false);
+  }, []);
 
   const SortDropdown = ({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) => (
     <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
@@ -321,26 +331,15 @@ const Home = () => {
               {profileLoading ? (
                 <Skeleton className="h-4 w-24 mx-auto mb-3 bg-white/20" />
               ) : profile?.username ? (
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50 text-center mb-3">@{profile.username}</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50 text-center mb-3">@{profile.username}</p>
               ) : null}
-              <div className="relative">
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
-                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={72} outerRadius={110} paddingAngle={3} dataKey="value" strokeWidth={2} stroke="hsl(45 90% 62% / 0.2)" animationBegin={0} animationDuration={900} animationEasing="ease-out">
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 0 ? '#1E5BFF' : 'rgba(255,255,255,0.06)'} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-[3.25rem] font-black text-white tracking-tight leading-none">{stats.completionPercent.toFixed(1)}%</span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/45 mt-1.5">Complete</span>
-                </div>
-              </div>
-              <p className="text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35 mt-2">
-                {stats.ownedCount} of {stats.totalStickers} stickers
-              </p>
+              <ProgressRing
+                percent={stats.completionPercent}
+                ownedCount={stats.ownedCount}
+                totalStickers={stats.totalStickers}
+                onComplete={handleCompletion}
+              />
+              <CompletionCelebration trigger={celebrating} onFinished={handleCelebrationFinished} />
             </CardContent>
           </Card>
         ) : null}
