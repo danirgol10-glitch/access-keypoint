@@ -63,6 +63,10 @@
     /* Header gradient */
     --header-gradient-start: 263 69% 42%;
     --header-gradient-end: 263 84% 50%;
+
+    /* Hero card */
+    --hero-bg: 245 58% 20%;
+    --hero-glow: 263 69% 55%;
   }
 
   .dark {
@@ -116,6 +120,9 @@
 
     --header-gradient-start: 263 69% 42%;
     --header-gradient-end: 263 84% 50%;
+
+    --hero-bg: 245 58% 14%;
+    --hero-glow: 263 69% 45%;
   }
 }
 
@@ -145,5 +152,24 @@
       hsl(var(--header-gradient-start)) 0%,
       hsl(var(--header-gradient-end)) 100%
     );
+  }
+
+  .hero-gradient {
+    background: hsl(var(--hero-bg));
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-gradient::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(var(--hero-glow) / 0.35) 0%, transparent 70%);
+    pointer-events: none;
   }
 }
