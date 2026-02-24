@@ -17,8 +17,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 263 70% 50%;
+    --primary: 263 84% 50%;
     --primary-foreground: 0 0% 100%;
+    --primary-hover: 263 69% 42%;
+    --primary-soft: 263 89% 92%;
 
     --secondary: 220 14% 96%;
     --secondary-foreground: 222 47% 11%;
@@ -26,7 +28,7 @@
     --muted: 220 14% 96%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 263 70% 50%;
+    --accent: 263 84% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -34,24 +36,24 @@
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 263 70% 50%;
+    --ring: 263 84% 50%;
 
     --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 263 70% 50%;
+    --sidebar-primary: 263 84% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 263 70% 50%;
+    --sidebar-ring: 263 84% 50%;
 
     /* Custom tokens */
-    --tab-active: 263 70% 50%;
+    --tab-active: 263 84% 50%;
     --tab-inactive: 215 16% 47%;
     --auth-gradient-start: 220 14% 96%;
-    --auth-gradient-end: 263 90% 93%;
+    --auth-gradient-end: 263 89% 92%;
 
     /* Status tokens */
     --pending: 38 92% 50%;
@@ -69,8 +71,10 @@
     --popover: 222 47% 10%;
     --popover-foreground: 220 14% 96%;
 
-    --primary: 263 70% 55%;
+    --primary: 263 84% 55%;
     --primary-foreground: 0 0% 100%;
+    --primary-hover: 263 69% 47%;
+    --primary-soft: 263 40% 20%;
 
     --secondary: 222 30% 16%;
     --secondary-foreground: 220 14% 96%;
@@ -78,7 +82,7 @@
     --muted: 222 30% 16%;
     --muted-foreground: 215 16% 60%;
 
-    --accent: 263 70% 55%;
+    --accent: 263 84% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 63% 31%;
@@ -86,21 +90,21 @@
 
     --border: 222 30% 18%;
     --input: 222 30% 18%;
-    --ring: 263 70% 55%;
+    --ring: 263 84% 55%;
 
     --sidebar-background: 222 47% 8%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 263 70% 55%;
+    --sidebar-primary: 263 84% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 222 30% 14%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 222 30% 14%;
-    --sidebar-ring: 263 70% 55%;
+    --sidebar-ring: 263 84% 55%;
 
-    --tab-active: 263 70% 55%;
+    --tab-active: 263 84% 55%;
     --tab-inactive: 215 16% 50%;
     --auth-gradient-start: 222 47% 6%;
-    --auth-gradient-end: 263 40% 12%;
+    --auth-gradient-end: 263 40% 15%;
 
     --pending: 38 92% 50%;
     --success: 160 84% 39%;

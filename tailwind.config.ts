@@ -64,6 +64,9 @@ export default {
           active: "hsl(var(--tab-active))",
           inactive: "hsl(var(--tab-inactive))",
         },
+        pending: "hsl(var(--pending))",
+        success: "hsl(var(--success))",
+        error: "hsl(var(--error))",
       },
       borderRadius: {
         xl: "var(--radius)",
