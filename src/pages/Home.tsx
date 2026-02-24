@@ -316,29 +316,29 @@ const Home = () => {
             </CardContent>
           </Card>
         ) : stats ? (
-          <Card className="w-full hero-gradient border-0 shadow-card">
-            <CardContent className="pt-6 pb-5 relative z-10">
+          <Card className="w-full hero-gradient border-0 rounded-2xl">
+            <CardContent className="pt-7 pb-6 relative z-10">
               {profileLoading ? (
-                <Skeleton className="h-4 w-24 mx-auto mb-2 bg-white/20" />
+                <Skeleton className="h-4 w-24 mx-auto mb-3 bg-white/20" />
               ) : profile?.username ? (
-                <p className="text-sm text-white/60 text-center mb-2">@{profile.username}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50 text-center mb-3">@{profile.username}</p>
               ) : null}
               <div className="relative">
-                <ResponsiveContainer width="100%" height={240}>
+                <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
-                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={68} outerRadius={105} paddingAngle={2} dataKey="value" strokeWidth={0} animationBegin={0} animationDuration={800} animationEasing="ease-out">
+                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={72} outerRadius={110} paddingAngle={3} dataKey="value" strokeWidth={2} stroke="hsl(45 80% 55% / 0.15)" animationBegin={0} animationDuration={900} animationEasing="ease-out">
                       {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 0 ? '#A78BFA' : 'rgba(255,255,255,0.08)'} />
+                        <Cell key={`cell-${index}`} fill={index === 0 ? '#B794F4' : 'rgba(255,255,255,0.06)'} />
                       ))}
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-5xl font-extrabold text-white tracking-tight">{stats.completionPercent.toFixed(1)}%</span>
-                  <span className="text-sm text-white/60 mt-0.5">Complete</span>
+                  <span className="text-[3.25rem] font-black text-white tracking-tight leading-none">{stats.completionPercent.toFixed(1)}%</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/45 mt-1.5">Complete</span>
                 </div>
               </div>
-              <p className="text-center text-[11px] uppercase tracking-wider text-white/40 mt-1">
+              <p className="text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35 mt-2">
                 {stats.ownedCount} of {stats.totalStickers} stickers
               </p>
             </CardContent>
@@ -362,23 +362,23 @@ const Home = () => {
             </CardContent>
           </Card>
         ) : stats ? (
-          <Card className="w-full">
+          <Card className="w-full border-0 bg-secondary/80 rounded-2xl">
             <CardContent className="py-5">
-              <div className="grid grid-cols-3 divide-x divide-border/60">
-                <div className="flex flex-col items-center gap-1.5 px-2">
-                  <Check className="w-5 h-5 text-emerald-500" />
-                  <span className="text-2xl font-extrabold text-emerald-400">{stats.ownedCount}</span>
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Owned</span>
+              <div className="grid grid-cols-3 divide-x divide-border/40">
+                <div className="flex flex-col items-center gap-1 px-2">
+                  <Check className="w-4 h-4 text-emerald-500" />
+                  <span className="text-2xl font-black text-emerald-400">{stats.ownedCount}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Owned</span>
                 </div>
-                <div className="flex flex-col items-center gap-1.5 px-2">
-                  <Search className="w-5 h-5 text-orange-500" />
-                  <span className="text-2xl font-extrabold text-foreground">{stats.missingCount}</span>
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Missing</span>
+                <div className="flex flex-col items-center gap-1 px-2">
+                  <Search className="w-4 h-4 text-orange-400" />
+                  <span className="text-2xl font-black text-foreground">{stats.missingCount}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Missing</span>
                 </div>
-                <div className="flex flex-col items-center gap-1.5 px-2">
-                  <Copy className="w-5 h-5 text-primary" />
-                  <span className="text-2xl font-extrabold text-primary">{stats.duplicateCount}</span>
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Dupes</span>
+                <div className="flex flex-col items-center gap-1 px-2">
+                  <Copy className="w-4 h-4 text-primary" />
+                  <span className="text-2xl font-black text-primary">{stats.duplicateCount}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Dupes</span>
                 </div>
               </div>
             </CardContent>
