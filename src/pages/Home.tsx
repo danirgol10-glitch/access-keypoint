@@ -308,37 +308,37 @@ const Home = () => {
       {/* Hero Card with Pie Chart */}
       <div className="w-full">
         {statsLoading ? (
-          <Card className="w-full header-gradient border-0">
-            <CardContent className="py-8">
+          <Card className="w-full hero-gradient border-0">
+            <CardContent className="py-8 relative z-10">
               <div className="flex flex-col items-center">
-                <Skeleton className="h-48 w-48 rounded-full bg-white/20" />
+                <Skeleton className="h-48 w-48 rounded-full bg-white/10" />
               </div>
             </CardContent>
           </Card>
         ) : stats ? (
-          <Card className="w-full header-gradient border-0 shadow-card">
-            <CardContent className="pt-6 pb-5">
+          <Card className="w-full hero-gradient border-0 shadow-card">
+            <CardContent className="pt-6 pb-5 relative z-10">
               {profileLoading ? (
                 <Skeleton className="h-4 w-24 mx-auto mb-2 bg-white/20" />
               ) : profile?.username ? (
-                <p className="text-sm text-white/70 text-center mb-2">@{profile.username}</p>
+                <p className="text-sm text-white/60 text-center mb-2">@{profile.username}</p>
               ) : null}
               <div className="relative">
-                <ResponsiveContainer width="100%" height={220}>
+                <ResponsiveContainer width="100%" height={240}>
                   <PieChart>
-                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={70} outerRadius={95} paddingAngle={2} dataKey="value" strokeWidth={0}>
+                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={75} outerRadius={100} paddingAngle={3} dataKey="value" strokeWidth={0}>
                       {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 0 ? '#FFFFFF' : 'rgba(255,255,255,0.2)'} />
+                        <Cell key={`cell-${index}`} fill={index === 0 ? '#A78BFA' : 'rgba(255,255,255,0.12)'} />
                       ))}
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-4xl font-bold text-white">{stats.completionPercent.toFixed(1)}%</span>
-                  <span className="text-sm text-white/70">Complete</span>
+                  <span className="text-5xl font-extrabold text-white tracking-tight">{stats.completionPercent.toFixed(1)}%</span>
+                  <span className="text-sm text-white/60 mt-0.5">Complete</span>
                 </div>
               </div>
-              <p className="text-center text-sm text-white/60 mt-1">
+              <p className="text-center text-sm text-white/50 mt-1">
                 {stats.ownedCount} of {stats.totalStickers} stickers
               </p>
             </CardContent>
