@@ -327,6 +327,9 @@ const Home = () => {
           </Card>
         ) : stats ? (
           <Card className="w-full hero-gradient border-0 rounded-2xl">
+            {/* Depth layers */}
+            <div className="hero-vignette" />
+            <div className="hero-noise" />
             <CardContent className="pt-7 pb-6 relative z-10">
               {profileLoading ? (
                 <Skeleton className="h-4 w-24 mx-auto mb-3 bg-white/20" />

@@ -8,7 +8,7 @@
 
 @layer base {
   :root {
-    --background: 220 85% 15%;
+    --background: 222 84% 15%;
     --foreground: 210 40% 98%;
 
     --card: 220 70% 18%;
@@ -160,14 +160,29 @@
 
   .hero-gradient {
     background: linear-gradient(
-      180deg,
-      hsl(var(--hero-bg)) 0%,
-      hsl(var(--hero-bg-end)) 100%
+      135deg,
+      #0B2A55 0%,
+      #1E4C8A 100%
     );
     position: relative;
     overflow: hidden;
   }
 
+  /* Radial spotlight behind ring */
+  .hero-gradient::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(30, 76, 138, 0.35) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Gold top line with bottom shadow */
   .hero-gradient::after {
     content: '';
     position: absolute;
@@ -175,8 +190,31 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: hsl(var(--hero-accent) / 0.7);
+    background: #FFD23F;
+    box-shadow: 0 2px 8px rgba(255, 210, 63, 0.10);
     pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Vignette overlay */
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(7, 28, 71, 0.15) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Noise texture overlay */
+  .hero-noise {
+    position: absolute;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
+    pointer-events: none;
+    z-index: 0;
   }
 
   @keyframes ring-draw {
