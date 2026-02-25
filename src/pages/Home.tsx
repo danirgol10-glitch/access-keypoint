@@ -94,24 +94,24 @@ const Home = () => {
       <div className="w-full flex items-center justify-between">
         {/* Profile Button - Top Left */}
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
-          className="rounded-full h-12 w-12"
+          className="rounded-full h-12 w-12 border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]"
           onClick={() => navigate('/profile')}
         >
-          <User className="h-5 w-5" />
+          <User className="h-5 w-5 stroke-[2.2]" />
         </Button>
 
         {/* Center Title */}
-        <h1 className="text-lg font-semibold text-foreground">Progress</h1>
+        <h1 className="text-sm font-bold tracking-[0.12em] uppercase text-white">Progress</h1>
 
         {/* Right Helper Buttons */}
         <div className="flex items-center gap-2">
         {/* Friends Helpers Button */}
         <Sheet open={friendsSheetOpen} onOpenChange={setFriendsSheetOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="rounded-full h-12 w-12 relative">
-              <Users className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]">
+              <Users className="h-5 w-5 stroke-[2.2]" />
               {friendsBadgeCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
                   {friendsBadgeCount > 99 ? '99+' : friendsBadgeCount}
@@ -175,8 +175,8 @@ const Home = () => {
         {/* City Helpers Button */}
         <Sheet open={citySheetOpen} onOpenChange={setCitySheetOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="rounded-full h-12 w-12 relative">
-              <MapPin className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]">
+              <MapPin className="h-5 w-5 stroke-[2.2]" />
               {cityBadgeCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
                   {cityBadgeCount > 99 ? '99+' : cityBadgeCount}
@@ -246,8 +246,8 @@ const Home = () => {
         <Sheet open={uniSheetOpen} onOpenChange={setUniSheetOpen}>
           <SheetTrigger asChild>
             {universityId ? (
-              <Button variant="outline" size="icon" className="rounded-full h-12 w-12 relative">
-                <GraduationCap className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]">
+                <GraduationCap className="h-5 w-5 stroke-[2.2]" />
                 {uniBadgeCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
                     {uniBadgeCount > 99 ? '99+' : uniBadgeCount}
@@ -255,8 +255,8 @@ const Home = () => {
                 )}
               </Button>
             ) : (
-              <Button variant="outline" size="icon" className="rounded-full h-12 w-12 opacity-50">
-                <GraduationCap className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 opacity-50 border border-white/20 bg-transparent text-[#CFE3FF]">
+                <GraduationCap className="h-5 w-5 stroke-[2.2]" />
               </Button>
             )}
           </SheetTrigger>
@@ -334,7 +334,7 @@ const Home = () => {
               {profileLoading ? (
                 <Skeleton className="h-4 w-24 mx-auto mb-3 bg-white/20" />
               ) : profile?.username ? (
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50 text-center mb-3">@{profile.username}</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-white/[0.55] text-center mb-4">@{profile.username}</p>
               ) : null}
               <ProgressRing
                 percent={stats.completionPercent}
