@@ -65,20 +65,10 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
     <div className="relative flex items-center justify-center">
       <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="drop-shadow-lg">
         <defs>
-          {/* Glow filter for active segment */}
-          <filter id="ring-glow" x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur stdDeviation="6" result="blur" />
-            <feFlood floodColor="#4FA3FF" floodOpacity="0.4" />
-            <feComposite in2="blur" operator="in" />
-            <feMerge>
-              <feMergeNode />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          {/* Gold glow for complete state */}
-          <filter id="gold-glow" x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur stdDeviation="4" result="blur" />
-            <feFlood floodColor="#FFD23F" floodOpacity="0.5" />
+          {/* Subtle glow for active segment */}
+          <filter id="ring-glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feFlood floodColor="#4FA3FF" floodOpacity="0.25" />
             <feComposite in2="blur" operator="in" />
             <feMerge>
               <feMergeNode />
@@ -86,6 +76,17 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
             </feMerge>
           </filter>
         </defs>
+
+        {/* Outer gold outline */}
+        <circle
+          cx={CENTER}
+          cy={CENTER}
+          r={RADIUS + STROKE / 2 + 3}
+          fill="none"
+          stroke="#FFD23F"
+          strokeWidth={1.5}
+          opacity={0.4}
+        />
 
         {/* Base ring - deep blue */}
         <circle
@@ -115,17 +116,16 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
           style={{ transition: 'none' }}
         />
 
-        {/* Gold outline for complete state */}
+        {/* Brighter gold outline for complete state */}
         {isComplete && (
           <circle
             cx={CENTER}
             cy={CENTER}
-            r={RADIUS + STROKE / 2 + 2}
+            r={RADIUS + STROKE / 2 + 3}
             fill="none"
             stroke="#FFD23F"
-            strokeWidth={1.5}
-            opacity={0.6}
-            filter="url(#gold-glow)"
+            strokeWidth={2}
+            opacity={0.7}
           />
         )}
 
@@ -146,10 +146,12 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
         <span className="text-[3.5rem] font-black text-white tracking-tight leading-none">
           {animatedPercent.toFixed(1)}%
         </span>
-        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 mt-2">
+        {/* Gold accent line */}
+        <div className="w-10 h-[2px] bg-[#FFD23F] opacity-50 mt-2.5 mb-2 rounded-full" />
+        <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50">
           Road to 100%
         </span>
-        <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/30 mt-1">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35 mt-1">
           {displayCount} / {totalStickers} stickers
         </span>
       </div>

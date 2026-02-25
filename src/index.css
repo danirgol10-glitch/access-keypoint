@@ -8,13 +8,13 @@
 
 @layer base {
   :root {
-    --background: 224 80% 8%;
+    --background: 220 85% 15%;
     --foreground: 210 40% 98%;
 
-    --card: 224 55% 14%;
+    --card: 220 70% 18%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 224 55% 14%;
+    --popover: 220 70% 18%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 222 100% 56%;
@@ -22,11 +22,11 @@
     --primary-hover: 222 100% 48%;
     --primary-soft: 222 60% 22%;
 
-    --secondary: 224 60% 11%;
+    --secondary: 220 75% 20%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 224 60% 11%;
-    --muted-foreground: 220 10% 62%;
+    --muted: 220 70% 18%;
+    --muted-foreground: 220 15% 60%;
 
     --accent: 222 100% 56%;
     --accent-foreground: 0 0% 100%;
@@ -34,26 +34,26 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 224 45% 20%;
-    --input: 224 45% 20%;
+    --border: 220 50% 24%;
+    --input: 220 50% 24%;
     --ring: 222 100% 56%;
 
     --radius: 1rem;
 
-    --sidebar-background: 224 75% 9%;
+    --sidebar-background: 220 85% 12%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 222 100% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 224 55% 14%;
+    --sidebar-accent: 220 70% 18%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 224 45% 18%;
+    --sidebar-border: 220 50% 22%;
     --sidebar-ring: 222 100% 56%;
 
     /* Custom tokens */
     --tab-active: 222 100% 56%;
     --tab-inactive: 220 10% 62%;
-    --auth-gradient-start: 224 80% 8%;
-    --auth-gradient-end: 222 70% 18%;
+    --auth-gradient-start: 220 85% 15%;
+    --auth-gradient-end: 222 70% 22%;
 
     /* Status tokens */
     --pending: 45 93% 58%;
@@ -61,24 +61,24 @@
     --error: 0 84% 60%;
 
     /* Header gradient */
-    --header-gradient-start: 224 80% 14%;
-    --header-gradient-end: 222 75% 24%;
+    --header-gradient-start: 220 80% 16%;
+    --header-gradient-end: 222 75% 26%;
 
     /* Hero card - Road to Glory */
-    --hero-bg: 220 82% 25%;
-    --hero-bg-end: 212 72% 38%;
-    --hero-glow: 45 90% 62%;
-    --hero-accent: 45 90% 62%;
+    --hero-bg: 222 82% 24%;
+    --hero-bg-end: 212 68% 35%;
+    --hero-glow: 45 95% 60%;
+    --hero-accent: 45 95% 60%;
   }
 
   .dark {
-    --background: 224 80% 6%;
+    --background: 220 85% 15%;
     --foreground: 210 40% 98%;
 
-    --card: 224 55% 12%;
+    --card: 220 70% 18%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 224 55% 12%;
+    --popover: 220 70% 18%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 222 100% 56%;
@@ -86,11 +86,11 @@
     --primary-hover: 222 100% 48%;
     --primary-soft: 222 60% 20%;
 
-    --secondary: 224 60% 9%;
+    --secondary: 220 75% 20%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 224 60% 9%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 220 70% 18%;
+    --muted-foreground: 220 15% 55%;
 
     --accent: 222 100% 56%;
     --accent-foreground: 0 0% 100%;
@@ -98,35 +98,35 @@
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 224 45% 16%;
-    --input: 224 45% 16%;
+    --border: 220 50% 22%;
+    --input: 220 50% 22%;
     --ring: 222 100% 56%;
 
-    --sidebar-background: 224 80% 6%;
+    --sidebar-background: 220 85% 12%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 222 100% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 224 55% 11%;
+    --sidebar-accent: 220 70% 16%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 224 45% 14%;
+    --sidebar-border: 220 50% 20%;
     --sidebar-ring: 222 100% 56%;
 
     --tab-active: 222 100% 56%;
     --tab-inactive: 220 10% 50%;
-    --auth-gradient-start: 224 80% 6%;
-    --auth-gradient-end: 222 70% 14%;
+    --auth-gradient-start: 220 85% 15%;
+    --auth-gradient-end: 222 70% 20%;
 
     --pending: 45 93% 58%;
     --success: 142 72% 46%;
     --error: 0 84% 60%;
 
-    --header-gradient-start: 224 80% 10%;
-    --header-gradient-end: 222 75% 20%;
+    --header-gradient-start: 220 80% 14%;
+    --header-gradient-end: 222 75% 24%;
 
-    --hero-bg: 220 82% 20%;
-    --hero-bg-end: 212 72% 32%;
-    --hero-glow: 45 90% 55%;
-    --hero-accent: 45 90% 55%;
+    --hero-bg: 222 82% 20%;
+    --hero-bg-end: 212 68% 30%;
+    --hero-glow: 45 95% 55%;
+    --hero-accent: 45 95% 55%;
   }
 }
 
@@ -160,26 +160,12 @@
 
   .hero-gradient {
     background: linear-gradient(
-      145deg,
+      180deg,
       hsl(var(--hero-bg)) 0%,
-      hsl(var(--hero-bg-end)) 60%,
-      hsl(var(--hero-bg)) 100%
+      hsl(var(--hero-bg-end)) 100%
     );
     position: relative;
     overflow: hidden;
-  }
-
-  .hero-gradient::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background: radial-gradient(circle, hsl(var(--hero-glow) / 0.15) 0%, transparent 65%);
-    pointer-events: none;
   }
 
   .hero-gradient::after {
@@ -189,7 +175,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, transparent 10%, hsl(var(--hero-accent) / 0.6) 50%, transparent 90%);
+    background: hsl(var(--hero-accent) / 0.7);
     pointer-events: none;
   }
 
