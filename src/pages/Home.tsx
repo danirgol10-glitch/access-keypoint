@@ -1,71 +1,22 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAlbumStats } from '@/hooks/useAlbumStats';
-import { useCityMatches, sortMatches, type SortMode } from '@/hooks/useCityMatches';
-import { useFriendMatches } from '@/hooks/useFriendMatches';
-import { useUniversityMatches } from '@/hooks/useUniversityMatches';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { FriendMatchCard } from '@/components/FriendMatchCard';
 import { ProgressRing } from '@/components/ProgressRing';
 import { CompletionCelebration } from '@/components/CompletionCelebration';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Check, Copy, Search, MapPin, GraduationCap, User } from 'lucide-react';
+import { Check, Copy, Search, User } from 'lucide-react';
 
 const Home = () => {
   const navigate = useNavigate();
   const { profile, isLoading: profileLoading } = useUserProfile();
   const { stats, isLoading: statsLoading } = useAlbumStats();
-  const { usersWithMatches, isLoading: matchesLoading, city, hasCityUsers } = useCityMatches();
-  const { friendsWithMatches, isLoading: friendsMatchesLoading, hasFriends } = useFriendMatches();
-  const { usersWithMatches: uniUsersWithMatches, isLoading: uniMatchesLoading, universityId } = useUniversityMatches();
   const { t } = useLanguage();
-  const [citySheetOpen, setCitySheetOpen] = useState(false);
-  const [friendsSheetOpen, setFriendsSheetOpen] = useState(false);
-  const [uniSheetOpen, setUniSheetOpen] = useState(false);
-  const [citySortMode, setCitySortMode] = useState<SortMode>('default');
-  const [friendsSortMode, setFriendsSortMode] = useState<SortMode>('default');
-  const [uniSortMode, setUniSortMode] = useState<SortMode>('default');
-
-  const sortedCityMatches = useMemo(
-    () => sortMatches(usersWithMatches, citySortMode),
-    [usersWithMatches, citySortMode]
-  );
-
-  const sortedFriendMatches = useMemo(
-    () => sortMatches(friendsWithMatches, friendsSortMode),
-    [friendsWithMatches, friendsSortMode]
-  );
-
-  const sortedUniMatches = useMemo(
-    () => sortMatches(uniUsersWithMatches.map(m => ({ ...m, sameUniversity: true as const })), uniSortMode),
-    [uniUsersWithMatches, uniSortMode]
-  );
-
-  const handleViewCityUser = (userId: string) => {
-    setCitySheetOpen(false);
-    navigate(`/friend/${userId}`);
-  };
-
-  const handleViewFriend = (friendId: string) => {
-    setFriendsSheetOpen(false);
-    navigate(`/friend/${friendId}`);
-  };
-
-  const handleViewUniUser = (userId: string) => {
-    setUniSheetOpen(false);
-    navigate(`/friend/${userId}`);
-  };
 
   const [celebrating, setCelebrating] = useState(false);
-
-  const cityBadgeCount = usersWithMatches.length;
-  const friendsBadgeCount = friendsWithMatches.length;
-  const uniBadgeCount = uniUsersWithMatches.length;
 
   const handleCompletion = useCallback(() => {
     const key = `album_completed_${profile?.username || 'user'}`;
@@ -77,18 +28,6 @@ const Home = () => {
   const handleCelebrationFinished = useCallback(() => {
     setCelebrating(false);
   }, []);
-
-  const SortDropdown = ({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) => (
-    <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
-      <SelectTrigger className="w-auto h-7 text-xs px-2.5 gap-1 border-none bg-muted/50">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="default">{t('home.sortDefault')}</SelectItem>
-        <SelectItem value="most_active">{t('home.sortMostActive')}</SelectItem>
-      </SelectContent>
-    </Select>
-  );
 
   return (
     <div className="flex flex-col p-4 space-y-4 relative">
@@ -105,213 +44,8 @@ const Home = () => {
 
         <h1 className="text-sm font-bold tracking-[0.12em] uppercase text-white">{t('home.progress')}</h1>
 
-        <div className="flex items-center gap-2">
-        {/* Friends Helpers Button */}
-        <Sheet open={friendsSheetOpen} onOpenChange={setFriendsSheetOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]">
-              <Users className="h-5 w-5 stroke-[2.2]" />
-              {friendsBadgeCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
-                  {friendsBadgeCount > 99 ? '99+' : friendsBadgeCount}
-                </span>
-              )}
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:max-w-md">
-            <SheetHeader>
-              <SheetTitle>{t('home.friendsWhoCanHelp')}</SheetTitle>
-            </SheetHeader>
-            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
-              {friendsMatchesLoading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <Card key={i} className="w-full">
-                      <CardContent className="flex items-center gap-3 py-4 px-4">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="flex-1 space-y-2">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-3 w-32" />
-                        </div>
-                        <Skeleton className="h-8 w-16" />
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : !hasFriends ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-4">{t('home.addFriendsToDiscover')}</p>
-                  <Button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }}>{t('home.addFriends')}</Button>
-                </div>
-              ) : friendsBadgeCount === 0 ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">{t('home.noFriendDuplicates')}</p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span>{t('home.sortBy')}</span>
-                    <SortDropdown value={friendsSortMode} onChange={setFriendsSortMode} />
-                  </div>
-                  {sortedFriendMatches.map((match) => (
-                    <FriendMatchCard
-                      key={match.friendId}
-                      username={match.username}
-                      matchCount={match.matchCount}
-                      duplicateTotal={match.duplicateTotal}
-                      lastActiveAt={match.lastActiveAt}
-                      onView={() => handleViewFriend(match.friendId)}
-                    />
-                  ))}
-                </>
-              )}
-            </div>
-          </SheetContent>
-        </Sheet>
-
-        {/* City Helpers Button */}
-        <Sheet open={citySheetOpen} onOpenChange={setCitySheetOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]">
-              <MapPin className="h-5 w-5 stroke-[2.2]" />
-              {cityBadgeCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
-                  {cityBadgeCount > 99 ? '99+' : cityBadgeCount}
-                </span>
-              )}
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:max-w-md">
-            <SheetHeader>
-              <SheetTitle>{city ? t('home.peopleInCityWhoCanHelp', { city }) : t('home.localMatches')}</SheetTitle>
-            </SheetHeader>
-            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
-              {matchesLoading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <Card key={i} className="w-full">
-                      <CardContent className="flex items-center gap-3 py-4 px-4">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="flex-1 space-y-2">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-3 w-32" />
-                        </div>
-                        <Skeleton className="h-8 w-16" />
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : !city ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <MapPin className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-4">{t('home.setCityToFind')}</p>
-                  <Button onClick={() => { setCitySheetOpen(false); navigate('/profile'); }}>{t('home.setCity')}</Button>
-                </div>
-              ) : !hasCityUsers ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <MapPin className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">{t('home.noCollectorsInCity', { city })}</p>
-                </div>
-              ) : usersWithMatches.length === 0 ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-2">{t('home.noMatchesInCity', { city })}</p>
-                  <p className="text-sm text-muted-foreground">{t('home.noMatchesInCityDetail')}</p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span>{t('home.sortBy')}</span>
-                    <SortDropdown value={citySortMode} onChange={setCitySortMode} />
-                  </div>
-                  {sortedCityMatches.map((match) => (
-                    <FriendMatchCard
-                      key={match.userId}
-                      username={match.username}
-                      matchCount={match.matchCount}
-                      duplicateTotal={match.duplicateTotal}
-                      lastActiveAt={match.lastActiveAt}
-                      onView={() => handleViewCityUser(match.userId)}
-                    />
-                  ))}
-                </>
-              )}
-            </div>
-          </SheetContent>
-        </Sheet>
-        {/* University Helpers Button */}
-        <Sheet open={uniSheetOpen} onOpenChange={setUniSheetOpen}>
-          <SheetTrigger asChild>
-            {universityId ? (
-              <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]">
-                <GraduationCap className="h-5 w-5 stroke-[2.2]" />
-                {uniBadgeCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
-                    {uniBadgeCount > 99 ? '99+' : uniBadgeCount}
-                  </span>
-                )}
-              </Button>
-            ) : (
-              <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 opacity-50 border border-white/20 bg-transparent text-[#CFE3FF]">
-                <GraduationCap className="h-5 w-5 stroke-[2.2]" />
-              </Button>
-            )}
-          </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:max-w-md">
-            <SheetHeader>
-              <SheetTitle>{t('home.uniWhoCanHelp')}</SheetTitle>
-            </SheetHeader>
-            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
-              {!universityId ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <GraduationCap className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-4">{t('home.setUniToFind')}</p>
-                  <Button onClick={() => { setUniSheetOpen(false); navigate('/profile'); }}>{t('home.setUniversity')}</Button>
-                </div>
-              ) : uniMatchesLoading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <Card key={i} className="w-full">
-                      <CardContent className="flex items-center gap-3 py-4 px-4">
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                        <div className="flex-1 space-y-2">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-3 w-32" />
-                        </div>
-                        <Skeleton className="h-8 w-16" />
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : uniBadgeCount === 0 ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <GraduationCap className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">{t('home.noUniMatches')}</p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span>{t('home.sortBy')}</span>
-                    <SortDropdown value={uniSortMode} onChange={setUniSortMode} />
-                  </div>
-                  {sortedUniMatches.map((match) => (
-                    <FriendMatchCard
-                      key={match.userId}
-                      username={match.username}
-                      matchCount={match.matchCount}
-                      duplicateTotal={match.duplicateTotal}
-                      lastActiveAt={match.lastActiveAt}
-                      onView={() => handleViewUniUser(match.userId)}
-                    />
-                  ))}
-                </>
-              )}
-            </div>
-          </SheetContent>
-        </Sheet>
-        </div>
+        {/* Spacer to balance layout */}
+        <div className="h-12 w-12" />
       </div>
 
       {/* Hero Card with Pie Chart */}
