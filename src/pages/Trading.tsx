@@ -1,23 +1,18 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
-import { useConversations } from '@/hooks/useConversations';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { useFriendAlbumStats } from '@/hooks/useFriendAlbumStats';
+import { useCityMatches, sortMatches, type SortMode } from '@/hooks/useCityMatches';
+import { useFriendMatches } from '@/hooks/useFriendMatches';
+import { useUniversityMatches } from '@/hooks/useUniversityMatches';
 import { useLanguage } from '@/contexts/LanguageContext';
-import {
-  useIncomingRequests,
-  useOutgoingRequests,
-  useSendFriendRequest,
-  useRespondToRequest,
-} from '@/hooks/useFriendships';
-import { TradeRequestCard } from '@/components/TradeRequestCard';
+import { FriendMatchCard } from '@/components/FriendMatchCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,16 +26,11 @@ import {
 import {
   MessageCircle,
   Users,
-  UserPlus,
-  User,
-  Check,
-  X,
-  Clock,
+  MapPin,
+  GraduationCap,
   ChevronRight,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
-import { toast as uiToast } from '@/hooks/use-toast';
 
 const Trading = () => {
   const navigate = useNavigate();
@@ -48,16 +38,25 @@ const Trading = () => {
   const { t } = useLanguage();
 
   const { sentRequests, receivedRequests, isLoading: tradeLoading, updateStatus, isUpdating } = useTradeRequests();
-  const { data: conversations = [], isLoading: chatsLoading } = useConversations();
 
-  const { incomingRequests, isLoading: incomingLoading } = useIncomingRequests();
-  const { outgoingRequests, isLoading: outgoingLoading } = useOutgoingRequests();
-  const { friendStats, isLoading: statsLoading } = useFriendAlbumStats();
-  const sendFriendRequest = useSendFriendRequest();
-  const respondToFriendRequest = useRespondToRequest();
+  // Discovery data
+  const { usersWithMatches, isLoading: matchesLoading, city, hasCityUsers } = useCityMatches();
+  const { friendsWithMatches, isLoading: friendsMatchesLoading, hasFriends } = useFriendMatches();
+  const { usersWithMatches: uniUsersWithMatches, isLoading: uniMatchesLoading, universityId } = useUniversityMatches();
 
-  const [usernameInput, setUsernameInput] = useState('');
-  const [inputError, setInputError] = useState<string | null>(null);
+  const [citySheetOpen, setCitySheetOpen] = useState(false);
+  const [friendsSheetOpen, setFriendsSheetOpen] = useState(false);
+  const [uniSheetOpen, setUniSheetOpen] = useState(false);
+  const [citySortMode, setCitySortMode] = useState<SortMode>('default');
+  const [friendsSortMode, setFriendsSortMode] = useState<SortMode>('default');
+  const [uniSortMode, setUniSortMode] = useState<SortMode>('default');
+
+  const sortedCityMatches = useMemo(() => sortMatches(usersWithMatches, citySortMode), [usersWithMatches, citySortMode]);
+  const sortedFriendMatches = useMemo(() => sortMatches(friendsWithMatches, friendsSortMode), [friendsWithMatches, friendsSortMode]);
+  const sortedUniMatches = useMemo(
+    () => sortMatches(uniUsersWithMatches.map(m => ({ ...m, sameUniversity: true as const })), uniSortMode),
+    [uniUsersWithMatches, uniSortMode]
+  );
 
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
@@ -67,49 +66,10 @@ const Trading = () => {
     otherUsername?: string;
   } | null>(null);
 
-  const pendingReceived = receivedRequests.filter((r) => r.status === 'SENT');
-  const pendingSent = sentRequests.filter((r) => r.status === 'SENT');
-  const hasPendingRequests = pendingReceived.length > 0 || pendingSent.length > 0;
-
   const activeTrades = [
     ...sentRequests.filter((r) => r.status === 'ACCEPTED'),
     ...receivedRequests.filter((r) => r.status === 'ACCEPTED'),
   ];
-
-  const handleAccept = async (requestId: string, request: typeof receivedRequests[0]) => {
-    try {
-      await updateStatus({
-        requestId,
-        newStatus: 'ACCEPTED',
-        otherUserId: request.from_user_id,
-        otherUsername: request.other_user?.username ?? undefined,
-        myUsername: myProfile?.username ?? undefined,
-      });
-      toast.success(t('trade.statusAccepted'));
-    } catch {
-      toast.error(t('trading.error'));
-    }
-  };
-
-  const handleReject = (requestId: string, request: typeof receivedRequests[0]) => {
-    setConfirmDialog({
-      open: true,
-      type: 'reject',
-      requestId,
-      otherUserId: request.from_user_id,
-      otherUsername: request.other_user?.username ?? undefined,
-    });
-  };
-
-  const handleCancel = (requestId: string, request: typeof sentRequests[0]) => {
-    setConfirmDialog({
-      open: true,
-      type: 'cancel',
-      requestId,
-      otherUserId: request.to_user_id,
-      otherUsername: request.other_user?.username ?? undefined,
-    });
-  };
 
   const confirmAction = async () => {
     if (!confirmDialog) return;
@@ -130,273 +90,246 @@ const Trading = () => {
     }
   };
 
-  const handleSendFriendRequest = async () => {
-    if (!usernameInput.trim()) {
-      setInputError(t('trading.enterUsername'));
-      return;
-    }
-    setInputError(null);
-    const result = await sendFriendRequest.mutateAsync(usernameInput.trim());
-    if (result.success) {
-      uiToast({ title: t('trading.requestSent'), description: t('trading.requestSentTo', { username: usernameInput }) });
-      setUsernameInput('');
-    } else {
-      setInputError(result.error ?? t('trading.error'));
-    }
+  const cityBadgeCount = usersWithMatches.length;
+  const friendsBadgeCount = friendsWithMatches.length;
+  const uniBadgeCount = uniUsersWithMatches.length;
+
+  const handleViewCityUser = (userId: string) => {
+    setCitySheetOpen(false);
+    navigate(`/friend/${userId}`);
+  };
+  const handleViewFriend = (friendId: string) => {
+    setFriendsSheetOpen(false);
+    navigate(`/friend/${friendId}`);
+  };
+  const handleViewUniUser = (userId: string) => {
+    setUniSheetOpen(false);
+    navigate(`/friend/${userId}`);
   };
 
-  const handleRespondFriend = async (friendshipId: string, accept: boolean) => {
-    try {
-      await respondToFriendRequest.mutateAsync({ friendshipId, accept });
-      uiToast({
-        title: accept ? t('trading.friendAdded') : t('trading.requestRejected'),
-        description: accept ? t('trading.youAreNowFriends') : t('trading.theRequestRejected'),
-      });
-    } catch {
-      uiToast({ title: t('trading.error'), description: t('trading.failedToRespond'), variant: 'destructive' });
-    }
-  };
+  const SortDropdown = ({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) => (
+    <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
+      <SelectTrigger className="w-auto h-7 text-xs px-2.5 gap-1 border-none bg-muted/50">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="default">{t('home.sortDefault')}</SelectItem>
+        <SelectItem value="most_active">{t('home.sortMostActive')}</SelectItem>
+      </SelectContent>
+    </Select>
+  );
 
-  const isLoading = tradeLoading || chatsLoading || incomingLoading || outgoingLoading || statsLoading;
+  const isLoading = tradeLoading;
 
   return (
-    <div className="flex flex-col p-4 space-y-4 pb-24">
-      <h1 className="text-2xl font-semibold text-foreground">{t('trading.title')}</h1>
-
-      {isLoading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-lg" />
-          ))}
-        </div>
-      ) : (
-        <>
-          {/* Pending Trade Requests */}
-          {hasPendingRequests && (
-            <section className="space-y-3">
-              <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                {t('trading.pendingRequests')}
-              </h2>
-
-              {pendingReceived.length > 0 && (
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">{t('trading.incoming')}</h3>
-                  {pendingReceived.map((request) => (
-                    <TradeRequestCard
-                      key={request.id}
-                      request={request}
-                      type="received"
-                      onClick={() => navigate(`/request/${request.id}`)}
-                      onAccept={() => handleAccept(request.id, request)}
-                      onReject={() => handleReject(request.id, request)}
-                      isUpdating={isUpdating}
-                    />
-                  ))}
-                </div>
+    <div className="flex flex-col p-4 space-y-6 pb-24">
+      {/* Discovery Icons - centered */}
+      <div className="flex items-center justify-center gap-4 pt-2">
+        {/* Friends */}
+        <Sheet open={friendsSheetOpen} onOpenChange={setFriendsSheetOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full h-14 w-14 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]">
+              <Users className="h-6 w-6 stroke-[2.2]" />
+              {friendsBadgeCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+                  {friendsBadgeCount > 99 ? '99+' : friendsBadgeCount}
+                </span>
               )}
-
-              {pendingSent.length > 0 && (
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">{t('trading.outgoing')}</h3>
-                  {pendingSent.map((request) => (
-                    <TradeRequestCard
-                      key={request.id}
-                      request={request}
-                      type="sent"
-                      onClick={() => navigate(`/request/${request.id}`)}
-                      onCancel={() => handleCancel(request.id, request)}
-                      isUpdating={isUpdating}
-                    />
-                  ))}
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-full sm:max-w-md">
+            <SheetHeader>
+              <SheetTitle>{t('home.friendsWhoCanHelp')}</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
+              {friendsMatchesLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-lg" />)}
                 </div>
+              ) : !hasFriends ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground mb-4">{t('home.addFriendsToDiscover')}</p>
+                  <Button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }}>{t('home.addFriends')}</Button>
+                </div>
+              ) : friendsBadgeCount === 0 ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">{t('home.noFriendDuplicates')}</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span>{t('home.sortBy')}</span>
+                    <SortDropdown value={friendsSortMode} onChange={setFriendsSortMode} />
+                  </div>
+                  {sortedFriendMatches.map((match) => (
+                    <FriendMatchCard key={match.friendId} username={match.username} matchCount={match.matchCount} duplicateTotal={match.duplicateTotal} lastActiveAt={match.lastActiveAt} onView={() => handleViewFriend(match.friendId)} />
+                  ))}
+                </>
               )}
-            </section>
-          )}
-
-          {/* Active Trades */}
-          {activeTrades.length > 0 && (
-            <section className="space-y-3">
-              <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
-                <Check className="h-5 w-5" />
-                {t('trading.activeTrades')}
-              </h2>
-              <div className="space-y-2">
-                {activeTrades.map((trade) => (
-                  <Card
-                    key={trade.id}
-                    className="cursor-pointer hover:bg-accent/50 transition-colors"
-                    onClick={() => navigate(`/request/${trade.id}`)}
-                  >
-                    <CardContent className="flex items-center justify-between p-4">
-                      <div>
-                        <span className="font-medium text-foreground">
-                          @{trade.other_user?.username ?? t('common.unknown')}
-                        </span>
-                        <p className="text-sm text-muted-foreground">{t('trading.chatAvailable')}</p>
-                      </div>
-                      <Badge variant="secondary" className="gap-1">
-                        <MessageCircle className="h-3 w-3" />
-                        {t('trading.open')}
-                      </Badge>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Chats */}
-          <section className="space-y-3">
-            <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
-              <MessageCircle className="h-5 w-5" />
-              {t('trading.chats')}
-            </h2>
-            {conversations.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-2">
-                {t('trading.noChats')}
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {conversations.map((convo) => (
-                  <Card
-                    key={convo.id}
-                    className="cursor-pointer hover:bg-accent/50 transition-colors"
-                    onClick={() => navigate(`/chat/${convo.id}`)}
-                  >
-                    <CardContent className="flex items-center gap-3 p-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-foreground truncate">
-                            @{convo.other_username ?? t('common.unknown')}
-                          </span>
-                          {convo.unread_count > 0 && (
-                            <span className="bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
-                              {convo.unread_count}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground truncate mt-1">
-                          {convo.last_message_text ?? t('trading.noMessages')}
-                        </p>
-                      </div>
-                      {convo.last_message_at && (
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          {formatDistanceToNow(new Date(convo.last_message_at), { addSuffix: true })}
-                        </span>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* Friends */}
-          <section className="space-y-3">
-            <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              {t('trading.friends')}
-            </h2>
-
-            <div className="flex gap-2">
-              <Input
-                placeholder={t('trading.addFriendPlaceholder')}
-                value={usernameInput}
-                onChange={(e) => {
-                  setUsernameInput(e.target.value);
-                  setInputError(null);
-                }}
-                onKeyDown={(e) => e.key === 'Enter' && handleSendFriendRequest()}
-                className="flex-1"
-              />
-              <Button
-                onClick={handleSendFriendRequest}
-                disabled={sendFriendRequest.isPending}
-                size="sm"
-              >
-                <UserPlus className="h-4 w-4" />
-              </Button>
             </div>
-            {inputError && (
-              <p className="text-sm text-destructive">{inputError}</p>
-            )}
+          </SheetContent>
+        </Sheet>
 
-            {(incomingRequests.length > 0 || outgoingRequests.length > 0) && (
-              <div className="space-y-2">
-                {incomingRequests.length > 0 && (
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-muted-foreground">{t('trading.incomingFriendRequests')}</h3>
-                    {incomingRequests.map((req) => (
-                      <div key={req.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">@{req.requester?.username ?? t('common.unknown')}</span>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-primary hover:text-primary hover:bg-primary/10" onClick={() => handleRespondFriend(req.id, true)} disabled={respondToFriendRequest.isPending}>
-                            <Check className="w-4 h-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleRespondFriend(req.id, false)} disabled={respondToFriendRequest.isPending}>
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+        {/* City */}
+        <Sheet open={citySheetOpen} onOpenChange={setCitySheetOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full h-14 w-14 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]">
+              <MapPin className="h-6 w-6 stroke-[2.2]" />
+              {cityBadgeCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+                  {cityBadgeCount > 99 ? '99+' : cityBadgeCount}
+                </span>
+              )}
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-full sm:max-w-md">
+            <SheetHeader>
+              <SheetTitle>{city ? t('home.peopleInCityWhoCanHelp', { city }) : t('home.localMatches')}</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
+              {matchesLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-lg" />)}
+                </div>
+              ) : !city ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <MapPin className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground mb-4">{t('home.setCityToFind')}</p>
+                  <Button onClick={() => { setCitySheetOpen(false); navigate('/profile'); }}>{t('home.setCity')}</Button>
+                </div>
+              ) : !hasCityUsers ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <MapPin className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">{t('home.noCollectorsInCity', { city })}</p>
+                </div>
+              ) : usersWithMatches.length === 0 ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground mb-2">{t('home.noMatchesInCity', { city })}</p>
+                  <p className="text-sm text-muted-foreground">{t('home.noMatchesInCityDetail')}</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span>{t('home.sortBy')}</span>
+                    <SortDropdown value={citySortMode} onChange={setCitySortMode} />
                   </div>
-                )}
-                {outgoingRequests.length > 0 && (
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-muted-foreground">{t('trading.outgoingFriendRequests')}</h3>
-                    {outgoingRequests.map((req) => (
-                      <div key={req.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">@{req.addressee?.username ?? t('common.unknown')}</span>
-                        </div>
-                        <Badge variant="secondary" className="gap-1">
-                          <Clock className="w-3 h-3" />
-                          {t('trading.pending')}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                  {sortedCityMatches.map((match) => (
+                    <FriendMatchCard key={match.userId} username={match.username} matchCount={match.matchCount} duplicateTotal={match.duplicateTotal} lastActiveAt={match.lastActiveAt} onView={() => handleViewCityUser(match.userId)} />
+                  ))}
+                </>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
 
-            {friendStats.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-2">
-                {t('trading.noFriends')}
-              </p>
+        {/* University */}
+        <Sheet open={uniSheetOpen} onOpenChange={setUniSheetOpen}>
+          <SheetTrigger asChild>
+            {universityId ? (
+              <Button variant="ghost" size="icon" className="rounded-full h-14 w-14 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]">
+                <GraduationCap className="h-6 w-6 stroke-[2.2]" />
+                {uniBadgeCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+                    {uniBadgeCount > 99 ? '99+' : uniBadgeCount}
+                  </span>
+                )}
+              </Button>
             ) : (
-              <div className="space-y-2">
-                {friendStats.map((friend) => (
-                  <button
-                    key={friend.friendId}
-                    onClick={() => navigate(`/friend-profile/${friend.friendId}`)}
-                    className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-left"
-                  >
-                    <div className="flex-1 min-w-0 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                        <span className="font-medium truncate">@{friend.username}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Progress value={friend.progressPercent} className="h-2 flex-1" />
-                        <span className="text-xs text-muted-foreground w-12 text-right">
-                          {friend.progressPercent.toFixed(0)}%
-                        </span>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" />
-                  </button>
-                ))}
-              </div>
+              <Button variant="ghost" size="icon" className="rounded-full h-14 w-14 opacity-50 border border-white/20 bg-transparent text-[#CFE3FF]">
+                <GraduationCap className="h-6 w-6 stroke-[2.2]" />
+              </Button>
             )}
-          </section>
-        </>
-      )}
+          </SheetTrigger>
+          <SheetContent side="right" className="w-full sm:max-w-md">
+            <SheetHeader>
+              <SheetTitle>{t('home.uniWhoCanHelp')}</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
+              {!universityId ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <GraduationCap className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground mb-4">{t('home.setUniToFind')}</p>
+                  <Button onClick={() => { setUniSheetOpen(false); navigate('/profile'); }}>{t('home.setUniversity')}</Button>
+                </div>
+              ) : uniMatchesLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-lg" />)}
+                </div>
+              ) : uniBadgeCount === 0 ? (
+                <div className="flex flex-col items-center py-8 text-center">
+                  <GraduationCap className="h-12 w-12 text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">{t('home.noUniMatches')}</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span>{t('home.sortBy')}</span>
+                    <SortDropdown value={uniSortMode} onChange={setUniSortMode} />
+                  </div>
+                  {sortedUniMatches.map((match) => (
+                    <FriendMatchCard key={match.userId} username={match.username} matchCount={match.matchCount} duplicateTotal={match.duplicateTotal} lastActiveAt={match.lastActiveAt} onView={() => handleViewUniUser(match.userId)} />
+                  ))}
+                </>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Labels under icons */}
+      <div className="flex items-center justify-center gap-4 -mt-4">
+        <span className="w-14 text-center text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground">{t('trading.friends')}</span>
+        <span className="w-14 text-center text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground">{t('trading.cityLabel')}</span>
+        <span className="w-14 text-center text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground">{t('trading.uniLabel')}</span>
+      </div>
+
+      {/* Active Trades Section */}
+      <section className="space-y-3">
+        <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-muted-foreground">
+          {t('trading.activeTrades')}
+        </h2>
+
+        {isLoading ? (
+          <div className="space-y-2">
+            {[1, 2].map((i) => <Skeleton key={i} className="h-16 w-full rounded-lg" />)}
+          </div>
+        ) : activeTrades.length === 0 ? (
+          <div className="flex flex-col items-center py-12 text-center">
+            <p className="text-sm text-muted-foreground">
+              {t('trading.noActiveTrades')}
+            </p>
+            <p className="text-xs text-muted-foreground/60 mt-2">
+              {t('trading.findCollectors')}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {activeTrades.map((trade) => (
+              <Card
+                key={trade.id}
+                className="cursor-pointer hover:bg-accent/50 border-white/10"
+                onClick={() => navigate(`/request/${trade.id}`)}
+              >
+                <CardContent className="flex items-center justify-between p-4">
+                  <div>
+                    <span className="font-medium text-foreground">
+                      @{trade.other_user?.username ?? t('common.unknown')}
+                    </span>
+                    <p className="text-xs text-muted-foreground mt-0.5">{t('trading.chatAvailable')}</p>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-xs border border-white/20 hover:bg-white/[0.08]">
+                    {t('trading.open')}
+                    <ChevronRight className="h-3 w-3 ml-1" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* Confirmation Dialog */}
       <AlertDialog
@@ -409,9 +342,7 @@ const Trading = () => {
               {confirmDialog?.type === 'reject' ? t('trading.rejectRequest') : t('trading.cancelRequest')}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {confirmDialog?.type === 'reject'
-                ? t('trading.confirmReject')
-                : t('trading.confirmCancel')}
+              {confirmDialog?.type === 'reject' ? t('trading.confirmReject') : t('trading.confirmCancel')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
