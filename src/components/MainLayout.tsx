@@ -5,11 +5,12 @@ import { cn } from '@/lib/utils';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useConversations } from '@/hooks/useConversations';
 import { useLastActive } from '@/hooks/useLastActive';
+import { useLanguage } from '@/contexts/LanguageContext';
 
-const tabs = [
-  { path: '/', label: 'Progress', icon: Home },
-  { path: '/album', label: 'Album', icon: Image },
-  { path: '/trading', label: 'Trading', icon: Handshake },
+const tabConfig = [
+  { path: '/', labelKey: 'nav.progress', icon: Home },
+  { path: '/album', labelKey: 'nav.album', icon: Image },
+  { path: '/trading', labelKey: 'nav.trading', icon: Handshake },
 ];
 
 const MainLayout = () => {
@@ -19,8 +20,8 @@ const MainLayout = () => {
   const chatUnreadCount = conversations.reduce((sum, c) => sum + c.unread_count, 0);
   const tradingBadge = unreadCount + chatUnreadCount;
   const { touch } = useLastActive();
+  const { t } = useLanguage();
 
-  // Update last_active on tab switch
   useEffect(() => {
     touch();
   }, [location.pathname, touch]);
@@ -33,7 +34,7 @@ const MainLayout = () => {
 
       <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg">
         <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
-          {tabs.map((tab) => {
+          {tabConfig.map((tab) => {
             const isActive = location.pathname === tab.path;
             const Icon = tab.icon;
             const showBadge = tab.path === '/trading' && tradingBadge > 0;
@@ -67,7 +68,7 @@ const MainLayout = () => {
                     isActive ? 'text-tab-active' : 'text-tab-inactive'
                   )}
                 >
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </span>
               </NavLink>
             );

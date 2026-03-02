@@ -7,6 +7,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface QuickDuplicateOnboardingProps {
   open: boolean;
@@ -15,21 +16,23 @@ interface QuickDuplicateOnboardingProps {
 }
 
 export function QuickDuplicateOnboarding({ open, onStart, onSkip }: QuickDuplicateOnboardingProps) {
+  const { t } = useLanguage();
+
   return (
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent className="sm:max-w-sm" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Start Trading Faster</DialogTitle>
+          <DialogTitle>{t('onboarding.title')}</DialogTitle>
           <DialogDescription>
-            Mark your duplicate stickers. Only duplicates appear in the marketplace.
+            {t('onboarding.description')}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex-col gap-2 sm:flex-col">
           <Button onClick={onStart} className="w-full">
-            Mark duplicates now
+            {t('onboarding.markNow')}
           </Button>
           <Button variant="ghost" onClick={onSkip} className="w-full">
-            Skip for now
+            {t('onboarding.skip')}
           </Button>
         </DialogFooter>
       </DialogContent>

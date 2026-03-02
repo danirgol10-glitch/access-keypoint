@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProgressRingProps {
   percent: number;
@@ -19,6 +20,7 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
   const [displayCount, setDisplayCount] = useState(0);
   const hasCompletedRef = useRef(false);
   const rafRef = useRef<number>();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const startTime = performance.now();
@@ -28,7 +30,6 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
     const animate = (now: number) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / ANIMATION_DURATION, 1);
-      // ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
 
       setAnimatedPercent(eased * targetPercent);
@@ -55,8 +56,7 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
   const offset = CIRCUMFERENCE - (animatedPercent / 100) * CIRCUMFERENCE;
   const isComplete = animatedPercent >= 100;
 
-  // Golden tick mark position at 100% (top of circle, which is the start)
-  const tickAngle = -90; // top
+  const tickAngle = -90;
   const tickRad = (tickAngle * Math.PI) / 180;
   const tickX = CENTER + (RADIUS) * Math.cos(tickRad);
   const tickY = CENTER + (RADIUS) * Math.sin(tickRad);
@@ -65,7 +65,6 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
     <div className="relative flex items-center justify-center">
       <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="drop-shadow-lg">
         <defs>
-          {/* Subtle glow for active segment */}
           <filter id="ring-glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="3" result="blur" />
             <feFlood floodColor="#4FA3FF" floodOpacity="0.25" />
@@ -77,7 +76,6 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
           </filter>
         </defs>
 
-        {/* Outer gold outline */}
         <circle
           cx={CENTER}
           cy={CENTER}
@@ -88,7 +86,6 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
           opacity={0.4}
         />
 
-        {/* Base ring - deep blue */}
         <circle
           cx={CENTER}
           cy={CENTER}
@@ -99,13 +96,12 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
           opacity={0.6}
         />
 
-        {/* Active ring - electric blue with glow */}
         <circle
           cx={CENTER}
           cy={CENTER}
           r={RADIUS}
           fill="none"
-          stroke={isComplete ? '#4FA3FF' : '#4FA3FF'}
+          stroke="#4FA3FF"
           strokeWidth={STROKE}
           strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}
@@ -116,7 +112,6 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
           style={{ transition: 'none' }}
         />
 
-        {/* Brighter gold outline for complete state */}
         {isComplete && (
           <circle
             cx={CENTER}
@@ -129,7 +124,6 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
           />
         )}
 
-        {/* Golden tick mark at 100% position */}
         {!isComplete && (
           <circle
             cx={tickX}
@@ -141,18 +135,16 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
         )}
       </svg>
 
-      {/* Center content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
         <span className="text-[3.5rem] font-black text-white tracking-tight leading-none">
           {animatedPercent.toFixed(1)}%
         </span>
-        {/* Gold accent line */}
         <div className="w-10 h-[2px] bg-[#FFD23F] opacity-50 mt-2.5 mb-2 rounded-full" />
         <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50">
-          Road to 100%
+          {t('home.roadTo100')}
         </span>
         <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35 mt-1">
-          {displayCount} / {totalStickers} stickers
+          {t('home.stickersCount', { count: displayCount, total: totalStickers })}
         </span>
       </div>
     </div>
