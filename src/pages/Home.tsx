@@ -5,6 +5,7 @@ import { useAlbumStats } from '@/hooks/useAlbumStats';
 import { useCityMatches, sortMatches, type SortMode } from '@/hooks/useCityMatches';
 import { useFriendMatches } from '@/hooks/useFriendMatches';
 import { useUniversityMatches } from '@/hooks/useUniversityMatches';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { FriendMatchCard } from '@/components/FriendMatchCard';
 import { ProgressRing } from '@/components/ProgressRing';
 import { CompletionCelebration } from '@/components/CompletionCelebration';
@@ -22,6 +23,7 @@ const Home = () => {
   const { usersWithMatches, isLoading: matchesLoading, city, hasCityUsers } = useCityMatches();
   const { friendsWithMatches, isLoading: friendsMatchesLoading, hasFriends } = useFriendMatches();
   const { usersWithMatches: uniUsersWithMatches, isLoading: uniMatchesLoading, universityId } = useUniversityMatches();
+  const { t } = useLanguage();
   const [citySheetOpen, setCitySheetOpen] = useState(false);
   const [friendsSheetOpen, setFriendsSheetOpen] = useState(false);
   const [uniSheetOpen, setUniSheetOpen] = useState(false);
@@ -82,8 +84,8 @@ const Home = () => {
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="default">Default</SelectItem>
-        <SelectItem value="most_active">Most active</SelectItem>
+        <SelectItem value="default">{t('home.sortDefault')}</SelectItem>
+        <SelectItem value="most_active">{t('home.sortMostActive')}</SelectItem>
       </SelectContent>
     </Select>
   );
@@ -92,7 +94,6 @@ const Home = () => {
     <div className="flex flex-col p-4 space-y-4 relative">
       {/* Header Row */}
       <div className="w-full flex items-center justify-between">
-        {/* Profile Button - Top Left */}
         <Button
           variant="ghost"
           size="icon"
@@ -102,10 +103,8 @@ const Home = () => {
           <User className="h-5 w-5 stroke-[2.2]" />
         </Button>
 
-        {/* Center Title */}
-        <h1 className="text-sm font-bold tracking-[0.12em] uppercase text-white">Progress</h1>
+        <h1 className="text-sm font-bold tracking-[0.12em] uppercase text-white">{t('home.progress')}</h1>
 
-        {/* Right Helper Buttons */}
         <div className="flex items-center gap-2">
         {/* Friends Helpers Button */}
         <Sheet open={friendsSheetOpen} onOpenChange={setFriendsSheetOpen}>
@@ -121,7 +120,7 @@ const Home = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-full sm:max-w-md">
             <SheetHeader>
-              <SheetTitle>Friends Who Can Help</SheetTitle>
+              <SheetTitle>{t('home.friendsWhoCanHelp')}</SheetTitle>
             </SheetHeader>
             <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
               {friendsMatchesLoading ? (
@@ -142,18 +141,18 @@ const Home = () => {
               ) : !hasFriends ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-4">Add friends to discover who can help!</p>
-                  <Button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }}>Add Friends</Button>
+                  <p className="text-muted-foreground mb-4">{t('home.addFriendsToDiscover')}</p>
+                  <Button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }}>{t('home.addFriends')}</Button>
                 </div>
               ) : friendsBadgeCount === 0 ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">No friend duplicates match your needs yet.</p>
+                  <p className="text-muted-foreground">{t('home.noFriendDuplicates')}</p>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span>Sort by:</span>
+                    <span>{t('home.sortBy')}</span>
                     <SortDropdown value={friendsSortMode} onChange={setFriendsSortMode} />
                   </div>
                   {sortedFriendMatches.map((match) => (
@@ -186,7 +185,7 @@ const Home = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-full sm:max-w-md">
             <SheetHeader>
-              <SheetTitle>{city ? `People in ${city} Who Can Help` : 'Local Matches'}</SheetTitle>
+              <SheetTitle>{city ? t('home.peopleInCityWhoCanHelp', { city }) : t('home.localMatches')}</SheetTitle>
             </SheetHeader>
             <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
               {matchesLoading ? (
@@ -207,24 +206,24 @@ const Home = () => {
               ) : !city ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <MapPin className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-4">Set your city in your profile to find local collectors!</p>
-                  <Button onClick={() => { setCitySheetOpen(false); navigate('/profile'); }}>Set City</Button>
+                  <p className="text-muted-foreground mb-4">{t('home.setCityToFind')}</p>
+                  <Button onClick={() => { setCitySheetOpen(false); navigate('/profile'); }}>{t('home.setCity')}</Button>
                 </div>
               ) : !hasCityUsers ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <MapPin className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">No other collectors in {city} yet. Spread the word!</p>
+                  <p className="text-muted-foreground">{t('home.noCollectorsInCity', { city })}</p>
                 </div>
               ) : usersWithMatches.length === 0 ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-2">No matches yet in {city}.</p>
-                  <p className="text-sm text-muted-foreground">Collectors in your city haven't marked duplicates that match what you need.</p>
+                  <p className="text-muted-foreground mb-2">{t('home.noMatchesInCity', { city })}</p>
+                  <p className="text-sm text-muted-foreground">{t('home.noMatchesInCityDetail')}</p>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span>Sort by:</span>
+                    <span>{t('home.sortBy')}</span>
                     <SortDropdown value={citySortMode} onChange={setCitySortMode} />
                   </div>
                   {sortedCityMatches.map((match) => (
@@ -262,14 +261,14 @@ const Home = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-full sm:max-w-md">
             <SheetHeader>
-              <SheetTitle>People at Your University Who Can Help</SheetTitle>
+              <SheetTitle>{t('home.uniWhoCanHelp')}</SheetTitle>
             </SheetHeader>
             <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
               {!universityId ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <GraduationCap className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-4">Set your university in your profile to find classmates!</p>
-                  <Button onClick={() => { setUniSheetOpen(false); navigate('/profile'); }}>Set University</Button>
+                  <p className="text-muted-foreground mb-4">{t('home.setUniToFind')}</p>
+                  <Button onClick={() => { setUniSheetOpen(false); navigate('/profile'); }}>{t('home.setUniversity')}</Button>
                 </div>
               ) : uniMatchesLoading ? (
                 <div className="space-y-3">
@@ -289,12 +288,12 @@ const Home = () => {
               ) : uniBadgeCount === 0 ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <GraduationCap className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">No university matches yet. Spread the word!</p>
+                  <p className="text-muted-foreground">{t('home.noUniMatches')}</p>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span>Sort by:</span>
+                    <span>{t('home.sortBy')}</span>
                     <SortDropdown value={uniSortMode} onChange={setUniSortMode} />
                   </div>
                   {sortedUniMatches.map((match) => (
@@ -327,7 +326,6 @@ const Home = () => {
           </Card>
         ) : stats ? (
           <Card className="w-full hero-gradient border-0 rounded-2xl">
-            {/* Depth layers */}
             <div className="hero-vignette" />
             <div className="hero-noise" />
             <CardContent className="pt-7 pb-6 relative z-10">
@@ -370,17 +368,17 @@ const Home = () => {
                 <div className="flex flex-col items-center gap-1 px-2">
                   <Check className="w-4 h-4 text-emerald-500" />
                   <span className="text-2xl font-black text-emerald-400">{stats.ownedCount}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Owned</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{t('home.owned')}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1 px-2">
                   <Search className="w-4 h-4 text-orange-400" />
                   <span className="text-2xl font-black text-foreground">{stats.missingCount}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Missing</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{t('home.missing')}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1 px-2">
                   <Copy className="w-4 h-4 text-primary" />
                   <span className="text-2xl font-black text-primary">{stats.duplicateCount}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Dupes</span>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{t('home.dupes')}</span>
                 </div>
               </div>
             </CardContent>

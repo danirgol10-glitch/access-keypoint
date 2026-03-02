@@ -2,6 +2,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { User } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FriendMatchCardProps {
   username: string | null;
@@ -12,8 +13,10 @@ interface FriendMatchCardProps {
 }
 
 export function FriendMatchCard({ username, matchCount, duplicateTotal, lastActiveAt, onView }: FriendMatchCardProps) {
+  const { t } = useLanguage();
+
   const activeLabel = lastActiveAt
-    ? `Active ${formatDistanceToNow(new Date(lastActiveAt), { addSuffix: true })}`
+    ? t('match.active', { time: formatDistanceToNow(new Date(lastActiveAt), { addSuffix: true }) })
     : null;
 
   return (
@@ -24,14 +27,14 @@ export function FriendMatchCard({ username, matchCount, duplicateTotal, lastActi
             <User className="h-5 w-5 text-muted-foreground" />
           </div>
           <div>
-            <p className="font-medium text-foreground">@{username ?? 'unknown'}</p>
+            <p className="font-medium text-foreground">@{username ?? t('common.unknown')}</p>
             <p className="text-sm text-muted-foreground">
               {matchCount > 0
-                ? `Has ${matchCount} sticker${matchCount !== 1 ? 's' : ''} you need`
-                : 'No matching stickers'
+                ? t('match.hasStickers', { count: matchCount, s: matchCount !== 1 ? 's' : '' })
+                : t('match.noMatching')
               }
               {duplicateTotal !== undefined && duplicateTotal > 0 && (
-                <span className="text-muted-foreground/60"> · {duplicateTotal} dupes</span>
+                <span className="text-muted-foreground/60"> · {t('match.dupes', { count: duplicateTotal })}</span>
               )}
             </p>
             {activeLabel && (
@@ -40,7 +43,7 @@ export function FriendMatchCard({ username, matchCount, duplicateTotal, lastActi
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={onView}>
-          View
+          {t('match.view')}
         </Button>
       </CardContent>
     </Card>

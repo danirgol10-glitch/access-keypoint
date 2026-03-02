@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronRight, Check, X } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { TradeRequest } from '@/hooks/useTradeRequests';
 
 interface TradeRequestCardProps {
@@ -15,14 +16,14 @@ interface TradeRequestCardProps {
   isUpdating?: boolean;
 }
 
-const statusConfig: Record<
+const statusVariants: Record<
   TradeRequest['status'],
-  { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }
+  { labelKey: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }
 > = {
-  SENT: { label: 'Pending', variant: 'default' },
-  ACCEPTED: { label: 'Accepted', variant: 'secondary' },
-  REJECTED: { label: 'Rejected', variant: 'destructive' },
-  CANCELLED: { label: 'Cancelled', variant: 'outline' },
+  SENT: { labelKey: 'trade.statusPending', variant: 'default' },
+  ACCEPTED: { labelKey: 'trade.statusAccepted', variant: 'secondary' },
+  REJECTED: { labelKey: 'trade.statusRejected', variant: 'destructive' },
+  CANCELLED: { labelKey: 'trade.statusCancelled', variant: 'outline' },
 };
 
 export function TradeRequestCard({
@@ -34,7 +35,8 @@ export function TradeRequestCard({
   onCancel,
   isUpdating,
 }: TradeRequestCardProps) {
-  const statusInfo = statusConfig[request.status];
+  const { t } = useLanguage();
+  const statusInfo = statusVariants[request.status];
   const relativeTime = formatDistanceToNow(new Date(request.created_at), { addSuffix: true });
   const canAct = request.status === 'SENT';
 
@@ -52,14 +54,14 @@ export function TradeRequestCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="font-medium text-foreground truncate">
-              {type === 'sent' ? 'To' : 'From'}: @{request.other_user?.username ?? 'Unknown'}
+              {type === 'sent' ? t('trade.to') : t('trade.from')}: @{request.other_user?.username ?? t('common.unknown')}
             </span>
             <Badge variant={statusInfo.variant} className="text-xs">
-              {statusInfo.label}
+              {t(statusInfo.labelKey)}
             </Badge>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>{request.item_count} sticker{request.item_count !== 1 ? 's' : ''}</span>
+            <span>{t('trade.stickers', { count: request.item_count, s: request.item_count !== 1 ? 's' : '' })}</span>
             <span>•</span>
             <span>{relativeTime}</span>
           </div>
@@ -77,7 +79,7 @@ export function TradeRequestCard({
                   className="h-8 px-3"
                 >
                   <Check className="h-4 w-4 mr-1" />
-                  Accept
+                  {t('trade.accept')}
                 </Button>
                 <Button
                   size="sm"
@@ -87,7 +89,7 @@ export function TradeRequestCard({
                   className="h-8 px-3"
                 >
                   <X className="h-4 w-4 mr-1" />
-                  Reject
+                  {t('trade.reject')}
                 </Button>
               </>
             )}
@@ -99,7 +101,7 @@ export function TradeRequestCard({
                 disabled={isUpdating}
                 className="h-8 px-3"
               >
-                Cancel
+                {t('trade.cancel')}
               </Button>
             )}
           </div>

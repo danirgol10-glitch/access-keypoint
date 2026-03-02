@@ -4,6 +4,7 @@ import { useTradeRequests } from '@/hooks/useTradeRequests';
 import { useConversations } from '@/hooks/useConversations';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useFriendAlbumStats } from '@/hooks/useFriendAlbumStats';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   useIncomingRequests,
   useOutgoingRequests,
@@ -11,7 +12,7 @@ import {
   useRespondToRequest,
 } from '@/hooks/useFriendships';
 import { TradeRequestCard } from '@/components/TradeRequestCard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -28,8 +29,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
-  Inbox,
-  Send,
   MessageCircle,
   Users,
   UserPlus,
@@ -46,14 +45,11 @@ import { toast as uiToast } from '@/hooks/use-toast';
 const Trading = () => {
   const navigate = useNavigate();
   const { profile: myProfile } = useUserProfile();
+  const { t } = useLanguage();
 
-  // Trade requests
   const { sentRequests, receivedRequests, isLoading: tradeLoading, updateStatus, isUpdating } = useTradeRequests();
-
-  // Conversations
   const { data: conversations = [], isLoading: chatsLoading } = useConversations();
 
-  // Friends
   const { incomingRequests, isLoading: incomingLoading } = useIncomingRequests();
   const { outgoingRequests, isLoading: outgoingLoading } = useOutgoingRequests();
   const { friendStats, isLoading: statsLoading } = useFriendAlbumStats();
@@ -63,7 +59,6 @@ const Trading = () => {
   const [usernameInput, setUsernameInput] = useState('');
   const [inputError, setInputError] = useState<string | null>(null);
 
-  // Confirmation dialog for trade requests
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     type: 'reject' | 'cancel';
@@ -72,18 +67,15 @@ const Trading = () => {
     otherUsername?: string;
   } | null>(null);
 
-  // Filter pending trade requests
   const pendingReceived = receivedRequests.filter((r) => r.status === 'SENT');
   const pendingSent = sentRequests.filter((r) => r.status === 'SENT');
   const hasPendingRequests = pendingReceived.length > 0 || pendingSent.length > 0;
 
-  // Filter active (accepted) trade requests
   const activeTrades = [
     ...sentRequests.filter((r) => r.status === 'ACCEPTED'),
     ...receivedRequests.filter((r) => r.status === 'ACCEPTED'),
   ];
 
-  // Trade request handlers
   const handleAccept = async (requestId: string, request: typeof receivedRequests[0]) => {
     try {
       await updateStatus({
@@ -93,9 +85,9 @@ const Trading = () => {
         otherUsername: request.other_user?.username ?? undefined,
         myUsername: myProfile?.username ?? undefined,
       });
-      toast.success('Request accepted');
+      toast.success(t('trade.statusAccepted'));
     } catch {
-      toast.error('Failed to accept request');
+      toast.error(t('trading.error'));
     }
   };
 
@@ -130,27 +122,26 @@ const Trading = () => {
         otherUsername: confirmDialog.otherUsername,
         myUsername: myProfile?.username ?? undefined,
       });
-      toast.success(confirmDialog.type === 'reject' ? 'Request rejected' : 'Request cancelled');
+      toast.success(confirmDialog.type === 'reject' ? t('trading.requestRejected') : t('trade.statusCancelled'));
     } catch {
-      toast.error('Failed to update request');
+      toast.error(t('trading.error'));
     } finally {
       setConfirmDialog(null);
     }
   };
 
-  // Friend request handlers
   const handleSendFriendRequest = async () => {
     if (!usernameInput.trim()) {
-      setInputError('Please enter a username');
+      setInputError(t('trading.enterUsername'));
       return;
     }
     setInputError(null);
     const result = await sendFriendRequest.mutateAsync(usernameInput.trim());
     if (result.success) {
-      uiToast({ title: 'Request sent', description: `Friend request sent to @${usernameInput}` });
+      uiToast({ title: t('trading.requestSent'), description: t('trading.requestSentTo', { username: usernameInput }) });
       setUsernameInput('');
     } else {
-      setInputError(result.error ?? 'Failed to send request');
+      setInputError(result.error ?? t('trading.error'));
     }
   };
 
@@ -158,11 +149,11 @@ const Trading = () => {
     try {
       await respondToFriendRequest.mutateAsync({ friendshipId, accept });
       uiToast({
-        title: accept ? 'Friend added' : 'Request rejected',
-        description: accept ? 'You are now friends!' : 'The request has been rejected.',
+        title: accept ? t('trading.friendAdded') : t('trading.requestRejected'),
+        description: accept ? t('trading.youAreNowFriends') : t('trading.theRequestRejected'),
       });
     } catch {
-      uiToast({ title: 'Error', description: 'Failed to respond', variant: 'destructive' });
+      uiToast({ title: t('trading.error'), description: t('trading.failedToRespond'), variant: 'destructive' });
     }
   };
 
@@ -170,7 +161,7 @@ const Trading = () => {
 
   return (
     <div className="flex flex-col p-4 space-y-4 pb-24">
-      <h1 className="text-2xl font-semibold text-foreground">Trading</h1>
+      <h1 className="text-2xl font-semibold text-foreground">{t('trading.title')}</h1>
 
       {isLoading ? (
         <div className="space-y-3">
@@ -180,17 +171,17 @@ const Trading = () => {
         </div>
       ) : (
         <>
-          {/* A) Pending Trade Requests */}
+          {/* Pending Trade Requests */}
           {hasPendingRequests && (
             <section className="space-y-3">
               <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                Pending Requests
+                {t('trading.pendingRequests')}
               </h2>
 
               {pendingReceived.length > 0 && (
                 <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">Incoming</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">{t('trading.incoming')}</h3>
                   {pendingReceived.map((request) => (
                     <TradeRequestCard
                       key={request.id}
@@ -207,7 +198,7 @@ const Trading = () => {
 
               {pendingSent.length > 0 && (
                 <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-muted-foreground">Outgoing</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">{t('trading.outgoing')}</h3>
                   {pendingSent.map((request) => (
                     <TradeRequestCard
                       key={request.id}
@@ -223,12 +214,12 @@ const Trading = () => {
             </section>
           )}
 
-          {/* B) Active Trades */}
+          {/* Active Trades */}
           {activeTrades.length > 0 && (
             <section className="space-y-3">
               <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
                 <Check className="h-5 w-5" />
-                Active Trades
+                {t('trading.activeTrades')}
               </h2>
               <div className="space-y-2">
                 {activeTrades.map((trade) => (
@@ -240,13 +231,13 @@ const Trading = () => {
                     <CardContent className="flex items-center justify-between p-4">
                       <div>
                         <span className="font-medium text-foreground">
-                          @{trade.other_user?.username ?? 'Unknown'}
+                          @{trade.other_user?.username ?? t('common.unknown')}
                         </span>
-                        <p className="text-sm text-muted-foreground">Chat available</p>
+                        <p className="text-sm text-muted-foreground">{t('trading.chatAvailable')}</p>
                       </div>
                       <Badge variant="secondary" className="gap-1">
                         <MessageCircle className="h-3 w-3" />
-                        Open
+                        {t('trading.open')}
                       </Badge>
                     </CardContent>
                   </Card>
@@ -255,15 +246,15 @@ const Trading = () => {
             </section>
           )}
 
-          {/* C) Chats */}
+          {/* Chats */}
           <section className="space-y-3">
             <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
               <MessageCircle className="h-5 w-5" />
-              Chats
+              {t('trading.chats')}
             </h2>
             {conversations.length === 0 ? (
               <p className="text-sm text-muted-foreground py-2">
-                No chats yet. Chats unlock when a trade request is accepted.
+                {t('trading.noChats')}
               </p>
             ) : (
               <div className="space-y-2">
@@ -277,7 +268,7 @@ const Trading = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-foreground truncate">
-                            @{convo.other_username ?? 'Unknown'}
+                            @{convo.other_username ?? t('common.unknown')}
                           </span>
                           {convo.unread_count > 0 && (
                             <span className="bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
@@ -286,7 +277,7 @@ const Trading = () => {
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground truncate mt-1">
-                          {convo.last_message_text ?? 'No messages yet'}
+                          {convo.last_message_text ?? t('trading.noMessages')}
                         </p>
                       </div>
                       {convo.last_message_at && (
@@ -301,17 +292,16 @@ const Trading = () => {
             )}
           </section>
 
-          {/* D) Friends */}
+          {/* Friends */}
           <section className="space-y-3">
             <h2 className="text-lg font-medium text-foreground flex items-center gap-2">
               <Users className="h-5 w-5" />
-              Friends
+              {t('trading.friends')}
             </h2>
 
-            {/* Add friend */}
             <div className="flex gap-2">
               <Input
-                placeholder="Add friend by username"
+                placeholder={t('trading.addFriendPlaceholder')}
                 value={usernameInput}
                 onChange={(e) => {
                   setUsernameInput(e.target.value);
@@ -332,17 +322,16 @@ const Trading = () => {
               <p className="text-sm text-destructive">{inputError}</p>
             )}
 
-            {/* Friend requests */}
             {(incomingRequests.length > 0 || outgoingRequests.length > 0) && (
               <div className="space-y-2">
                 {incomingRequests.length > 0 && (
                   <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-muted-foreground">Incoming friend requests</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground">{t('trading.incomingFriendRequests')}</h3>
                     {incomingRequests.map((req) => (
                       <div key={req.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                         <div className="flex items-center gap-2">
                           <User className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">@{req.requester?.username ?? 'unknown'}</span>
+                          <span className="font-medium">@{req.requester?.username ?? t('common.unknown')}</span>
                         </div>
                         <div className="flex gap-1">
                           <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-primary hover:text-primary hover:bg-primary/10" onClick={() => handleRespondFriend(req.id, true)} disabled={respondToFriendRequest.isPending}>
@@ -358,16 +347,16 @@ const Trading = () => {
                 )}
                 {outgoingRequests.length > 0 && (
                   <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-muted-foreground">Outgoing friend requests</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground">{t('trading.outgoingFriendRequests')}</h3>
                     {outgoingRequests.map((req) => (
                       <div key={req.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                         <div className="flex items-center gap-2">
                           <User className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">@{req.addressee?.username ?? 'unknown'}</span>
+                          <span className="font-medium">@{req.addressee?.username ?? t('common.unknown')}</span>
                         </div>
                         <Badge variant="secondary" className="gap-1">
                           <Clock className="w-3 h-3" />
-                          Pending
+                          {t('trading.pending')}
                         </Badge>
                       </div>
                     ))}
@@ -376,10 +365,9 @@ const Trading = () => {
               </div>
             )}
 
-            {/* Friends list */}
             {friendStats.length === 0 ? (
               <p className="text-sm text-muted-foreground py-2">
-                No friends yet. Add someone by username above!
+                {t('trading.noFriends')}
               </p>
             ) : (
               <div className="space-y-2">
@@ -418,18 +406,18 @@ const Trading = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {confirmDialog?.type === 'reject' ? 'Reject Request?' : 'Cancel Request?'}
+              {confirmDialog?.type === 'reject' ? t('trading.rejectRequest') : t('trading.cancelRequest')}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {confirmDialog?.type === 'reject'
-                ? 'Are you sure you want to reject this trade request?'
-                : 'Are you sure you want to cancel this trade request?'}
+                ? t('trading.confirmReject')
+                : t('trading.confirmCancel')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>No, go back</AlertDialogCancel>
+            <AlertDialogCancel>{t('trading.noGoBack')}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmAction}>
-              Yes, {confirmDialog?.type === 'reject' ? 'reject' : 'cancel'}
+              {confirmDialog?.type === 'reject' ? t('trading.yesReject') : t('trading.yesCancel')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
