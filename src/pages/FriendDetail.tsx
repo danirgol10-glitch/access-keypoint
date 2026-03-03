@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
@@ -21,6 +22,7 @@ const FriendDetail = () => {
   
   const { createRequest, isCreating } = useTradeRequests();
   const { profile: myProfile } = useUserProfile();
+  const { t } = useLanguage();
 
   // Fetch friend's username
   const { data: friendProfile, isLoading: profileLoading } = useQuery({
@@ -87,12 +89,11 @@ const FriendDetail = () => {
       });
 
       toast({
-        title: 'Request sent',
-        description: `Request sent to @${friendProfile?.username ?? 'friend'}`,
+        title: t('trading.requestSent'),
+        description: t('trading.tradeRequestSent'),
       });
 
       setSelectedStickers(new Set());
-      navigate('/requests');
     } catch (error) {
       console.error('Error creating request:', error);
       toast({
