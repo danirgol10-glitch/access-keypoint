@@ -9,13 +9,13 @@ interface StickerCardProps {
 }
 
 const statusConfig: Record<ComputedStatus, { label: string; bg: string; color: string }> = {
-  HAVE: { label: 'Have', bg: 'rgba(79,163,255,0.18)', color: '#4FA3FF' },
+  HAVE: { label: 'Have', bg: 'rgba(212,175,55,0.20)', color: '#D4AF37' },
   NEED: { label: 'Need', bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' },
   DUPLICATE: { label: 'Dup', bg: 'rgba(79,163,255,0.15)', color: 'hsl(222, 100%, 65%)' },
 };
 
 const cardStyles: Record<ComputedStatus, { background: string; border: string }> = {
-  HAVE: { background: 'rgba(79,163,255,0.12)', border: '1px solid rgba(79,163,255,0.45)' },
+  HAVE: { background: 'rgba(212,175,55,0.12)', border: '1px solid #D4AF37' },
   NEED: { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' },
   DUPLICATE: { background: 'rgba(79,163,255,0.08)', border: '1px solid rgba(79,163,255,0.30)' },
 };
@@ -36,12 +36,12 @@ export function StickerCard({ code, teamName, status, onClick }: StickerCardProp
           className="absolute top-1.5 right-1.5"
           size={12}
           strokeWidth={3}
-          style={{ color: '#4FA3FF' }}
+          style={{ color: status === 'HAVE' ? '#D4AF37' : '#4FA3FF' }}
         />
       )}
-      <span className="font-semibold text-sm" style={{ color: isOwned ? '#CFE3FF' : '#FFFFFF' }}>{code}</span>
+      <span className="font-semibold text-sm" style={{ color: status === 'HAVE' ? '#FFD86B' : isOwned ? '#CFE3FF' : '#FFFFFF' }}>{code}</span>
       {teamName && (
-        <span className="text-[10px] mt-1 truncate w-full" style={{ color: isOwned ? 'rgba(207,227,255,0.55)' : 'rgba(255,255,255,0.45)' }}>
+        <span className="text-[10px] mt-1 truncate w-full" style={{ color: status === 'HAVE' ? 'rgba(255,216,107,0.50)' : isOwned ? 'rgba(207,227,255,0.55)' : 'rgba(255,255,255,0.45)' }}>
           {teamName}
         </span>
       )}
