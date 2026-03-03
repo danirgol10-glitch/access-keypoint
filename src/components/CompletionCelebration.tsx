@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Particle {
   id: number;
@@ -22,11 +23,11 @@ const PARTICLE_COUNT = 40;
 const DURATION = 1500;
 
 export const CompletionCelebration = ({ trigger, onFinished }: CompletionCelebrationProps) => {
-  const [particles, setParticles] = useState<Particle[]>([]);
   const [showFlash, setShowFlash] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>();
+  const { t } = useLanguage();
 
   const createParticles = useCallback((): Particle[] => {
     return Array.from({ length: PARTICLE_COUNT }, (_, i) => {
@@ -49,18 +50,14 @@ export const CompletionCelebration = ({ trigger, onFinished }: CompletionCelebra
   useEffect(() => {
     if (!trigger) return;
 
-    // Flash sequence
     setShowFlash(true);
     setTimeout(() => setShowFlash(false), 400);
-
-    // Message
     setTimeout(() => setShowMessage(true), 600);
     setTimeout(() => {
       setShowMessage(false);
       onFinished?.();
     }, 3500);
 
-    // Particles
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -79,7 +76,6 @@ export const CompletionCelebration = ({ trigger, onFinished }: CompletionCelebra
       const elapsed = now - startTime;
       if (elapsed > DURATION) {
         ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
-        setParticles([]);
         return;
       }
 
@@ -133,11 +129,11 @@ export const CompletionCelebration = ({ trigger, onFinished }: CompletionCelebra
       {showMessage && (
         <div className="absolute inset-0 flex flex-col items-center justify-center animate-[fade-in_0.5s_ease-out]">
           <h2 className="text-3xl font-black text-white tracking-wide mb-1">
-            ALBUM COMPLETED
+            {t('celebration.title')}
           </h2>
           <div className="w-16 h-0.5 bg-[#FFD23F] mx-auto mb-3" />
           <p className="text-sm font-medium text-white/60 tracking-widest uppercase">
-            For the Good of the Game
+            {t('celebration.subtitle')}
           </p>
         </div>
       )}

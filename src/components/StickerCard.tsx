@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react';
 import type { ComputedStatus } from '@/hooks/useUserStickers';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StickerCardProps {
   code: string;
@@ -8,10 +9,10 @@ interface StickerCardProps {
   onClick: () => void;
 }
 
-const statusConfig: Record<ComputedStatus, { label: string; bg: string; color: string }> = {
-  HAVE: { label: 'Have', bg: 'rgba(212,175,55,0.20)', color: '#D4AF37' },
-  NEED: { label: 'Need', bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' },
-  DUPLICATE: { label: 'Dup', bg: 'rgba(79,163,255,0.15)', color: 'hsl(222, 100%, 65%)' },
+const statusStyles: Record<ComputedStatus, { bg: string; color: string }> = {
+  HAVE: { bg: 'rgba(212,175,55,0.20)', color: '#D4AF37' },
+  NEED: { bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' },
+  DUPLICATE: { bg: 'rgba(79,163,255,0.15)', color: 'hsl(222, 100%, 65%)' },
 };
 
 const cardStyles: Record<ComputedStatus, { background: string; border: string }> = {
@@ -20,8 +21,15 @@ const cardStyles: Record<ComputedStatus, { background: string; border: string }>
   DUPLICATE: { background: 'rgba(79,163,255,0.08)', border: '1px solid rgba(79,163,255,0.30)' },
 };
 
+const statusLabelKeys: Record<ComputedStatus, string> = {
+  HAVE: 'sticker.have',
+  NEED: 'sticker.need',
+  DUPLICATE: 'sticker.duplicate',
+};
+
 export function StickerCard({ code, teamName, status, onClick }: StickerCardProps) {
-  const statusInfo = statusConfig[status];
+  const { t } = useLanguage();
+  const style = statusStyles[status];
   const card = cardStyles[status];
   const isOwned = status === 'HAVE' || status === 'DUPLICATE';
 
@@ -47,9 +55,9 @@ export function StickerCard({ code, teamName, status, onClick }: StickerCardProp
       )}
       <span
         className="mt-2 text-[10px] font-medium px-1.5 py-0.5 rounded-full"
-        style={{ background: statusInfo.bg, color: statusInfo.color }}
+        style={{ background: style.bg, color: style.color }}
       >
-        {statusInfo.label}
+        {t(statusLabelKeys[status])}
       </span>
     </button>
   );
