@@ -45,14 +45,11 @@ const Trading = () => {
   const { usersWithMatches: uniUsersWithMatches, isLoading: uniMatchesLoading, universityId } = useUniversityMatches();
 
   const [citySheetOpen, setCitySheetOpen] = useState(false);
-  const [friendsSheetOpen, setFriendsSheetOpen] = useState(false);
   const [uniSheetOpen, setUniSheetOpen] = useState(false);
   const [citySortMode, setCitySortMode] = useState<SortMode>('default');
-  const [friendsSortMode, setFriendsSortMode] = useState<SortMode>('default');
   const [uniSortMode, setUniSortMode] = useState<SortMode>('default');
 
   const sortedCityMatches = useMemo(() => sortMatches(usersWithMatches, citySortMode), [usersWithMatches, citySortMode]);
-  const sortedFriendMatches = useMemo(() => sortMatches(friendsWithMatches, friendsSortMode), [friendsWithMatches, friendsSortMode]);
   const sortedUniMatches = useMemo(
     () => sortMatches(uniUsersWithMatches.map(m => ({ ...m, sameUniversity: true as const })), uniSortMode),
     [uniUsersWithMatches, uniSortMode]
@@ -99,7 +96,6 @@ const Trading = () => {
     navigate(`/friend/${userId}`);
   };
   const handleViewFriend = (friendId: string) => {
-    setFriendsSheetOpen(false);
     navigate(`/friend/${friendId}`);
   };
   const handleViewUniUser = (userId: string) => {
@@ -125,52 +121,20 @@ const Trading = () => {
     <div className="flex flex-col p-4 space-y-6 pb-24">
       {/* Discovery Icons - centered */}
       <div className="flex items-center justify-center gap-4 pt-2">
-        {/* Friends */}
-        <Sheet open={friendsSheetOpen} onOpenChange={setFriendsSheetOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full h-14 w-14 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]">
-              <Users className="h-6 w-6 stroke-[2.2]" />
-              {friendsBadgeCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
-                  {friendsBadgeCount > 99 ? '99+' : friendsBadgeCount}
-                </span>
-              )}
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:max-w-md">
-            <SheetHeader>
-              <SheetTitle>{t('home.friendsWhoCanHelp')}</SheetTitle>
-            </SheetHeader>
-            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
-              {friendsMatchesLoading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-lg" />)}
-                </div>
-              ) : !hasFriends ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground mb-4">{t('home.addFriendsToDiscover')}</p>
-                  <Button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }}>{t('home.addFriends')}</Button>
-                </div>
-              ) : friendsBadgeCount === 0 ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <Users className="h-12 w-12 text-muted-foreground mb-3" />
-                  <p className="text-muted-foreground">{t('home.noFriendDuplicates')}</p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span>{t('home.sortBy')}</span>
-                    <SortDropdown value={friendsSortMode} onChange={setFriendsSortMode} />
-                  </div>
-                  {sortedFriendMatches.map((match) => (
-                    <FriendMatchCard key={match.friendId} username={match.username} matchCount={match.matchCount} duplicateTotal={match.duplicateTotal} lastActiveAt={match.lastActiveAt} onView={() => handleViewFriend(match.friendId)} />
-                  ))}
-                </>
-              )}
-            </div>
-          </SheetContent>
-        </Sheet>
+        {/* Friends - navigates to /friends page */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full h-14 w-14 relative border border-white/20 bg-transparent hover:bg-white/[0.08] text-[#CFE3FF]"
+          onClick={() => navigate('/friends')}
+        >
+          <Users className="h-6 w-6 stroke-[2.2]" />
+          {friendsBadgeCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+              {friendsBadgeCount > 99 ? '99+' : friendsBadgeCount}
+            </span>
+          )}
+        </Button>
 
         {/* City */}
         <Sheet open={citySheetOpen} onOpenChange={setCitySheetOpen}>
