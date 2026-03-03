@@ -140,6 +140,20 @@ const translations: Record<Language, Record<string, string>> = {
     'stats.missing': 'Missing',
     'stats.ofStickers': '{owned} of {total} stickers',
 
+    // Friends
+    'friends.title': 'Friends',
+    'friends.myFriends': 'My Friends',
+    'friends.searchUsers': 'Search Users',
+    'friends.searchPlaceholder': 'Search by username',
+    'friends.noResults': 'No users found.',
+    'friends.noFriendsYet': "You don't have friends yet.",
+    'friends.searchToConnect': 'Search collectors to connect.',
+    'friends.suggested': 'SUGGESTED',
+    'friends.add': 'Add',
+    'friends.alreadyFriends': 'Friends',
+    'friends.viewProfile': 'View Profile',
+    'friends.proposeTrade': 'Propose Trade',
+
     // Common
     'common.unknown': 'unknown',
   },
@@ -273,6 +287,20 @@ const translations: Record<Language, Record<string, string>> = {
     'stats.duplicates': 'Repetidos',
     'stats.missing': 'Faltan',
     'stats.ofStickers': '{owned} de {total} stickers',
+
+    // Friends
+    'friends.title': 'Amigos',
+    'friends.myFriends': 'Mis Amigos',
+    'friends.searchUsers': 'Buscar Usuarios',
+    'friends.searchPlaceholder': 'Buscar por nombre de usuario',
+    'friends.noResults': 'No se encontraron usuarios.',
+    'friends.noFriendsYet': 'Aún no tienes amigos.',
+    'friends.searchToConnect': 'Busca coleccionistas para conectar.',
+    'friends.suggested': 'SUGERIDOS',
+    'friends.add': 'Agregar',
+    'friends.alreadyFriends': 'Amigos',
+    'friends.viewProfile': 'Ver Perfil',
+    'friends.proposeTrade': 'Proponer Intercambio',
 
     // Common
     'common.unknown': 'desconocido',
