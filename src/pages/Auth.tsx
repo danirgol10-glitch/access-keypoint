@@ -1,10 +1,6 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
@@ -21,147 +17,104 @@ const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
   const { toast } = useToast();
 
-  // If already authenticated, redirect to home
-  if (!loading && user) {
-    return <Navigate to="/" replace />;
-  }
+  if (!loading && user) return <Navigate to="/" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Validate input
     const validation = authSchema.safeParse({ email, password });
     if (!validation.success) {
-      toast({
-        variant: 'destructive',
-        title: 'Validation Error',
-        description: validation.error.errors[0].message,
-      });
+      toast({ variant: 'destructive', title: 'Validation Error', description: validation.error.errors[0].message });
       setIsSubmitting(false);
       return;
     }
-
     try {
       if (isLogin) {
         const { error } = await signIn(email, password);
-        if (error) {
-          toast({
-            variant: 'destructive',
-            title: 'Login Failed',
-            description: error.message === 'Invalid login credentials' 
-              ? 'Invalid email or password. Please try again.'
-              : error.message,
-          });
-        }
+        if (error) toast({ variant: 'destructive', title: 'Login Failed', description: error.message === 'Invalid login credentials' ? 'Invalid email or password.' : error.message });
       } else {
         const { error } = await signUp(email, password);
         if (error) {
-          if (error.message.includes('already registered')) {
-            toast({
-              variant: 'destructive',
-              title: 'Account Exists',
-              description: 'This email is already registered. Please log in instead.',
-            });
-          } else {
-            toast({
-              variant: 'destructive',
-              title: 'Sign Up Failed',
-              description: error.message,
-            });
-          }
+          toast({ variant: 'destructive', title: error.message.includes('already registered') ? 'Account Exists' : 'Sign Up Failed', description: error.message.includes('already registered') ? 'This email is already registered.' : error.message });
         } else {
-          toast({
-            title: 'Check Your Email',
-            description: 'We sent you a confirmation link. Please check your inbox.',
-          });
+          toast({ title: 'Check Your Email', description: 'We sent you a confirmation link.' });
         }
       }
-    } catch (err) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'An unexpected error occurred. Please try again.',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    } catch {
+      toast({ variant: 'destructive', title: 'Error', description: 'An unexpected error occurred.' });
+    } finally { setIsSubmitting(false); }
   };
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center auth-gradient">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      <div className="flex min-h-screen items-center justify-center page-bg">
+        <div className="animate-pulse" style={{ color: 'rgba(255,255,255,0.5)' }}>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center auth-gradient p-4">
-      <Card className="w-full max-w-md shadow-xl border-0">
-        <CardHeader className="space-y-1 text-center pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight">
+    <div className="flex min-h-screen items-center justify-center page-bg p-4">
+      <div className="w-full max-w-md premium-panel premium-panel-gold p-6 space-y-6">
+        <div className="text-center space-y-1">
+          <h1 className="text-[22px] font-bold" style={{ color: '#FFFFFF' }}>
             {isLogin ? 'Welcome back' : 'Create an account'}
-          </CardTitle>
-          <CardDescription className="text-muted-foreground">
-            {isLogin
-              ? 'Enter your credentials to access your account'
-              : 'Enter your email to get started'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                className="h-11"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete={isLogin ? 'current-password' : 'new-password'}
-                className="h-11"
-              />
-            </div>
-            <Button
-              type="submit"
-              className="w-full h-11 font-medium"
-              disabled={isSubmitting}
-            >
-              {isSubmitting
-                ? 'Please wait...'
-                : isLogin
-                ? 'Sign In'
-                : 'Create Account'}
-            </Button>
-          </form>
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              {isLogin
-                ? "Don't have an account? Create one"
-                : 'Already have an account? Sign in'}
-            </button>
+          </h1>
+          <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.55)' }}>
+            {isLogin ? 'Enter your credentials to access your account' : 'Enter your email to get started'}
+          </p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'rgba(255,255,255,0.45)' }}>Email</label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              className="w-full h-11 px-4 text-[14px] rounded-xl outline-none transition-all duration-200"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#4FA3FF'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; }}
+            />
           </div>
-        </CardContent>
-      </Card>
+          <div className="space-y-2">
+            <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'rgba(255,255,255,0.45)' }}>Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete={isLogin ? 'current-password' : 'new-password'}
+              className="w-full h-11 px-4 text-[14px] rounded-xl outline-none transition-all duration-200"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#4FA3FF'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; }}
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full h-11 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
+            style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
+          </button>
+        </form>
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-sm transition-colors"
+            style={{ color: 'rgba(255,255,255,0.55)' }}
+          >
+            {isLogin ? "Don't have an account? Create one" : 'Already have an account? Sign in'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

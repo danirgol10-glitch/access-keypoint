@@ -11,7 +11,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -42,7 +41,6 @@ const Album = () => {
   const [selectedGroup, setSelectedGroup] = useState<string>('all');
   const [selectedTeam, setSelectedTeam] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('all');
-
   const [quickMode, setQuickMode] = useState(false);
 
   const duplicateCount = useMemo(
@@ -117,15 +115,11 @@ const Album = () => {
         !q ||
         sticker.code.toLowerCase().includes(q) ||
         (sticker.team_name && sticker.team_name.toLowerCase().includes(q));
-      const matchesScope =
-        selectedScope === 'all' || sticker.scope === selectedScope;
-      const matchesGroup =
-        selectedGroup === 'all' || sticker.group_letter === selectedGroup;
-      const matchesTeam =
-        selectedTeam === 'all' || sticker.team_code === selectedTeam;
+      const matchesScope = selectedScope === 'all' || sticker.scope === selectedScope;
+      const matchesGroup = selectedGroup === 'all' || sticker.group_letter === selectedGroup;
+      const matchesTeam = selectedTeam === 'all' || sticker.team_code === selectedTeam;
       const computedStatus = getComputedStatus(userStickers, sticker.id);
       const matchesStatus = selectedStatus === 'all' || computedStatus === selectedStatus;
-
       return matchesSearch && matchesScope && matchesGroup && matchesTeam && matchesStatus;
     });
   }, [stickers, searchQuery, selectedScope, selectedGroup, selectedTeam, selectedStatus, userStickers, quickMode]);
@@ -138,7 +132,7 @@ const Album = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-5rem)] p-6">
-        <p className="text-muted-foreground animate-pulse">{t('album.loading')}</p>
+        <p className="animate-pulse" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('album.loading')}</p>
       </div>
     );
   }
@@ -152,7 +146,9 @@ const Album = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-5rem)] p-4 space-y-4">
+    <div className="relative px-4 pt-14 pb-28 space-y-4 max-w-md mx-auto">
+      <div className="page-vignette" />
+
       <QuickDuplicateOnboarding
         open={showOnboarding}
         onStart={handleStartQuickMode}
@@ -160,8 +156,8 @@ const Album = () => {
       />
 
       {quickMode && (
-        <div className="sticky top-0 z-10 flex items-center justify-between bg-background/95 backdrop-blur py-2 border-b border-border -mx-4 -mt-4 mb-0 px-4">
-          <span className="text-sm font-medium text-foreground">
+        <div className="sticky top-0 z-30 flex items-center justify-between py-2 px-4 -mx-4 -mt-4 mb-0 rounded-b-2xl" style={{ background: 'rgba(7,28,71,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          <span className="text-sm font-medium" style={{ color: '#FFFFFF' }}>
             {t('album.duplicatesSelected', { count: quickDuplicateCount, s: quickDuplicateCount !== 1 ? 's' : '' })}
           </span>
           <Button size="sm" onClick={handleDoneQuickMode}>
@@ -170,21 +166,31 @@ const Album = () => {
         </div>
       )}
 
+      {/* Header */}
+      <div className="relative z-20 text-center mb-2">
+        <h1 className="text-[22px] font-bold tracking-wide" style={{ color: '#FFFFFF' }}>{t('nav.album')}</h1>
+      </div>
+
       {!quickMode && (
-        <div className="space-y-3">
+        <div className="relative z-20 space-y-3">
+          {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'rgba(255,255,255,0.4)' }} />
+            <input
               placeholder={t('album.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl outline-none transition-all duration-200"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#4FA3FF'; e.currentTarget.style.boxShadow = '0 0 12px rgba(79,163,255,0.15)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; e.currentTarget.style.boxShadow = 'none'; }}
             />
           </div>
 
+          {/* Filters */}
           <div className="flex gap-2 flex-wrap">
             <Select value={selectedScope} onValueChange={handleScopeChange}>
-              <SelectTrigger className="flex-1 min-w-[100px]">
+              <SelectTrigger className="flex-1 min-w-[100px] h-9 text-xs rounded-xl" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}>
                 <SelectValue placeholder="Scope" />
               </SelectTrigger>
               <SelectContent>
@@ -196,7 +202,7 @@ const Album = () => {
 
             {selectedScope !== 'FWC' && groups.length > 0 && (
               <Select value={selectedGroup} onValueChange={handleGroupChange}>
-                <SelectTrigger className="flex-1 min-w-[100px]">
+                <SelectTrigger className="flex-1 min-w-[100px] h-9 text-xs rounded-xl" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}>
                   <SelectValue placeholder="Group" />
                 </SelectTrigger>
                 <SelectContent>
@@ -210,7 +216,7 @@ const Album = () => {
 
             {selectedGroup !== 'all' && teamsForGroup.length > 0 && (
               <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-                <SelectTrigger className="flex-1 min-w-[120px]">
+                <SelectTrigger className="flex-1 min-w-[120px] h-9 text-xs rounded-xl" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}>
                   <SelectValue placeholder="Team" />
                 </SelectTrigger>
                 <SelectContent>
@@ -226,7 +232,7 @@ const Album = () => {
               value={selectedStatus}
               onValueChange={(v) => setSelectedStatus(v as StatusFilter)}
             >
-              <SelectTrigger className="flex-1 min-w-[100px]">
+              <SelectTrigger className="flex-1 min-w-[100px] h-9 text-xs rounded-xl" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -241,11 +247,11 @@ const Album = () => {
       )}
 
       {filteredStickers.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-muted-foreground">{t('album.noStickersFound')}</p>
+        <div className="relative z-20 flex-1 flex items-center justify-center py-12">
+          <p style={{ color: 'rgba(255,255,255,0.5)' }}>{t('album.noStickersFound')}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+        <div className="relative z-20 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
           {filteredStickers.map((sticker) => {
             const computedStatus = getComputedStatus(userStickers, sticker.id);
             return (

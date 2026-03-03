@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge';
 import type { ComputedStatus } from '@/hooks/useUserStickers';
 
 interface StickerCardProps {
@@ -8,10 +7,10 @@ interface StickerCardProps {
   onClick: () => void;
 }
 
-const statusConfig: Record<ComputedStatus, { label: string; variant: 'default' | 'secondary' | 'outline' }> = {
-  HAVE: { label: 'Have', variant: 'default' },
-  NEED: { label: 'Need', variant: 'secondary' },
-  DUPLICATE: { label: 'Duplicate', variant: 'outline' },
+const statusConfig: Record<ComputedStatus, { label: string; bg: string; color: string }> = {
+  HAVE: { label: 'Have', bg: 'rgba(34,197,94,0.15)', color: 'hsl(142, 72%, 55%)' },
+  NEED: { label: 'Need', bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' },
+  DUPLICATE: { label: 'Dup', bg: 'rgba(79,163,255,0.15)', color: 'hsl(222, 100%, 65%)' },
 };
 
 export function StickerCard({ code, teamName, status, onClick }: StickerCardProps) {
@@ -20,20 +19,21 @@ export function StickerCard({ code, teamName, status, onClick }: StickerCardProp
   return (
     <button
       onClick={onClick}
-      className="aspect-[3/4] rounded-lg border border-border bg-card p-2 flex flex-col items-center justify-center text-center hover:bg-accent/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      className="aspect-[3/4] rounded-[14px] p-2 flex flex-col items-center justify-center text-center transition-all duration-150 active:scale-[0.96] focus:outline-none"
+      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
     >
-      <span className="font-semibold text-foreground text-sm">{code}</span>
+      <span className="font-semibold text-sm" style={{ color: '#FFFFFF' }}>{code}</span>
       {teamName && (
-        <span className="text-xs text-muted-foreground mt-1 truncate w-full">
+        <span className="text-[10px] mt-1 truncate w-full" style={{ color: 'rgba(255,255,255,0.45)' }}>
           {teamName}
         </span>
       )}
-      <Badge
-        variant={statusInfo.variant}
-        className="mt-2 text-[10px] px-1.5 py-0"
+      <span
+        className="mt-2 text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+        style={{ background: statusInfo.bg, color: statusInfo.color }}
       >
         {statusInfo.label}
-      </Badge>
+      </span>
     </button>
   );
 }

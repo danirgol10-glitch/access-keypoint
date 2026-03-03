@@ -28,12 +28,12 @@ const MainLayout = () => {
   }, [location.pathname, touch]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen page-bg">
       <main className="flex-1 pb-20 overflow-auto">
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg">
+      <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: '#071C47', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
           {tabConfig.map((tab) => {
             const isActive = location.pathname === tab.path;
@@ -47,7 +47,6 @@ const MainLayout = () => {
                 to={tab.path}
                 className={cn(
                   'flex flex-col items-center justify-center w-full h-full transition-colors relative',
-                  'hover:bg-muted/50'
                 )}
               >
                 <div className="relative">

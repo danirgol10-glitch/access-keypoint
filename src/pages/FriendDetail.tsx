@@ -8,8 +8,6 @@ import { useFriendHelpfulStickers } from '@/hooks/useFriendHelpfulStickers';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { BlockUserMenu } from '@/components/BlockUserMenu';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
@@ -19,221 +17,122 @@ const FriendDetail = () => {
   const { friendId } = useParams<{ friendId: string }>();
   const navigate = useNavigate();
   const [selectedStickers, setSelectedStickers] = useState<Set<string>>(new Set());
-  
   const { createRequest, isCreating } = useTradeRequests();
   const { profile: myProfile } = useUserProfile();
   const { t } = useLanguage();
 
-  // Fetch friend's username
   const { data: friendProfile, isLoading: profileLoading } = useQuery({
     queryKey: ['friend-profile', friendId],
     queryFn: async () => {
       if (!friendId) return null;
-
-      const { data, error } = await supabase
-        .from('users')
-        .select('username, last_active_at')
-        .eq('id', friendId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching friend profile:', error);
-        return null;
-      }
-
+      const { data, error } = await supabase.from('users').select('username, last_active_at').eq('id', friendId).single();
+      if (error) return null;
       return data;
     },
     enabled: !!friendId,
   });
 
   const { helpfulStickers, isLoading: stickersLoading, count } = useFriendHelpfulStickers(friendId);
-
   const isLoading = profileLoading || stickersLoading;
 
   const toggleSticker = (stickerId: string) => {
     setSelectedStickers(prev => {
       const next = new Set(prev);
-      if (next.has(stickerId)) {
-        next.delete(stickerId);
-      } else {
-        next.add(stickerId);
-      }
+      if (next.has(stickerId)) next.delete(stickerId);
+      else next.add(stickerId);
       return next;
     });
   };
 
   const handleRequestClick = async () => {
     if (!friendId || selectedStickers.size === 0) return;
-
-    // Validate: cannot request 0 items (already checked above)
-    // Re-validate selected stickers are still in helpful list
-    const validStickers = Array.from(selectedStickers).filter(id =>
-      helpfulStickers.some(s => s.id === id)
-    );
-
+    const validStickers = Array.from(selectedStickers).filter(id => helpfulStickers.some(s => s.id === id));
     if (validStickers.length === 0) {
-      toast({
-        title: 'No valid stickers',
-        description: 'The selected stickers are no longer available.',
-        variant: 'destructive',
-      });
+      toast({ title: 'No valid stickers', description: 'The selected stickers are no longer available.', variant: 'destructive' });
       setSelectedStickers(new Set());
       return;
     }
-
     try {
-      await createRequest({
-        toUserId: friendId,
-        stickerIds: validStickers,
-        fromUsername: myProfile?.username ?? undefined,
-      });
-
-      toast({
-        title: t('trading.requestSent'),
-        description: t('trading.tradeRequestSent'),
-      });
-
+      await createRequest({ toUserId: friendId, stickerIds: validStickers, fromUsername: myProfile?.username ?? undefined });
+      toast({ title: t('trading.requestSent'), description: t('trading.tradeRequestSent') });
       setSelectedStickers(new Set());
-    } catch (error) {
-      console.error('Error creating request:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to send request. Please try again.',
-        variant: 'destructive',
-      });
+    } catch {
+      toast({ title: 'Error', description: 'Failed to send request.', variant: 'destructive' });
     }
   };
 
   const selectedCount = selectedStickers.size;
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3">
+    <div className="flex flex-col min-h-screen page-bg">
+      <header className="sticky top-0 z-10 px-4 py-3" style={{ background: 'rgba(7,28,71,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+          <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <ArrowLeft className="h-5 w-5" style={{ color: 'rgba(255,255,255,0.7)' }} />
+          </button>
           <div className="flex-1">
-            {profileLoading ? (
-              <Skeleton className="h-6 w-32" />
-            ) : (
+            {profileLoading ? <Skeleton className="h-6 w-32" style={{ background: 'rgba(255,255,255,0.06)' }} /> : (
               <div>
-                <h1 className="text-lg font-semibold text-foreground">
-                  @{friendProfile?.username ?? 'Unknown'}
-                </h1>
-                {friendProfile?.last_active_at && (
-                  <p className="text-xs text-muted-foreground">
-                    Active {formatDistanceToNow(new Date(friendProfile.last_active_at), { addSuffix: true })}
-                  </p>
-                )}
+                <h1 className="text-[16px] font-semibold" style={{ color: '#FFFFFF' }}>@{friendProfile?.username ?? 'Unknown'}</h1>
+                {friendProfile?.last_active_at && <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.4)' }}>Active {formatDistanceToNow(new Date(friendProfile.last_active_at), { addSuffix: true })}</p>}
               </div>
             )}
           </div>
-          {friendId && (
-            <BlockUserMenu userId={friendId} username={friendProfile?.username ?? null} />
-          )}
+          {friendId && <BlockUserMenu userId={friendId} username={friendProfile?.username ?? null} />}
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="flex-1 p-4 pb-40">
-        <div className="max-w-2xl mx-auto space-y-4">
-          {/* Summary */}
-          <div className="text-center py-2">
-            {isLoading ? (
-              <Skeleton className="h-5 w-48 mx-auto" />
-            ) : (
-              <p className="text-muted-foreground">
-                Has <span className="font-semibold text-foreground">{count}</span> sticker{count !== 1 ? 's' : ''} you need
-              </p>
-            )}
-          </div>
-
-          {/* Sticker list */}
-          {isLoading ? (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Skeleton key={i} className="aspect-[3/4] rounded-lg" />
-              ))}
-            </div>
-          ) : count === 0 ? (
-            <Card className="w-full">
-              <CardContent className="flex flex-col items-center py-8 text-center">
-                <Package className="h-12 w-12 text-muted-foreground mb-3" />
-                <p className="text-muted-foreground mb-2">
-                  No duplicates from this friend match your needs yet.
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Ask @{friendProfile?.username ?? 'your friend'} to mark their duplicate stickers in the Album tab.
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {helpfulStickers.map((sticker) => {
-                const isSelected = selectedStickers.has(sticker.id);
-                return (
-                  <button
-                    key={sticker.id}
-                    onClick={() => toggleSticker(sticker.id)}
-                    className={`relative aspect-[3/4] rounded-lg border p-2 flex flex-col items-center justify-center text-center transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${
-                      isSelected
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-card hover:bg-accent/50'
-                    }`}
-                  >
-                    {/* Checkbox indicator */}
-                    <div className="absolute top-2 right-2">
-                      <Checkbox
-                        checked={isSelected}
-                        onCheckedChange={() => toggleSticker(sticker.id)}
-                        aria-label={`Select sticker ${sticker.code}`}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </div>
-
-                    <span className="font-semibold text-foreground text-sm">
-                      {sticker.code}
-                    </span>
-                    {sticker.team_name && (
-                      <span className="text-xs text-muted-foreground mt-1 truncate w-full px-1">
-                        {sticker.team_name}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+      <main className="flex-1 px-4 pt-4 pb-40 max-w-md mx-auto w-full space-y-4">
+        <div className="text-center py-2">
+          {isLoading ? <Skeleton className="h-5 w-48 mx-auto" style={{ background: 'rgba(255,255,255,0.06)' }} /> : (
+            <p style={{ color: 'rgba(255,255,255,0.5)' }}>Has <span className="font-semibold" style={{ color: '#FFFFFF' }}>{count}</span> sticker{count !== 1 ? 's' : ''} you need</p>
           )}
         </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => <Skeleton key={i} className="aspect-[3/4] rounded-[14px]" style={{ background: 'rgba(255,255,255,0.06)' }} />)}
+          </div>
+        ) : count === 0 ? (
+          <div className="premium-panel p-8 flex flex-col items-center text-center">
+            <Package className="h-12 w-12 mb-3" style={{ color: 'rgba(255,255,255,0.2)' }} />
+            <p className="text-[14px] mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>No duplicates match your needs yet.</p>
+            <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.35)' }}>Ask @{friendProfile?.username ?? 'your friend'} to mark their duplicates.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {helpfulStickers.map((sticker) => {
+              const isSelected = selectedStickers.has(sticker.id);
+              return (
+                <button
+                  key={sticker.id}
+                  onClick={() => toggleSticker(sticker.id)}
+                  className="relative aspect-[3/4] rounded-[14px] p-2 flex flex-col items-center justify-center text-center transition-all duration-150 active:scale-[0.96]"
+                  style={{ background: isSelected ? 'rgba(30,91,255,0.15)' : 'rgba(255,255,255,0.04)', border: isSelected ? '1px solid rgba(30,91,255,0.5)' : '1px solid rgba(255,255,255,0.08)' }}
+                >
+                  <div className="absolute top-2 right-2">
+                    <Checkbox checked={isSelected} onCheckedChange={() => toggleSticker(sticker.id)} onClick={(e) => e.stopPropagation()} />
+                  </div>
+                  <span className="font-semibold text-sm" style={{ color: '#FFFFFF' }}>{sticker.code}</span>
+                  {sticker.team_name && <span className="text-[10px] mt-1 truncate w-full px-1" style={{ color: 'rgba(255,255,255,0.45)' }}>{sticker.team_name}</span>}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </main>
 
-      {/* Sticky bottom action bar - above tab bar */}
       {count > 0 && (
-        <div className="fixed left-0 right-0 bottom-16 z-20 bg-background border-t border-border shadow-[0_-2px_10px_rgba(0,0,0,0.1)] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-          <div className="max-w-2xl mx-auto">
-            <Button
-              className="w-full"
+        <div className="fixed left-0 right-0 bottom-16 z-20 px-4 py-3" style={{ background: 'rgba(7,28,71,0.95)', borderTop: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}>
+          <div className="max-w-md mx-auto">
+            <button
+              className="w-full h-11 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
+              style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}
               disabled={selectedCount === 0 || isCreating}
               onClick={handleRequestClick}
             >
-              {isCreating ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Sending...
-                </>
-              ) : selectedCount === 0 ? (
-                'Select stickers'
-              ) : (
-                `Request (${selectedCount})`
-              )}
-            </Button>
+              {isCreating ? (<><Loader2 className="h-4 w-4 animate-spin mr-2 inline" />Sending...</>) : selectedCount === 0 ? 'Select stickers' : `Request (${selectedCount})`}
+            </button>
           </div>
         </div>
       )}
