@@ -1,6 +1,8 @@
+import { useEffect, useRef } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -9,10 +11,24 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, loading: authLoading } = useAuth();
   const location = useLocation();
-  const { profile, isLoading: profileLoading } = useUserProfile();
+  const { profile, isLoading: profileLoading, refetchProfile } = useUserProfile();
+  const ensuredRef = useRef(false);
 
-  // Still loading auth or profile
-  if (authLoading || (user && profileLoading)) {
+  // Auto-create user row if auth exists but profile row is missing
+  useEffect(() => {
+    if (!user || profileLoading || profile || ensuredRef.current) return;
+    ensuredRef.current = true;
+    supabase
+      .from('users')
+      .upsert({ id: user.id, email: user.email! }, { onConflict: 'id' })
+      .then(({ error }) => {
+        if (error) console.error('Auto-create user row failed:', error);
+        refetchProfile();
+      });
+  }, [user, profileLoading, profile, refetchProfile]);
+
+  // Still loading auth or profile, or creating missing row
+  if (authLoading || (user && profileLoading) || (user && !profile && !ensuredRef.current)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
@@ -20,20 +36,17 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
-  // Not authenticated
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
-  // Check username from database
-  const hasUsername = profile?.username !== null && profile?.username !== undefined;
+  // Profile row exists but no username → onboarding
+  const hasUsername = !!profile?.username;
 
-  // If user doesn't have a username and isn't on the onboarding page, redirect
   if (!hasUsername && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />;
   }
 
-  // If user has a username and is on onboarding, redirect to home
   if (hasUsername && location.pathname === '/onboarding') {
     return <Navigate to="/" replace />;
   }
