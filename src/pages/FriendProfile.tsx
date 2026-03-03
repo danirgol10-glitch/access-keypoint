@@ -6,13 +6,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useFriendStickers } from '@/hooks/useFriendStickers';
 import { useAlbumConfig } from '@/hooks/useAlbumStats';
 import { BlockUserMenu } from '@/components/BlockUserMenu';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Search, Package } from 'lucide-react';
+import { ArrowLeft, Search, Package, User } from 'lucide-react';
 
 type FilterType = 'all' | 'have' | 'duplicate';
 
@@ -22,23 +18,12 @@ const FriendProfile = () => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch friend's username
   const { data: friendProfile, isLoading: profileLoading } = useQuery({
     queryKey: ['friend-profile', friendId],
     queryFn: async () => {
       if (!friendId) return null;
-
-      const { data, error } = await supabase
-        .from('users')
-        .select('username, last_active_at')
-        .eq('id', friendId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching friend profile:', error);
-        return null;
-      }
-
+      const { data, error } = await supabase.from('users').select('username, last_active_at').eq('id', friendId).single();
+      if (error) return null;
       return data;
     },
     enabled: !!friendId,
@@ -48,178 +33,115 @@ const FriendProfile = () => {
   const { data: totalStickers } = useAlbumConfig();
 
   const isLoading = profileLoading || stickersLoading;
-
   const missingCount = (totalStickers ?? 0) - ownedCount;
   const progressPercent = totalStickers ? (ownedCount / totalStickers) * 100 : 0;
 
-  // Filter and search stickers
   const filteredStickers = useMemo(() => {
     let result = stickers;
-
-    // Apply status filter
-    if (filter === 'have') {
-      result = result.filter((s) => s.status === 'HAVE');
-    } else if (filter === 'duplicate') {
-      result = result.filter((s) => s.status === 'DUPLICATE');
-    }
-
-    // Apply search
+    if (filter === 'have') result = result.filter((s) => s.status === 'HAVE');
+    else if (filter === 'duplicate') result = result.filter((s) => s.status === 'DUPLICATE');
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      result = result.filter(
-        (s) =>
-          s.code.toLowerCase().includes(query) ||
-          s.display_name?.toLowerCase().includes(query) ||
-          s.team_name?.toLowerCase().includes(query)
-      );
+      result = result.filter((s) => s.code.toLowerCase().includes(query) || s.display_name?.toLowerCase().includes(query) || s.team_name?.toLowerCase().includes(query));
     }
-
-    // Sort by code
     result.sort((a, b) => a.code.localeCompare(b.code));
-
     return result;
   }, [stickers, filter, searchQuery]);
 
-  const isDev = import.meta.env.DEV;
-
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen page-bg">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3">
+      <header className="sticky top-0 z-10 px-4 py-3" style={{ background: 'rgba(7,28,71,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+          <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <ArrowLeft className="h-5 w-5" style={{ color: 'rgba(255,255,255,0.7)' }} />
+          </button>
           <div className="flex-1">
-            {profileLoading ? (
-              <Skeleton className="h-6 w-32" />
-            ) : (
+            {profileLoading ? <Skeleton className="h-6 w-32" style={{ background: 'rgba(255,255,255,0.06)' }} /> : (
               <div>
-                <h1 className="text-lg font-semibold text-foreground">
-                  @{friendProfile?.username ?? 'Unknown'}
-                </h1>
-                {friendProfile?.last_active_at && (
-                  <p className="text-xs text-muted-foreground">
-                    Active {formatDistanceToNow(new Date(friendProfile.last_active_at), { addSuffix: true })}
-                  </p>
-                )}
+                <h1 className="text-[16px] font-semibold" style={{ color: '#FFFFFF' }}>@{friendProfile?.username ?? 'Unknown'}</h1>
+                {friendProfile?.last_active_at && <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.4)' }}>Active {formatDistanceToNow(new Date(friendProfile.last_active_at), { addSuffix: true })}</p>}
               </div>
             )}
           </div>
-          {friendId && (
-            <BlockUserMenu userId={friendId} username={friendProfile?.username ?? null} />
-          )}
+          {friendId && <BlockUserMenu userId={friendId} username={friendProfile?.username ?? null} />}
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="flex-1 p-4 pb-24">
-        <div className="max-w-2xl mx-auto space-y-4">
-          {/* Progress summary */}
-          <Card>
-            <CardContent className="py-4">
-              {isLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-8 w-24 mx-auto" />
-                  <Skeleton className="h-4 w-48 mx-auto" />
-                </div>
-              ) : (
-                <div className="text-center space-y-2">
-                  <p className="text-3xl font-bold text-foreground">
-                    {progressPercent.toFixed(1)}%
-                  </p>
-                  <div className="flex justify-center gap-4 text-sm text-muted-foreground">
-                    <span>Owned {ownedCount}</span>
-                    <span>•</span>
-                    <span>Duplicates {duplicateCount}</span>
-                    <span>•</span>
-                    <span>Missing {missingCount}</span>
-                  </div>
-                  {isDev && (
-                    <p className="text-xs text-muted-foreground/50 font-mono">
-                      debug: friend_user_id={friendId} owned={ownedCount} dup={duplicateCount}
-                    </p>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by code, name, team..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          {/* Filter tabs */}
-          <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterType)}>
-            <TabsList className="w-full grid grid-cols-3">
-              <TabsTrigger value="all">All ({stickers.length})</TabsTrigger>
-              <TabsTrigger value="have">Have ({haveCount})</TabsTrigger>
-              <TabsTrigger value="duplicate">Duplicate ({duplicateCount})</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          {/* Sticker list */}
+      <main className="flex-1 px-4 pt-4 pb-24 max-w-md mx-auto w-full space-y-4">
+        {/* Progress summary */}
+        <div className="premium-panel premium-panel-gold p-5">
           {isLoading ? (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Skeleton key={i} className="aspect-[3/4] rounded-lg" />
-              ))}
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-24 mx-auto" style={{ background: 'rgba(255,255,255,0.06)' }} />
+              <Skeleton className="h-4 w-48 mx-auto" style={{ background: 'rgba(255,255,255,0.06)' }} />
             </div>
-          ) : filteredStickers.length === 0 ? (
-            <Card className="w-full">
-              <CardContent className="flex flex-col items-center py-8 text-center">
-                <Package className="h-12 w-12 text-muted-foreground mb-3" />
-                <p className="text-muted-foreground">
-                  {searchQuery.trim()
-                    ? 'No stickers match your search.'
-                    : filter !== 'all'
-                    ? `No ${filter} stickers.`
-                    : 'This friend has not marked any stickers yet.'}
-                </p>
-              </CardContent>
-            </Card>
           ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {filteredStickers.map((sticker) => (
-                <div
-                  key={sticker.id}
-                  className="relative aspect-[3/4] rounded-lg border border-border bg-card p-2 flex flex-col items-center justify-center text-center"
-                >
-                  {/* Status badge */}
-                  <div className="absolute top-2 right-2">
-                    <Badge
-                      variant={sticker.status === 'DUPLICATE' ? 'default' : 'secondary'}
-                      className="text-[10px] px-1.5 py-0"
-                    >
-                      {sticker.status === 'DUPLICATE' ? 'Dup' : 'Have'}
-                    </Badge>
-                  </div>
-
-                  <span className="font-semibold text-foreground text-sm">
-                    {sticker.code}
-                  </span>
-                  {sticker.team_name && (
-                    <span className="text-xs text-muted-foreground mt-1 truncate w-full px-1">
-                      {sticker.team_name}
-                    </span>
-                  )}
-                </div>
-              ))}
+            <div className="text-center space-y-2">
+              <p className="text-3xl font-bold" style={{ color: '#FFFFFF' }}>{progressPercent.toFixed(1)}%</p>
+              <div className="flex justify-center gap-4 text-[12px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                <span>Owned {ownedCount}</span><span>•</span><span>Duplicates {duplicateCount}</span><span>•</span><span>Missing {missingCount}</span>
+              </div>
             </div>
           )}
         </div>
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'rgba(255,255,255,0.4)' }} />
+          <input
+            placeholder="Search by code, name, team..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl outline-none"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}
+          />
+        </div>
+
+        {/* Filter tabs */}
+        <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.10)' }}>
+          {(['all', 'have', 'duplicate'] as FilterType[]).map((f) => {
+            const count = f === 'all' ? stickers.length : f === 'have' ? haveCount : duplicateCount;
+            return (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className="flex-1 py-2 text-[12px] font-medium capitalize transition-colors"
+                style={filter === f ? { background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}
+              >
+                {f} ({count})
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sticker grid */}
+        {isLoading ? (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => <Skeleton key={i} className="aspect-[3/4] rounded-[14px]" style={{ background: 'rgba(255,255,255,0.06)' }} />)}
+          </div>
+        ) : filteredStickers.length === 0 ? (
+          <div className="premium-panel p-8 flex flex-col items-center text-center">
+            <Package className="h-12 w-12 mb-3" style={{ color: 'rgba(255,255,255,0.2)' }} />
+            <p className="text-[14px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              {searchQuery.trim() ? 'No stickers match your search.' : filter !== 'all' ? `No ${filter} stickers.` : 'No stickers marked yet.'}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {filteredStickers.map((sticker) => (
+              <div key={sticker.id} className="relative aspect-[3/4] rounded-[14px] p-2 flex flex-col items-center justify-center text-center" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div className="absolute top-2 right-2">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: sticker.status === 'DUPLICATE' ? 'rgba(79,163,255,0.15)' : 'rgba(34,197,94,0.15)', color: sticker.status === 'DUPLICATE' ? 'hsl(222,100%,65%)' : 'hsl(142,72%,55%)' }}>
+                    {sticker.status === 'DUPLICATE' ? 'Dup' : 'Have'}
+                  </span>
+                </div>
+                <span className="font-semibold text-sm" style={{ color: '#FFFFFF' }}>{sticker.code}</span>
+                {sticker.team_name && <span className="text-[10px] mt-1 truncate w-full px-1" style={{ color: 'rgba(255,255,255,0.45)' }}>{sticker.team_name}</span>}
+              </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

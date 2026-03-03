@@ -3,9 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTradeRequestDetail, useTradeRequests } from '@/hooks/useTradeRequests';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   AlertDialog,
@@ -21,14 +18,11 @@ import { ArrowLeft, Package, Check, X, MessageCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 
-const statusConfig: Record<
-  string,
-  { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }
-> = {
-  SENT: { label: 'Pending', variant: 'default' },
-  ACCEPTED: { label: 'Accepted', variant: 'secondary' },
-  REJECTED: { label: 'Rejected', variant: 'destructive' },
-  CANCELLED: { label: 'Cancelled', variant: 'outline' },
+const statusConfig: Record<string, { label: string; bg: string; color: string }> = {
+  SENT: { label: 'Pending', bg: 'rgba(255,210,63,0.15)', color: 'hsl(45, 93%, 58%)' },
+  ACCEPTED: { label: 'Accepted', bg: 'rgba(34,197,94,0.15)', color: 'hsl(142, 72%, 55%)' },
+  REJECTED: { label: 'Rejected', bg: 'rgba(239,68,68,0.15)', color: 'hsl(0, 84%, 60%)' },
+  CANCELLED: { label: 'Cancelled', bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' },
 };
 
 const RequestDetail = () => {
@@ -39,239 +33,132 @@ const RequestDetail = () => {
   const { data: request, isLoading } = useTradeRequestDetail(requestId);
   const { updateStatus, isUpdating } = useTradeRequests();
 
-  const [confirmDialog, setConfirmDialog] = useState<{
-    open: boolean;
-    type: 'reject' | 'cancel';
-  } | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; type: 'reject' | 'cancel' } | null>(null);
 
   const statusInfo = request ? statusConfig[request.status] : null;
   const canAct = request?.status === 'SENT';
   const isReceiver = request && request.to_user_id === user?.id;
   const isSender = request && request.from_user_id === user?.id;
-
-  // Determine other user ID for notifications
   const otherUserId = request?.isFromMe ? request.to_user_id : request?.from_user_id;
 
   const handleAccept = async () => {
     if (!requestId || !otherUserId) return;
     try {
-      await updateStatus({
-        requestId,
-        newStatus: 'ACCEPTED',
-        otherUserId,
-        otherUsername: request?.other_user?.username ?? undefined,
-        myUsername: myProfile?.username ?? undefined,
-      });
+      await updateStatus({ requestId, newStatus: 'ACCEPTED', otherUserId, otherUsername: request?.other_user?.username ?? undefined, myUsername: myProfile?.username ?? undefined });
       toast.success('Request accepted');
-    } catch (error) {
-      console.error('Error accepting request:', error);
-      toast.error('Failed to accept request');
-    }
-  };
-
-  const handleReject = () => {
-    setConfirmDialog({ open: true, type: 'reject' });
-  };
-
-  const handleCancel = () => {
-    setConfirmDialog({ open: true, type: 'cancel' });
+    } catch { toast.error('Failed to accept request'); }
   };
 
   const confirmAction = async () => {
     if (!confirmDialog || !requestId || !otherUserId) return;
-
     try {
       const newStatus = confirmDialog.type === 'reject' ? 'REJECTED' : 'CANCELLED';
-      await updateStatus({
-        requestId,
-        newStatus,
-        otherUserId,
-        otherUsername: request?.other_user?.username ?? undefined,
-        myUsername: myProfile?.username ?? undefined,
-      });
+      await updateStatus({ requestId, newStatus, otherUserId, otherUsername: request?.other_user?.username ?? undefined, myUsername: myProfile?.username ?? undefined });
       toast.success(confirmDialog.type === 'reject' ? 'Request rejected' : 'Request cancelled');
-    } catch (error) {
-      console.error('Error updating request:', error);
-      toast.error('Failed to update request');
-    } finally {
-      setConfirmDialog(null);
-    }
+    } catch { toast.error('Failed to update request'); } finally { setConfirmDialog(null); }
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3">
+    <div className="flex flex-col min-h-screen page-bg">
+      <header className="sticky top-0 z-10 px-4 py-3" style={{ background: 'rgba(7,28,71,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-lg font-semibold text-foreground">Request Details</h1>
-          </div>
+          <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <ArrowLeft className="h-5 w-5" style={{ color: 'rgba(255,255,255,0.7)' }} />
+          </button>
+          <h1 className="text-[16px] font-semibold" style={{ color: '#FFFFFF' }}>Request Details</h1>
         </div>
       </header>
 
-      {/* Main content */}
-      <main className="flex-1 p-4">
-        <div className="max-w-2xl mx-auto space-y-6">
-          {isLoading ? (
-            <>
-              <Skeleton className="h-24 w-full rounded-lg" />
-              <Skeleton className="h-48 w-full rounded-lg" />
-            </>
-          ) : !request ? (
-            <Card>
-              <CardContent className="flex flex-col items-center py-8 text-center">
-                <Package className="h-12 w-12 text-muted-foreground mb-3" />
-                <p className="text-muted-foreground">Request not found.</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              {/* Request info */}
-              <Card>
-                <CardContent className="p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Status</span>
-                    {statusInfo && (
-                      <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      {request.isFromMe ? 'To' : 'From'}
-                    </span>
-                    <span className="font-medium">
-                      @{request.other_user?.username ?? 'Unknown'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Created</span>
-                    <span className="text-sm">
-                      {formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Action buttons */}
-              {canAct && (
-                <Card>
-                  <CardContent className="p-4">
-                    {isReceiver && (
-                      <div className="flex gap-3">
-                        <Button
-                          className="flex-1"
-                          onClick={handleAccept}
-                          disabled={isUpdating}
-                        >
-                          <Check className="h-4 w-4 mr-2" />
-                          Accept
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="flex-1"
-                          onClick={handleReject}
-                          disabled={isUpdating}
-                        >
-                          <X className="h-4 w-4 mr-2" />
-                          Reject
-                        </Button>
-                      </div>
-                    )}
-                    {isSender && (
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={handleCancel}
-                        disabled={isUpdating}
-                      >
-                        Cancel Request
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Open Chat button when ACCEPTED */}
-              {request.status === 'ACCEPTED' && request.conversation_id && (
-                <Card>
-                  <CardContent className="p-4">
-                    <Button
-                      className="w-full"
-                      onClick={() => navigate(`/chat/${request.conversation_id}`)}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Open Chat
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Requested stickers */}
-              <div className="space-y-3">
-                <h2 className="text-sm font-medium text-muted-foreground">
-                  Requested Stickers ({request.items?.length ?? 0})
-                </h2>
-                {request.items && request.items.length > 0 ? (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                    {request.items.map((item) => (
-                      <div
-                        key={item.id}
-                        className="aspect-[3/4] rounded-lg border border-border bg-card p-2 flex flex-col items-center justify-center text-center"
-                      >
-                        <span className="font-semibold text-foreground text-sm">
-                          {item.sticker?.code ?? 'Unknown'}
-                        </span>
-                        {item.sticker?.team_name && (
-                          <span className="text-xs text-muted-foreground mt-1 truncate w-full px-1">
-                            {item.sticker.team_name}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <Card>
-                    <CardContent className="flex flex-col items-center py-8 text-center">
-                      <Package className="h-12 w-12 text-muted-foreground mb-3" />
-                      <p className="text-muted-foreground">No stickers in this request.</p>
-                    </CardContent>
-                  </Card>
+      <main className="flex-1 px-4 pt-4 pb-24 max-w-md mx-auto w-full space-y-4">
+        {isLoading ? (
+          <>
+            <Skeleton className="h-24 w-full rounded-[20px]" style={{ background: 'rgba(255,255,255,0.06)' }} />
+            <Skeleton className="h-48 w-full rounded-[20px]" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          </>
+        ) : !request ? (
+          <div className="premium-panel p-8 flex flex-col items-center text-center">
+            <Package className="h-12 w-12 mb-3" style={{ color: 'rgba(255,255,255,0.2)' }} />
+            <p style={{ color: 'rgba(255,255,255,0.5)' }}>Request not found.</p>
+          </div>
+        ) : (
+          <>
+            {/* Request info */}
+            <div className="premium-panel premium-panel-gold p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.5)' }}>Status</span>
+                {statusInfo && (
+                  <span className="text-[12px] font-medium px-2.5 py-0.5 rounded-full" style={{ background: statusInfo.bg, color: statusInfo.color }}>{statusInfo.label}</span>
                 )}
               </div>
-            </>
-          )}
-        </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{request.isFromMe ? 'To' : 'From'}</span>
+                <span className="font-medium text-[14px]" style={{ color: '#FFFFFF' }}>@{request.other_user?.username ?? 'Unknown'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.5)' }}>Created</span>
+                <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.65)' }}>{formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}</span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            {canAct && (
+              <div className="premium-panel p-4 space-y-3">
+                {isReceiver && (
+                  <div className="flex gap-3">
+                    <button onClick={handleAccept} disabled={isUpdating} className="flex-1 h-10 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50" style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>
+                      <Check className="h-4 w-4" />Accept
+                    </button>
+                    <button onClick={() => setConfirmDialog({ open: true, type: 'reject' })} disabled={isUpdating} className="flex-1 h-10 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.85)' }}>
+                      <X className="h-4 w-4" />Reject
+                    </button>
+                  </div>
+                )}
+                {isSender && (
+                  <button onClick={() => setConfirmDialog({ open: true, type: 'cancel' })} disabled={isUpdating} className="w-full h-10 rounded-xl text-sm font-medium flex items-center justify-center transition-all active:scale-[0.98] disabled:opacity-50" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.85)' }}>
+                    Cancel Request
+                  </button>
+                )}
+              </div>
+            )}
+
+            {request.status === 'ACCEPTED' && request.conversation_id && (
+              <button onClick={() => navigate(`/chat/${request.conversation_id}`)} className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>
+                <MessageCircle className="h-4 w-4" />Open Chat
+              </button>
+            )}
+
+            {/* Stickers */}
+            <div className="space-y-3">
+              <h2 className="text-[14px] font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Requested Stickers ({request.items?.length ?? 0})</h2>
+              {request.items && request.items.length > 0 ? (
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                  {request.items.map((item) => (
+                    <div key={item.id} className="aspect-[3/4] rounded-[14px] p-2 flex flex-col items-center justify-center text-center" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <span className="font-semibold text-sm" style={{ color: '#FFFFFF' }}>{item.sticker?.code ?? 'Unknown'}</span>
+                      {item.sticker?.team_name && <span className="text-[10px] mt-1 truncate w-full px-1" style={{ color: 'rgba(255,255,255,0.45)' }}>{item.sticker.team_name}</span>}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="premium-panel p-8 flex flex-col items-center text-center">
+                  <Package className="h-12 w-12 mb-3" style={{ color: 'rgba(255,255,255,0.2)' }} />
+                  <p style={{ color: 'rgba(255,255,255,0.5)' }}>No stickers in this request.</p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </main>
 
-      {/* Confirmation Dialog */}
-      <AlertDialog
-        open={confirmDialog?.open ?? false}
-        onOpenChange={(open) => !open && setConfirmDialog(null)}
-      >
-        <AlertDialogContent>
+      <AlertDialog open={confirmDialog?.open ?? false} onOpenChange={(open) => !open && setConfirmDialog(null)}>
+        <AlertDialogContent style={{ background: '#0A1A3A', border: '1px solid rgba(255,255,255,0.10)' }}>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {confirmDialog?.type === 'reject' ? 'Reject Request?' : 'Cancel Request?'}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {confirmDialog?.type === 'reject'
-                ? 'Are you sure you want to reject this trade request? This action cannot be undone.'
-                : 'Are you sure you want to cancel this trade request? This action cannot be undone.'}
-            </AlertDialogDescription>
+            <AlertDialogTitle style={{ color: '#FFFFFF' }}>{confirmDialog?.type === 'reject' ? 'Reject Request?' : 'Cancel Request?'}</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'rgba(255,255,255,0.6)' }}>Are you sure? This action cannot be undone.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>No, go back</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmAction}>
-              Yes, {confirmDialog?.type === 'reject' ? 'reject' : 'cancel'}
-            </AlertDialogAction>
+            <AlertDialogCancel style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.85)' }}>No, go back</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmAction} style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>Yes, {confirmDialog?.type === 'reject' ? 'reject' : 'cancel'}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

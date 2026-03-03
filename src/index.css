@@ -4,8 +4,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Design System - Clean, modern, warm aesthetic */
-
 @layer base {
   :root {
     --background: 222 84% 15%;
@@ -49,26 +47,27 @@
     --sidebar-border: 220 50% 22%;
     --sidebar-ring: 222 100% 56%;
 
-    /* Custom tokens */
     --tab-active: 222 100% 56%;
     --tab-inactive: 220 10% 62%;
     --auth-gradient-start: 220 85% 15%;
     --auth-gradient-end: 222 70% 22%;
 
-    /* Status tokens */
     --pending: 45 93% 58%;
     --success: 142 72% 46%;
     --error: 0 84% 60%;
 
-    /* Header gradient */
     --header-gradient-start: 220 80% 16%;
     --header-gradient-end: 222 75% 26%;
 
-    /* Hero card - Road to Glory */
     --hero-bg: 222 82% 24%;
     --hero-bg-end: 212 68% 35%;
     --hero-glow: 45 95% 60%;
     --hero-accent: 45 95% 60%;
+
+    /* FIFA premium tokens */
+    --panel-bg: 220 50% 100%;
+    --panel-border: 220 50% 100%;
+    --gold-accent: 45 93% 58%;
   }
 
   .dark {
@@ -127,6 +126,10 @@
     --hero-bg-end: 212 68% 30%;
     --hero-glow: 45 95% 55%;
     --hero-accent: 45 95% 55%;
+
+    --panel-bg: 220 50% 100%;
+    --panel-border: 220 50% 100%;
+    --gold-accent: 45 93% 58%;
   }
 }
 
@@ -159,16 +162,11 @@
   }
 
   .hero-gradient {
-    background: linear-gradient(
-      135deg,
-      #0B2A55 0%,
-      #1E4C8A 100%
-    );
+    background: linear-gradient(135deg, #0B2A55 0%, #1E4C8A 100%);
     position: relative;
     overflow: hidden;
   }
 
-  /* Radial spotlight behind ring */
   .hero-gradient::before {
     content: '';
     position: absolute;
@@ -182,7 +180,6 @@
     z-index: 0;
   }
 
-  /* Gold top line with bottom shadow */
   .hero-gradient::after {
     content: '';
     position: absolute;
@@ -196,7 +193,6 @@
     z-index: 1;
   }
 
-  /* Vignette overlay */
   .hero-vignette {
     position: absolute;
     inset: 0;
@@ -205,7 +201,6 @@
     z-index: 0;
   }
 
-  /* Noise texture overlay */
   .hero-noise {
     position: absolute;
     inset: 0;
@@ -215,6 +210,44 @@
     background-size: 128px 128px;
     pointer-events: none;
     z-index: 0;
+  }
+
+  /* Unified premium panel */
+  .premium-panel {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .premium-panel-gold::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255, 210, 63, 0.6);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Unified page background */
+  .page-bg {
+    background: #071C47;
+    min-height: 100vh;
+  }
+
+  .page-vignette {
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8rem;
+    z-index: 10;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), transparent);
   }
 
   @keyframes ring-draw {
