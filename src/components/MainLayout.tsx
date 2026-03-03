@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Home, Image, Handshake } from 'lucide-react';
+import { Home, Image, Handshake, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useConversations } from '@/hooks/useConversations';
@@ -11,6 +11,7 @@ const tabConfig = [
   { path: '/', labelKey: 'nav.progress', icon: Home },
   { path: '/album', labelKey: 'nav.album', icon: Image },
   { path: '/trading', labelKey: 'nav.trading', icon: Handshake },
+  { path: '/friends', labelKey: 'nav.friends', icon: Users },
 ];
 
 const MainLayout = () => {

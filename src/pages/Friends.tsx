@@ -34,7 +34,7 @@ const Friends = () => {
 
   return (
     <div className="flex flex-col items-center p-6 space-y-6 pb-24">
-      <p className="text-xs font-mono text-destructive w-full max-w-md">FRIENDS SCREEN v2 ACTIVE</p>
+      <h1 className="text-2xl font-bold text-foreground w-full max-w-md">{t('friends.title')}</h1>
       <h1 className="text-2xl font-bold text-foreground w-full max-w-md">{t('friends.title')}</h1>
 
       {/* Search Users */}

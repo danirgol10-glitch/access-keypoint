@@ -14,6 +14,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.progress': 'Progress',
     'nav.album': 'Album',
     'nav.trading': 'Trading',
+    'nav.friends': 'Friends',
 
     // Profile
     'profile.title': 'Profile',
@@ -162,6 +163,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.progress': 'Progreso',
     'nav.album': 'Álbum',
     'nav.trading': 'Intercambio',
+    'nav.friends': 'Amigos',
 
     // Profile
     'profile.title': 'Perfil',
