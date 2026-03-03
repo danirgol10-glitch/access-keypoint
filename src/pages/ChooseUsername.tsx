@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUniversities } from '@/hooks/useUniversities';
@@ -17,7 +18,7 @@ const ChooseUsername = () => {
   const [city, setCity] = useState('');
   const [universityId, setUniversityId] = useState<string>('none');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { t } = useLanguage();
   const { profile, refetchProfile } = useUserProfile();
   const { universities, isLoading: uniLoading } = useUniversities(city || null);
@@ -54,7 +55,16 @@ const ChooseUsername = () => {
   return (
     <div className="flex min-h-screen items-center justify-center page-bg p-4">
       <div className="w-full max-w-md premium-panel premium-panel-gold p-6 space-y-6">
-        <div className="text-center space-y-1">
+        <div className="relative text-center space-y-1">
+          <button
+            type="button"
+            onClick={async () => { await signOut(); navigate('/auth', { replace: true }); }}
+            className="absolute left-0 top-0 flex items-center gap-1 text-xs transition-colors hover:opacity-80"
+            style={{ color: 'rgba(255,255,255,0.5)' }}
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            {t('setup.back')}
+          </button>
           <h1 className="text-[22px] font-bold" style={{ color: '#FFFFFF' }}>{t('setup.title')}</h1>
           <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.55)' }}>{t('setup.subtitle')}</p>
         </div>
