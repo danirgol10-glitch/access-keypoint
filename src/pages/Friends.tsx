@@ -1,17 +1,98 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Progress } from '@/components/ui/progress';
-import { Users, Search, UserPlus, User, ChevronRight, Sparkles } from 'lucide-react';
+import { Users, Search, UserPlus, User, ChevronRight, Sparkles, MapPin, GraduationCap, Activity } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFriendAlbumStats } from '@/hooks/useFriendAlbumStats';
 import { useSendFriendRequest } from '@/hooks/useFriendships';
 import { useSuggestedFriends } from '@/hooks/useSuggestedFriends';
 import { useUserSearch } from '@/hooks/useUserSearch';
 import { toast } from '@/hooks/use-toast';
+
+/* ─── Reusable Sub-components ─── */
+
+function PremiumCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="relative rounded-[20px] p-4 overflow-hidden"
+      style={{
+        background: 'rgba(255,255,255,0.04)',
+        border: '1px solid rgba(255,255,255,0.08)',
+      }}
+    >
+      <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'rgba(255,210,63,0.6)' }} />
+      {children}
+    </div>
+  );
+}
+
+function SectionHeader({ icon: Icon, title }: { icon: React.ElementType; title: string }) {
+  return (
+    <div className="flex items-center gap-2 mb-1">
+      <Icon className="w-[18px] h-[18px]" style={{ color: 'rgba(255,255,255,0.5)' }} />
+      <span className="text-[16px] font-semibold" style={{ color: '#FFFFFF' }}>{title}</span>
+    </div>
+  );
+}
+
+function AvatarCircle() {
+  return (
+    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #1E5BFF, #4FA3FF)', padding: '2px' }}>
+      <div className="w-full h-full rounded-full flex items-center justify-center" style={{ background: '#0A1A3A' }}>
+        <User className="w-4 h-4" style={{ color: 'rgba(207,227,255,0.7)' }} />
+      </div>
+    </div>
+  );
+}
+
+function UserRow({ username, detail, action, onAdd, isPending, chip, addLabel, pendingLabel, friendsLabel }: {
+  username: string | null;
+  detail: string;
+  action: 'add' | 'pending' | 'friends';
+  onAdd: () => void;
+  isPending: boolean;
+  chip?: { label: string; icon: React.ElementType };
+  addLabel: string;
+  pendingLabel: string;
+  friendsLabel: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 p-3 rounded-[14px] transition-all duration-150 active:scale-[0.98] active:opacity-80" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <AvatarCircle />
+      <div className="flex-1 min-w-0">
+        <p className="text-[14px] font-semibold truncate" style={{ color: '#FFFFFF' }}>@{username}</p>
+        <p className="text-[12px] truncate" style={{ color: 'rgba(255,255,255,0.45)' }}>{detail}</p>
+      </div>
+
+      {chip && (
+        <span className="hidden sm:flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.70)' }}>
+          <chip.icon className="w-3 h-3" />
+          {chip.label}
+        </span>
+      )}
+
+      {action === 'add' && (
+        <button onClick={onAdd} disabled={isPending} className="flex items-center gap-1 text-[12px] font-semibold px-3 py-1.5 rounded-xl flex-shrink-0 transition-all duration-150 active:scale-95 disabled:opacity-50 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>
+          <span className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'rgba(255,210,63,0.35)' }} />
+          <UserPlus className="w-3.5 h-3.5" />
+          {addLabel}
+        </button>
+      )}
+      {action === 'pending' && (
+        <span className="text-[12px] font-medium px-3 py-1.5 rounded-xl flex-shrink-0" style={{ background: 'rgba(255,255,255,0.06)', border: '1px dashed rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)' }}>
+          {pendingLabel}
+        </span>
+      )}
+      {action === 'friends' && (
+        <span className="text-[12px] font-medium px-3 py-1.5 rounded-xl flex-shrink-0" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.55)' }}>
+          {friendsLabel}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/* ─── Main Component ─── */
 
 const Friends = () => {
   const navigate = useNavigate();
@@ -32,151 +113,146 @@ const Friends = () => {
     }
   };
 
-  return (
-    <div className="flex flex-col items-center p-6 space-y-6 pb-24">
-      <h1 className="text-2xl font-bold text-foreground w-full max-w-md">{t('friends.title')}</h1>
-      <h1 className="text-2xl font-bold text-foreground w-full max-w-md">{t('friends.title')}</h1>
+  const getSuggestionChip = (u: { city?: string | null; university_name?: string | null }) => {
+    if (u.city) return { label: 'Same city', icon: MapPin };
+    if (u.university_name) return { label: 'Same university', icon: GraduationCap };
+    return { label: 'Active', icon: Activity };
+  };
 
-      {/* Search Users */}
-      <Card className="w-full max-w-md">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Search className="w-5 h-5" />
-            {t('friends.searchUsers')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Input
-            placeholder={t('friends.searchPlaceholder')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full"
-          />
+  const labels = {
+    add: t('friends.add'),
+    pending: t('trading.pending'),
+    friends: t('friends.alreadyFriends'),
+  };
+
+  return (
+    <div className="min-h-screen pb-28" style={{ background: '#071C47' }}>
+      <div className="pointer-events-none fixed top-0 left-0 right-0 h-32 z-10" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.25), transparent)' }} />
+
+      <div className="relative z-20 px-4 pt-14 space-y-4 max-w-md mx-auto">
+        {/* Header */}
+        <div className="text-center mb-2">
+          <h1 className="text-[22px] font-bold tracking-wide" style={{ color: '#FFFFFF' }}>{t('friends.title')}</h1>
+          <p className="text-[13px] mt-1" style={{ color: 'rgba(255,255,255,0.55)' }}>Find and manage your community</p>
+        </div>
+
+        {/* SEARCH */}
+        <PremiumCard>
+          <SectionHeader icon={Search} title={t('friends.searchUsers')} />
+          <div className="relative mt-3">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'rgba(255,255,255,0.4)' }} />
+            <input
+              type="text"
+              placeholder={t('friends.searchPlaceholder')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl outline-none transition-all duration-200"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#4FA3FF'; e.currentTarget.style.boxShadow = '0 0 12px rgba(79,163,255,0.15)'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; e.currentTarget.style.boxShadow = 'none'; }}
+            />
+          </div>
           {isSearching && (
-            <div className="space-y-2">
-              <Skeleton className="h-14 w-full" />
-              <Skeleton className="h-14 w-full" />
+            <div className="space-y-2 mt-3">
+              <Skeleton className="h-14 w-full rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }} />
+              <Skeleton className="h-14 w-full rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }} />
             </div>
           )}
           {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-3">
-              {t('friends.noResults')}
-            </p>
+            <p className="text-[13px] text-center py-4" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('friends.noResults')}</p>
           )}
-          {searchResults.map((u) => (
-            <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">@{u.username}</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {[u.city, u.university_name].filter(Boolean).join(' · ') || '—'}
-                </p>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleAddFriend(u.username!)}
-                disabled={sendRequest.isPending || u.isFriend || u.isPending}
-              >
-                {u.isFriend ? t('friends.alreadyFriends') : u.isPending ? t('trading.pending') : (
-                  <>
-                    <UserPlus className="w-3.5 h-3.5 mr-1" />
-                    {t('friends.add')}
-                  </>
-                )}
-              </Button>
+          {searchResults.length > 0 && (
+            <div className="space-y-2 mt-3">
+              {searchResults.map((u) => (
+                <UserRow
+                  key={u.id}
+                  username={u.username}
+                  detail={[u.city, u.university_name].filter(Boolean).join(' · ') || '—'}
+                  action={u.isFriend ? 'friends' : u.isPending ? 'pending' : 'add'}
+                  onAdd={() => handleAddFriend(u.username!)}
+                  isPending={sendRequest.isPending}
+                  addLabel={labels.add}
+                  pendingLabel={labels.pending}
+                  friendsLabel={labels.friends}
+                />
+              ))}
             </div>
-          ))}
-        </CardContent>
-      </Card>
+          )}
+        </PremiumCard>
 
-      {/* My Friends */}
-      <Card className="w-full max-w-md">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Users className="w-5 h-5" />
-            {t('friends.myFriends')} ({friendStats.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+        {/* MY FRIENDS */}
+        <PremiumCard>
+          <div className="flex items-center justify-between">
+            <SectionHeader icon={Users} title={t('friends.myFriends')} />
+            <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.7)' }}>
+              {statsLoading ? '…' : friendStats.length}
+            </span>
+          </div>
           {statsLoading ? (
-            <div className="space-y-3">
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
+            <div className="space-y-2 mt-3">
+              <Skeleton className="h-16 w-full rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }} />
+              <Skeleton className="h-16 w-full rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }} />
             </div>
           ) : friendStats.length === 0 ? (
-            <div className="text-center py-6 space-y-1">
-              <p className="text-sm text-muted-foreground">{t('friends.noFriendsYet')}</p>
-              <p className="text-xs text-muted-foreground">{t('friends.searchToConnect')}</p>
+            <div className="flex flex-col items-center py-8 gap-2">
+              <Users className="w-8 h-8" style={{ color: 'rgba(255,255,255,0.2)' }} />
+              <p className="text-[14px] font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('friends.noFriendsYet')}</p>
+              <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{t('friends.searchToConnect')}</p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 mt-3">
               {friendStats.map((friend) => (
                 <button
                   key={friend.friendId}
                   onClick={() => navigate(`/friend-profile/${friend.friendId}`)}
-                  className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3 rounded-[14px] text-left transition-all duration-150 active:scale-[0.98] active:opacity-80"
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
                 >
-                  <div className="flex-1 min-w-0 space-y-1">
+                  <AvatarCircle />
+                  <div className="flex-1 min-w-0 space-y-1.5">
+                    <span className="text-[14px] font-semibold truncate block" style={{ color: '#FFFFFF' }}>@{friend.username}</span>
                     <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                      <span className="font-medium truncate">@{friend.username}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Progress value={friend.progressPercent} className="h-2 flex-1" />
-                      <span className="text-xs text-muted-foreground w-12 text-right">
-                        {friend.progressPercent.toFixed(0)}%
-                      </span>
+                      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                        <div className="h-full rounded-full transition-all" style={{ width: `${friend.progressPercent}%`, background: 'linear-gradient(90deg, #1E5BFF, #4FA3FF)' }} />
+                      </div>
+                      <span className="text-[11px] font-medium w-9 text-right" style={{ color: 'rgba(255,255,255,0.55)' }}>{friend.progressPercent.toFixed(0)}%</span>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" />
+                  <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: 'rgba(255,255,255,0.25)' }} />
                 </button>
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </PremiumCard>
 
-      {/* Suggested Friends */}
-      {suggestions.length > 0 && (
-        <Card className="w-full max-w-md">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              {t('friends.suggested')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* SUGGESTIONS */}
+        {suggestions.length > 0 && (
+          <PremiumCard>
+            <SectionHeader icon={Sparkles} title={t('friends.suggested')} />
+            <p className="text-[12px] -mt-1 mb-3" style={{ color: 'rgba(255,255,255,0.4)' }}>Same city and university first</p>
             {suggestionsLoading ? (
-              <div className="space-y-3">
-                <Skeleton className="h-14 w-full" />
-                <Skeleton className="h-14 w-full" />
-              </div>
+              <Skeleton className="h-14 w-full rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }} />
             ) : (
               <div className="space-y-2">
                 {suggestions.map((u) => (
-                  <div key={u.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">@{u.username}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {[u.city, u.university_name].filter(Boolean).join(' · ') || '—'}
-                      </p>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleAddFriend(u.username!)}
-                      disabled={sendRequest.isPending}
-                    >
-                      <UserPlus className="w-3.5 h-3.5 mr-1" />
-                      {t('friends.add')}
-                    </Button>
-                  </div>
+                  <UserRow
+                    key={u.id}
+                    username={u.username}
+                    detail={[u.city, u.university_name].filter(Boolean).join(' · ') || '—'}
+                    action="add"
+                    onAdd={() => handleAddFriend(u.username!)}
+                    isPending={sendRequest.isPending}
+                    chip={getSuggestionChip(u)}
+                    addLabel={labels.add}
+                    pendingLabel={labels.pending}
+                    friendsLabel={labels.friends}
+                  />
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
-      )}
+          </PremiumCard>
+        )}
+      </div>
     </div>
   );
 };
