@@ -258,6 +258,7 @@ const translations: Record<Language, Record<string, string>> = {
     'setup.selectCity': 'Please select your city.',
     'setup.usernameTaken': 'Username taken',
     'setup.usernameTakenDesc': 'This username is already in use.',
+    'setup.back': 'Back',
 
     // Friend Profile
     'friendProfile.owned': 'Owned',
@@ -536,6 +537,7 @@ const translations: Record<Language, Record<string, string>> = {
     'setup.selectCity': 'Por favor selecciona tu ciudad.',
     'setup.usernameTaken': 'Usuario en uso',
     'setup.usernameTakenDesc': 'Este usuario ya está en uso.',
+    'setup.back': 'Volver',
 
     // Friend Profile
     'friendProfile.owned': 'Tengo',
