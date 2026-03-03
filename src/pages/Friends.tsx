@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Search, UserPlus, User, ChevronRight, Sparkles, MapPin, GraduationCap, Activity } from 'lucide-react';
+import { Users, Search, UserPlus, User, ChevronRight, Sparkles, MapPin, GraduationCap, Activity, Check, X, Bell } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFriendAlbumStats } from '@/hooks/useFriendAlbumStats';
-import { useSendFriendRequest } from '@/hooks/useFriendships';
+import { useSendFriendRequest, useIncomingRequests, useRespondToRequest } from '@/hooks/useFriendships';
 import { useSuggestedFriends } from '@/hooks/useSuggestedFriends';
 import { useUserSearch } from '@/hooks/useUserSearch';
 import { toast } from '@/hooks/use-toast';
@@ -104,12 +104,27 @@ const Friends = () => {
   const { results: searchResults, isSearching } = useUserSearch(searchQuery);
   const { suggestions, isLoading: suggestionsLoading } = useSuggestedFriends();
 
+  const { incomingRequests, isLoading: incomingLoading } = useIncomingRequests();
+  const respondToRequest = useRespondToRequest();
+
   const handleAddFriend = async (username: string) => {
     const result = await sendRequest.mutateAsync(username);
     if (result.success) {
       toast({ title: t('trading.requestSent'), description: t('trading.requestSentTo', { username }) });
     } else {
       toast({ title: t('trading.error'), description: result.error ?? '', variant: 'destructive' });
+    }
+  };
+
+  const handleRespondToRequest = async (friendshipId: string, accept: boolean) => {
+    try {
+      await respondToRequest.mutateAsync({ friendshipId, accept });
+      toast({
+        title: accept ? 'Friend added!' : 'Request rejected',
+        description: accept ? 'You are now friends!' : 'The request has been rejected.',
+      });
+    } catch {
+      toast({ title: 'Error', description: 'Failed to respond to request', variant: 'destructive' });
     }
   };
 
@@ -135,6 +150,48 @@ const Friends = () => {
           <h1 className="text-[22px] font-bold tracking-wide" style={{ color: '#FFFFFF' }}>{t('friends.title')}</h1>
           <p className="text-[13px] mt-1" style={{ color: 'rgba(255,255,255,0.55)' }}>Find and manage your community</p>
         </div>
+
+        {/* INCOMING FRIEND REQUESTS */}
+        {!incomingLoading && incomingRequests.length > 0 && (
+          <PremiumCard>
+            <SectionHeader icon={Bell} title={`Friend Requests (${incomingRequests.length})`} />
+            <div className="space-y-2 mt-3">
+              {incomingRequests.map((request) => (
+                <div
+                  key={request.id}
+                  className="flex items-center gap-3 p-3 rounded-[14px]"
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+                >
+                  <AvatarCircle />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[14px] font-semibold truncate" style={{ color: '#FFFFFF' }}>
+                      @{request.requester?.username ?? 'unknown'}
+                    </p>
+                    <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>Wants to be your friend</p>
+                  </div>
+                  <div className="flex gap-1.5 flex-shrink-0">
+                    <button
+                      onClick={() => handleRespondToRequest(request.id, true)}
+                      disabled={respondToRequest.isPending}
+                      className="h-8 w-8 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
+                      style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)' }}
+                    >
+                      <Check className="w-4 h-4" style={{ color: '#FFFFFF' }} />
+                    </button>
+                    <button
+                      onClick={() => handleRespondToRequest(request.id, false)}
+                      disabled={respondToRequest.isPending}
+                      className="h-8 w-8 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}
+                    >
+                      <X className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.6)' }} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </PremiumCard>
+        )}
 
         {/* SEARCH */}
         <PremiumCard>
