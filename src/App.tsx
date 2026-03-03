@@ -12,7 +12,7 @@ import Auth from "./pages/Auth";
 import ChooseUsername from "./pages/ChooseUsername";
 import Home from "./pages/Home";
 import Album from "./pages/Album";
-import Requests from "./pages/Requests";
+
 import Profile from "./pages/Profile";
 import Friends from "./pages/Friends";
 import Trading from "./pages/Trading";
@@ -55,7 +55,7 @@ const App = () => (
               <Route path="/album" element={<Album />} />
               <Route path="/trading" element={<Trading />} />
               <Route path="/friends" element={<Friends />} />
-              <Route path="/requests" element={<Requests />} />
+              
               <Route path="/chats" element={<Chats />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/friend/:friendId" element={<FriendDetail />} />
