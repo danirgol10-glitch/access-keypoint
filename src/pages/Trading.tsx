@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useCityMatches, sortMatches, type SortMode } from '@/hooks/useCityMatches';
@@ -20,7 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Users, MapPin, GraduationCap, ChevronRight } from 'lucide-react';
+import { Users, MapPin, GraduationCap, ChevronRight, Check, X, Inbox } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Trading = () => {
@@ -28,7 +29,7 @@ const Trading = () => {
   const { profile: myProfile } = useUserProfile();
   const { t } = useLanguage();
 
-  const { sentRequests, receivedRequests, isLoading: tradeLoading, updateStatus } = useTradeRequests();
+  const { sentRequests, receivedRequests, isLoading: tradeLoading, updateStatus, isUpdating } = useTradeRequests();
   const { usersWithMatches, isLoading: matchesLoading, city, hasCityUsers } = useCityMatches();
   const { friendsWithMatches, isLoading: friendsMatchesLoading, hasFriends } = useFriendMatches();
   const { usersWithMatches: uniUsersWithMatches, isLoading: uniMatchesLoading, universityId } = useUniversityMatches();
@@ -258,6 +259,92 @@ const Trading = () => {
         <span className="w-14 text-center text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: 'rgba(255,255,255,0.45)' }}>{t('trading.cityLabel')}</span>
         <span className="w-14 text-center text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: 'rgba(255,255,255,0.45)' }}>{t('trading.uniLabel')}</span>
       </div>
+
+      {/* Received Requests (Pending) */}
+      {(() => {
+        const pendingReceived = receivedRequests.filter((r) => r.status === 'SENT');
+        if (tradeLoading) return null;
+        if (pendingReceived.length === 0) return null;
+        return (
+          <section className="relative z-20 space-y-3">
+            <div className="flex items-center gap-2">
+              <Inbox className="h-4 w-4" style={{ color: 'rgba(207,227,255,0.7)' }} />
+              <h2 className="text-[16px] font-semibold" style={{ color: '#FFFFFF' }}>
+                {t('trading.receivedRequests')}
+              </h2>
+              <span className="text-[11px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1.5" style={{ background: 'hsl(222, 100%, 56%)', color: '#FFFFFF' }}>
+                {pendingReceived.length}
+              </span>
+            </div>
+            <div className="space-y-2">
+              {pendingReceived.map((request) => {
+                const relativeTime = formatDistanceToNow(new Date(request.created_at), { addSuffix: true });
+                return (
+                  <div
+                    key={request.id}
+                    className="flex items-center justify-between p-4 rounded-[16px] transition-all duration-150"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  >
+                    <div className="flex-1 min-w-0 cursor-pointer" onClick={() => navigate(`/request/${request.id}`)}>
+                      <span className="font-medium text-[14px]" style={{ color: '#FFFFFF' }}>
+                        {t('trade.from')}: @{request.other_user?.username ?? t('common.unknown')}
+                      </span>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                          {t('trade.stickers', { count: request.item_count ?? 0, s: (request.item_count ?? 0) !== 1 ? 's' : '' })}
+                        </span>
+                        <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.3)' }}>•</span>
+                        <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{relativeTime}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={async () => {
+                          try {
+                            await updateStatus({
+                              requestId: request.id,
+                              newStatus: 'ACCEPTED',
+                              otherUserId: request.from_user_id,
+                              otherUsername: request.other_user?.username ?? undefined,
+                              myUsername: myProfile?.username ?? undefined,
+                            });
+                            toast.success(t('requestDetail.accepted'));
+                          } catch {
+                            toast.error(t('trading.error'));
+                          }
+                        }}
+                        disabled={isUpdating}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[12px] font-medium transition-all duration-150 active:scale-95 disabled:opacity-50"
+                        style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        {t('trade.accept')}
+                      </button>
+                      <button
+                        onClick={() =>
+                          setConfirmDialog({
+                            open: true,
+                            type: 'reject',
+                            requestId: request.id,
+                            otherUserId: request.from_user_id,
+                            otherUsername: request.other_user?.username ?? undefined,
+                          })
+                        }
+                        disabled={isUpdating}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[12px] font-medium transition-all duration-150 active:scale-95 disabled:opacity-50"
+                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.7)' }}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        {t('trade.reject')}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Active Trades */}
       <section className="relative z-20 space-y-3">
