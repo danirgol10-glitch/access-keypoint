@@ -68,6 +68,19 @@
     --panel-bg: 220 50% 100%;
     --panel-border: 220 50% 100%;
     --gold-accent: 45 93% 58%;
+
+    /* Theme-able colors */
+    --page-bg: #071C47;
+    --ring-track: #123E8C;
+    --ring-fill: #4FA3FF;
+    --ring-glow-color: rgba(79, 163, 255, 0.25);
+    --ring-marker: #FFD23F;
+    --ring-complete: #FFD23F;
+    --accent-highlight: #FFD23F;
+    --hero-gradient-from: #0B2A55;
+    --hero-gradient-to: #1E4C8A;
+    --hero-top-line: #FFD23F;
+    --sticker-selected: #FFD23F;
   }
 
   .dark {
