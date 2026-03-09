@@ -28,9 +28,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     if (!user) return;
     supabase.from('users').select('theme').eq('id', user.id).maybeSingle().then(({ data }) => {
-      if (data?.theme && data.theme !== theme) {
-        setThemeState(data.theme as AppTheme);
-        localStorage.setItem('app-theme', data.theme);
+      if (data?.theme) {
+        const dbTheme = VALID_THEMES.includes(data.theme as AppTheme) ? (data.theme as AppTheme) : 'classic';
+        if (dbTheme !== theme) {
+          setThemeState(dbTheme);
+          localStorage.setItem('app-theme', dbTheme);
+        }
       }
     });
   }, [user]);
