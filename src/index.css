@@ -81,6 +81,68 @@
     --hero-gradient-to: #1E4C8A;
     --hero-top-line: #FFD23F;
     --sticker-selected: #FFD23F;
+
+    /* Navigation */
+    --nav-bg: #071C47;
+
+    /* Sticky headers / toolbars */
+    --header-bg: rgba(7, 28, 71, 0.95);
+
+    /* Button gradients */
+    --btn-gradient-from: #0A2B73;
+    --btn-gradient-to: #1E5AA6;
+
+    /* Avatar ring */
+    --avatar-gradient-from: #1E5BFF;
+    --avatar-gradient-to: #4FA3FF;
+    --avatar-inner-bg: #0A1A3A;
+
+    /* Dialog background */
+    --dialog-bg: #0A1A3A;
+
+    /* Sticker state colors */
+    --sticker-owned-bg: rgba(212, 175, 55, 0.12);
+    --sticker-owned-border: #D4AF37;
+    --sticker-owned-badge-bg: rgba(212, 175, 55, 0.20);
+    --sticker-owned-color: #D4AF37;
+    --sticker-owned-text: #FFD86B;
+    --sticker-owned-subtext: rgba(255, 216, 107, 0.50);
+
+    --sticker-duplicate-bg: rgba(79, 163, 255, 0.08);
+    --sticker-duplicate-border: rgba(79, 163, 255, 0.30);
+    --sticker-duplicate-badge-bg: rgba(79, 163, 255, 0.15);
+    --sticker-duplicate-color: hsl(222, 100%, 65%);
+    --sticker-duplicate-text: #CFE3FF;
+    --sticker-duplicate-subtext: rgba(207, 227, 255, 0.55);
+
+    /* Focus ring for inputs */
+    --input-focus-color: #4FA3FF;
+    --input-focus-glow: rgba(79, 163, 255, 0.15);
+
+    /* Premium panel gold line */
+    --panel-gold-line: rgba(255, 210, 63, 0.6);
+
+    /* Friend progress bar gradient */
+    --progress-bar-from: #1E5BFF;
+    --progress-bar-to: #4FA3FF;
+
+    /* Celebration colors */
+    --celebration-1: #4FA3FF;
+    --celebration-2: #1E5BFF;
+    --celebration-3: #FFD23F;
+    --celebration-4: #FFE680;
+    --celebration-5: #2B7FFF;
+    --celebration-line: #FFD23F;
+
+    /* Stats icon colors */
+    --stat-owned-color: 142 72% 46%;
+    --stat-owned-number: 142 72% 55%;
+    --stat-duplicate-color: 222 100% 56%;
+    --stat-duplicate-number: 222 100% 65%;
+    --stat-missing-color: 30 90% 55%;
+
+    /* Badge / notification accent */
+    --badge-bg: 222 100% 56%;
   }
 
   .dark {
@@ -155,6 +217,49 @@
     --hero-gradient-to: #1E4C8A;
     --hero-top-line: #FFD23F;
     --sticker-selected: #FFD23F;
+
+    --nav-bg: #071C47;
+    --header-bg: rgba(7, 28, 71, 0.95);
+    --btn-gradient-from: #0A2B73;
+    --btn-gradient-to: #1E5AA6;
+    --avatar-gradient-from: #1E5BFF;
+    --avatar-gradient-to: #4FA3FF;
+    --avatar-inner-bg: #0A1A3A;
+    --dialog-bg: #0A1A3A;
+
+    --sticker-owned-bg: rgba(212, 175, 55, 0.12);
+    --sticker-owned-border: #D4AF37;
+    --sticker-owned-badge-bg: rgba(212, 175, 55, 0.20);
+    --sticker-owned-color: #D4AF37;
+    --sticker-owned-text: #FFD86B;
+    --sticker-owned-subtext: rgba(255, 216, 107, 0.50);
+
+    --sticker-duplicate-bg: rgba(79, 163, 255, 0.08);
+    --sticker-duplicate-border: rgba(79, 163, 255, 0.30);
+    --sticker-duplicate-badge-bg: rgba(79, 163, 255, 0.15);
+    --sticker-duplicate-color: hsl(222, 100%, 65%);
+    --sticker-duplicate-text: #CFE3FF;
+    --sticker-duplicate-subtext: rgba(207, 227, 255, 0.55);
+
+    --input-focus-color: #4FA3FF;
+    --input-focus-glow: rgba(79, 163, 255, 0.15);
+    --panel-gold-line: rgba(255, 210, 63, 0.6);
+    --progress-bar-from: #1E5BFF;
+    --progress-bar-to: #4FA3FF;
+
+    --celebration-1: #4FA3FF;
+    --celebration-2: #1E5BFF;
+    --celebration-3: #FFD23F;
+    --celebration-4: #FFE680;
+    --celebration-5: #2B7FFF;
+    --celebration-line: #FFD23F;
+
+    --stat-owned-color: 142 72% 46%;
+    --stat-owned-number: 142 72% 55%;
+    --stat-duplicate-color: 222 100% 56%;
+    --stat-duplicate-number: 222 100% 65%;
+    --stat-missing-color: 30 90% 55%;
+    --badge-bg: 222 100% 56%;
   }
 
   /* ─── Theme: Royal Purple ─── */
@@ -188,6 +293,49 @@
     --sticker-selected: #9B5CFF;
     --gold-accent: 263 100% 68%;
     --pending: 263 100% 68%;
+
+    --nav-bg: #1B0F3B;
+    --header-bg: rgba(27, 15, 59, 0.95);
+    --btn-gradient-from: #2A1E5C;
+    --btn-gradient-to: #4A2F8C;
+    --avatar-gradient-from: #7B3FE4;
+    --avatar-gradient-to: #B47FFF;
+    --avatar-inner-bg: #1B0F3B;
+    --dialog-bg: #1B0F3B;
+
+    --sticker-owned-bg: rgba(192, 132, 255, 0.12);
+    --sticker-owned-border: #C084FF;
+    --sticker-owned-badge-bg: rgba(192, 132, 255, 0.20);
+    --sticker-owned-color: #C084FF;
+    --sticker-owned-text: #D9B3FF;
+    --sticker-owned-subtext: rgba(217, 179, 255, 0.50);
+
+    --sticker-duplicate-bg: rgba(230, 213, 255, 0.08);
+    --sticker-duplicate-border: rgba(230, 213, 255, 0.30);
+    --sticker-duplicate-badge-bg: rgba(230, 213, 255, 0.15);
+    --sticker-duplicate-color: #E6D5FF;
+    --sticker-duplicate-text: #E6D5FF;
+    --sticker-duplicate-subtext: rgba(230, 213, 255, 0.55);
+
+    --input-focus-color: #9B5CFF;
+    --input-focus-glow: rgba(155, 92, 255, 0.15);
+    --panel-gold-line: rgba(155, 92, 255, 0.6);
+    --progress-bar-from: #7B3FE4;
+    --progress-bar-to: #B47FFF;
+
+    --celebration-1: #9B5CFF;
+    --celebration-2: #7B3FE4;
+    --celebration-3: #E6D5FF;
+    --celebration-4: #C084FF;
+    --celebration-5: #B47FFF;
+    --celebration-line: #9B5CFF;
+
+    --stat-owned-color: 263 100% 68%;
+    --stat-owned-number: 263 100% 78%;
+    --stat-duplicate-color: 270 80% 80%;
+    --stat-duplicate-number: 270 80% 85%;
+    --stat-missing-color: 280 60% 65%;
+    --badge-bg: 263 100% 68%;
   }
 
   /* ─── Theme: Champions Red ─── */
@@ -221,6 +369,49 @@
     --sticker-selected: #FF3B3B;
     --gold-accent: 0 100% 62%;
     --pending: 0 100% 62%;
+
+    --nav-bg: #2A0A0A;
+    --header-bg: rgba(42, 10, 10, 0.95);
+    --btn-gradient-from: #5C1414;
+    --btn-gradient-to: #8C2222;
+    --avatar-gradient-from: #FF3B3B;
+    --avatar-gradient-to: #FF7A7A;
+    --avatar-inner-bg: #2A0A0A;
+    --dialog-bg: #2A0A0A;
+
+    --sticker-owned-bg: rgba(255, 90, 90, 0.12);
+    --sticker-owned-border: #FF5A5A;
+    --sticker-owned-badge-bg: rgba(255, 90, 90, 0.20);
+    --sticker-owned-color: #FF5A5A;
+    --sticker-owned-text: #FFB3B3;
+    --sticker-owned-subtext: rgba(255, 179, 179, 0.50);
+
+    --sticker-duplicate-bg: rgba(255, 214, 214, 0.08);
+    --sticker-duplicate-border: rgba(255, 214, 214, 0.30);
+    --sticker-duplicate-badge-bg: rgba(255, 214, 214, 0.15);
+    --sticker-duplicate-color: #FFD6D6;
+    --sticker-duplicate-text: #FFD6D6;
+    --sticker-duplicate-subtext: rgba(255, 214, 214, 0.55);
+
+    --input-focus-color: #FF3B3B;
+    --input-focus-glow: rgba(255, 59, 59, 0.15);
+    --panel-gold-line: rgba(255, 59, 59, 0.6);
+    --progress-bar-from: #FF3B3B;
+    --progress-bar-to: #FF7A7A;
+
+    --celebration-1: #FF3B3B;
+    --celebration-2: #CC2222;
+    --celebration-3: #FFD6D6;
+    --celebration-4: #FF7A7A;
+    --celebration-5: #FF5A5A;
+    --celebration-line: #FF3B3B;
+
+    --stat-owned-color: 0 100% 62%;
+    --stat-owned-number: 0 100% 72%;
+    --stat-duplicate-color: 0 80% 80%;
+    --stat-duplicate-number: 0 80% 85%;
+    --stat-missing-color: 15 80% 55%;
+    --badge-bg: 0 100% 62%;
   }
 
   /* ─── Theme: World Cup 2026 ─── */
@@ -254,6 +445,49 @@
     --sticker-selected: #00B5E2;
     --gold-accent: 195 100% 44%;
     --pending: 16 88% 55%;
+
+    --nav-bg: #0D1B2A;
+    --header-bg: rgba(13, 27, 42, 0.95);
+    --btn-gradient-from: #132C5A;
+    --btn-gradient-to: #1A4A7A;
+    --avatar-gradient-from: #00B5E2;
+    --avatar-gradient-to: #8CC63F;
+    --avatar-inner-bg: #0D1B2A;
+    --dialog-bg: #0D1B2A;
+
+    --sticker-owned-bg: rgba(0, 181, 226, 0.12);
+    --sticker-owned-border: #00B5E2;
+    --sticker-owned-badge-bg: rgba(0, 181, 226, 0.20);
+    --sticker-owned-color: #00B5E2;
+    --sticker-owned-text: #7DDEF5;
+    --sticker-owned-subtext: rgba(125, 222, 245, 0.50);
+
+    --sticker-duplicate-bg: rgba(241, 90, 41, 0.08);
+    --sticker-duplicate-border: rgba(241, 90, 41, 0.30);
+    --sticker-duplicate-badge-bg: rgba(241, 90, 41, 0.15);
+    --sticker-duplicate-color: #F15A29;
+    --sticker-duplicate-text: #FFB599;
+    --sticker-duplicate-subtext: rgba(255, 181, 153, 0.55);
+
+    --input-focus-color: #00B5E2;
+    --input-focus-glow: rgba(0, 181, 226, 0.15);
+    --panel-gold-line: rgba(0, 181, 226, 0.6);
+    --progress-bar-from: #00B5E2;
+    --progress-bar-to: #F15A29;
+
+    --celebration-1: #00B5E2;
+    --celebration-2: #F15A29;
+    --celebration-3: #8CC63F;
+    --celebration-4: #FFD23F;
+    --celebration-5: #6A5ACD;
+    --celebration-line: #00B5E2;
+
+    --stat-owned-color: 195 100% 44%;
+    --stat-owned-number: 195 100% 55%;
+    --stat-duplicate-color: 16 88% 55%;
+    --stat-duplicate-number: 16 88% 65%;
+    --stat-missing-color: 90 55% 50%;
+    --badge-bg: 195 100% 44%;
   }
 }
 
@@ -352,7 +586,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: var(--accent-highlight, rgba(255, 210, 63, 0.6));
+    background: var(--panel-gold-line, rgba(255, 210, 63, 0.6));
     pointer-events: none;
     z-index: 1;
   }
@@ -389,5 +623,29 @@
     0% { background: radial-gradient(circle, rgba(79,163,255,0.3) 0%, transparent 60%); }
     40% { background: radial-gradient(circle, rgba(255,210,63,0.25) 0%, transparent 60%); }
     100% { background: radial-gradient(circle, rgba(79,163,255,0.1) 0%, transparent 60%); opacity: 0; }
+  }
+
+  /* Themed button gradient utility */
+  .btn-themed {
+    background: linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+  }
+
+  /* Themed avatar utility */
+  .avatar-themed {
+    background: linear-gradient(135deg, var(--avatar-gradient-from), var(--avatar-gradient-to));
+    padding: 2px;
+  }
+
+  .avatar-themed-inner {
+    background: var(--avatar-inner-bg);
+  }
+
+  /* Themed sticky header */
+  .header-themed {
+    background: var(--header-bg);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 }

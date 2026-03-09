@@ -48,7 +48,7 @@ const ChatDetail = () => {
 
   return (
     <div className="flex flex-col h-screen page-bg">
-      <header className="sticky top-0 z-10 px-4 py-3" style={{ background: 'rgba(7,28,71,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <header className="sticky top-0 z-10 px-4 py-3 header-themed">
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
           <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
             <ArrowLeft className="h-5 w-5" style={{ color: 'rgba(255,255,255,0.7)' }} />
@@ -72,7 +72,7 @@ const ChatDetail = () => {
             return (
               <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${isMe ? 'rounded-br-md' : 'rounded-bl-md'}`}
-                  style={isMe ? { background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.06)', color: '#FFFFFF' }}>
+                  style={isMe ? { background: `linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))`, color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.06)', color: '#FFFFFF' }}>
                   <p className="text-sm break-words">{msg.text}</p>
                   <p className="text-[10px] mt-1" style={{ color: isMe ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.4)' }}>
                     {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}
@@ -85,7 +85,7 @@ const ChatDetail = () => {
         <div ref={bottomRef} />
       </main>
 
-      <div className="p-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: 'rgba(7,28,71,0.95)' }}>
+      <div className="p-3 header-themed" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex gap-2 max-w-2xl mx-auto">
           <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown}
             placeholder={t('chat.placeholder')}
@@ -94,8 +94,7 @@ const ChatDetail = () => {
             disabled={isSending}
           />
           <button onClick={handleSend} disabled={!text.trim() || isSending}
-            className="h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-150 active:scale-95 disabled:opacity-50"
-            style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>
+            className="h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-150 active:scale-95 disabled:opacity-50 btn-themed">
             <Send className="h-4 w-4" />
           </button>
         </div>

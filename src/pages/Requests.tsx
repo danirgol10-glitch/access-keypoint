@@ -73,7 +73,7 @@ const Requests = () => {
           <button
             onClick={() => setActiveTab('received')}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors"
-            style={activeTab === 'received' ? { background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}
+            style={activeTab === 'received' ? { background: `linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))`, color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}
           >
             <Inbox className="h-4 w-4" />
             Received
@@ -81,7 +81,7 @@ const Requests = () => {
           <button
             onClick={() => setActiveTab('sent')}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors"
-            style={activeTab === 'sent' ? { background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}
+            style={activeTab === 'sent' ? { background: `linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))`, color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}
           >
             <Send className="h-4 w-4" />
             Sent
@@ -118,14 +118,14 @@ const Requests = () => {
       </div>
 
       <AlertDialog open={confirmDialog?.open ?? false} onOpenChange={(open) => !open && setConfirmDialog(null)}>
-        <AlertDialogContent style={{ background: '#0A1A3A', border: '1px solid rgba(255,255,255,0.10)' }}>
+        <AlertDialogContent style={{ background: 'var(--dialog-bg)', border: '1px solid rgba(255,255,255,0.10)' }}>
           <AlertDialogHeader>
             <AlertDialogTitle style={{ color: '#FFFFFF' }}>{confirmDialog?.type === 'reject' ? 'Reject Request?' : 'Cancel Request?'}</AlertDialogTitle>
             <AlertDialogDescription style={{ color: 'rgba(255,255,255,0.6)' }}>{confirmDialog?.type === 'reject' ? 'Are you sure you want to reject this trade request?' : 'Are you sure you want to cancel this trade request?'}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.85)' }}>No, go back</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmAction} style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>Yes, {confirmDialog?.type === 'reject' ? 'reject' : 'cancel'}</AlertDialogAction>
+            <AlertDialogAction onClick={confirmAction} className="btn-themed">Yes, {confirmDialog?.type === 'reject' ? 'reject' : 'cancel'}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

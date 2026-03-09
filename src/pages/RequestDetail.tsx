@@ -56,7 +56,7 @@ const RequestDetail = () => {
 
   return (
     <div className="flex flex-col min-h-screen page-bg">
-      <header className="sticky top-0 z-10 px-4 py-3" style={{ background: 'rgba(7,28,71,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <header className="sticky top-0 z-10 px-4 py-3 header-themed">
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
           <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
             <ArrowLeft className="h-5 w-5" style={{ color: 'rgba(255,255,255,0.7)' }} />
@@ -99,7 +99,7 @@ const RequestDetail = () => {
               <div className="premium-panel p-4 space-y-3">
                 {isReceiver && (
                   <div className="flex gap-3">
-                    <button onClick={handleAccept} disabled={isUpdating} className="flex-1 h-10 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50" style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>
+                    <button onClick={handleAccept} disabled={isUpdating} className="flex-1 h-10 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 btn-themed">
                       <Check className="h-4 w-4" />{t('requestDetail.accept')}
                     </button>
                     <button onClick={() => setConfirmDialog({ open: true, type: 'reject' })} disabled={isUpdating} className="flex-1 h-10 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.85)' }}>
@@ -116,7 +116,7 @@ const RequestDetail = () => {
             )}
 
             {request.status === 'ACCEPTED' && request.conversation_id && (
-              <button onClick={() => navigate(`/chat/${request.conversation_id}`)} className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>
+              <button onClick={() => navigate(`/chat/${request.conversation_id}`)} className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98] btn-themed">
                 <MessageCircle className="h-4 w-4" />{t('requestDetail.openChat')}
               </button>
             )}
@@ -144,14 +144,14 @@ const RequestDetail = () => {
       </main>
 
       <AlertDialog open={confirmDialog?.open ?? false} onOpenChange={(open) => !open && setConfirmDialog(null)}>
-        <AlertDialogContent style={{ background: '#0A1A3A', border: '1px solid rgba(255,255,255,0.10)' }}>
+        <AlertDialogContent style={{ background: 'var(--dialog-bg)', border: '1px solid rgba(255,255,255,0.10)' }}>
           <AlertDialogHeader>
             <AlertDialogTitle style={{ color: '#FFFFFF' }}>{confirmDialog?.type === 'reject' ? t('trading.rejectRequest') : t('trading.cancelRequest')}</AlertDialogTitle>
             <AlertDialogDescription style={{ color: 'rgba(255,255,255,0.6)' }}>{t('requestDetail.confirmSure')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.85)' }}>{t('trading.noGoBack')}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmAction} style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>
+            <AlertDialogAction onClick={confirmAction} className="btn-themed">
               {confirmDialog?.type === 'reject' ? t('requestDetail.yesReject') : t('requestDetail.yesCancel')}
             </AlertDialogAction>
           </AlertDialogFooter>
