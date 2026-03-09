@@ -21,6 +21,7 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.university': 'UNIVERSITY',
     'profile.city': 'CITY',
     'profile.language': 'LANGUAGE',
+    'profile.theme': 'APP THEME',
     'profile.logout': 'Log Out',
     'profile.addUniversity': 'Add University',
     'profile.addCity': 'Add City',
