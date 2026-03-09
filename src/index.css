@@ -153,6 +153,25 @@
 
     /* Badge / notification accent */
     --badge-bg: 222 100% 56%;
+
+    /* Text & surface tokens (dark themes) */
+    --text-primary: #F0F4FF;
+    --text-secondary: rgba(255,255,255,0.65);
+    --text-muted: rgba(255,255,255,0.45);
+    --text-hint: rgba(255,255,255,0.25);
+    --text-faint: rgba(255,255,255,0.12);
+    --icon-default: rgba(255,255,255,0.75);
+    --icon-muted: rgba(255,255,255,0.40);
+    --icon-faint: rgba(255,255,255,0.18);
+    --surface-card: rgba(255,255,255,0.06);
+    --surface-card-hover: rgba(255,255,255,0.10);
+    --surface-card-border: rgba(255,210,63,0.35);
+    --surface-input: rgba(255,255,255,0.08);
+    --surface-input-border: rgba(255,255,255,0.15);
+    --surface-skeleton: rgba(255,255,255,0.08);
+    --surface-divider: rgba(255,255,255,0.10);
+    --overlay-gradient-start: rgba(0,0,0,0.25);
+    --nav-border-top: rgba(255,210,63,0.20);
   }
 
   .dark {
@@ -277,6 +296,24 @@
     --stat-duplicate-number: 222 100% 65%;
     --stat-missing-color: 30 90% 55%;
     --badge-bg: 222 100% 56%;
+
+    --text-primary: #F0F4FF;
+    --text-secondary: rgba(255,255,255,0.65);
+    --text-muted: rgba(255,255,255,0.45);
+    --text-hint: rgba(255,255,255,0.25);
+    --text-faint: rgba(255,255,255,0.12);
+    --icon-default: rgba(255,255,255,0.75);
+    --icon-muted: rgba(255,255,255,0.40);
+    --icon-faint: rgba(255,255,255,0.18);
+    --surface-card: rgba(255,255,255,0.06);
+    --surface-card-hover: rgba(255,255,255,0.10);
+    --surface-card-border: rgba(255,210,63,0.35);
+    --surface-input: rgba(255,255,255,0.08);
+    --surface-input-border: rgba(255,255,255,0.15);
+    --surface-skeleton: rgba(255,255,255,0.08);
+    --surface-divider: rgba(255,255,255,0.10);
+    --overlay-gradient-start: rgba(0,0,0,0.25);
+    --nav-border-top: rgba(255,210,63,0.20);
   }
 
   /* ─── Theme: Royal Purple ─── */
@@ -360,6 +397,15 @@
     --stat-duplicate-number: 270 80% 85%;
     --stat-missing-color: 280 60% 65%;
     --badge-bg: 263 100% 68%;
+
+    --text-primary: #E6D5FF;
+    --text-secondary: rgba(230,213,255,0.65);
+    --text-muted: rgba(230,213,255,0.45);
+    --surface-card: rgba(155,92,255,0.08);
+    --surface-card-border: rgba(155,92,255,0.35);
+    --surface-input: rgba(155,92,255,0.12);
+    --surface-input-border: rgba(155,92,255,0.25);
+    --nav-border-top: rgba(155,92,255,0.25);
   }
 
   /* ─── Theme: Champions Red ─── */
@@ -443,6 +489,15 @@
     --stat-duplicate-number: 0 80% 85%;
     --stat-missing-color: 15 80% 55%;
     --badge-bg: 0 100% 62%;
+
+    --text-primary: #FFD6D6;
+    --text-secondary: rgba(255,214,214,0.65);
+    --text-muted: rgba(255,214,214,0.45);
+    --surface-card: rgba(255,59,59,0.08);
+    --surface-card-border: rgba(255,90,90,0.35);
+    --surface-input: rgba(255,59,59,0.12);
+    --surface-input-border: rgba(255,90,90,0.25);
+    --nav-border-top: rgba(255,59,59,0.25);
   }
 
   /* ─── Theme: World Cup 2026 (LIGHT) ─── */
