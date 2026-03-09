@@ -153,6 +153,25 @@
 
     /* Badge / notification accent */
     --badge-bg: 222 100% 56%;
+
+    /* Text & surface tokens (dark themes) */
+    --text-primary: #F0F4FF;
+    --text-secondary: rgba(255,255,255,0.65);
+    --text-muted: rgba(255,255,255,0.45);
+    --text-hint: rgba(255,255,255,0.25);
+    --text-faint: rgba(255,255,255,0.12);
+    --icon-default: rgba(255,255,255,0.75);
+    --icon-muted: rgba(255,255,255,0.40);
+    --icon-faint: rgba(255,255,255,0.18);
+    --surface-card: rgba(255,255,255,0.06);
+    --surface-card-hover: rgba(255,255,255,0.10);
+    --surface-card-border: rgba(255,210,63,0.35);
+    --surface-input: rgba(255,255,255,0.08);
+    --surface-input-border: rgba(255,255,255,0.15);
+    --surface-skeleton: rgba(255,255,255,0.08);
+    --surface-divider: rgba(255,255,255,0.10);
+    --overlay-gradient-start: rgba(0,0,0,0.25);
+    --nav-border-top: rgba(255,210,63,0.20);
   }
 
   .dark {
