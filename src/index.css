@@ -445,64 +445,92 @@
     --badge-bg: 0 100% 62%;
   }
 
-  /* ─── Theme: World Cup 2026 ─── */
+  /* ─── Theme: World Cup 2026 (LIGHT) ─── */
   [data-theme="world-cup-2026"] {
-    --background: 215 70% 15%;
-    --card: 215 60% 22%;
-    --secondary: 215 60% 18%;
-    --muted: 215 60% 20%;
+    --background: 0 0% 97%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --secondary: 0 0% 93%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 40%;
     --primary: 195 100% 44%;
     --primary-hover: 195 100% 36%;
-    --primary-soft: 195 50% 22%;
+    --primary-soft: 195 20% 90%;
+    --primary-foreground: 0 0% 100%;
     --accent: 195 100% 44%;
-    --border: 215 50% 26%;
-    --input: 215 50% 26%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
     --ring: 195 100% 44%;
-    --sidebar-background: 215 75% 12%;
+    --sidebar-background: 0 0% 95%;
+    --sidebar-foreground: 0 0% 10%;
     --sidebar-primary: 195 100% 44%;
-    --sidebar-accent: 215 60% 18%;
-    --sidebar-border: 215 50% 22%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 93%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: 195 100% 44%;
     --tab-active: 195 100% 44%;
-    --page-bg: #0A1F44;
-    --ring-track: #132C5A;
-    --ring-fill: #00B5E2;
-    --ring-glow-color: rgba(0, 181, 226, 0.25);
-    --ring-marker: #F15A29;
-    --ring-complete: #00B5E2;
-    --accent-highlight: #00B5E2;
-    --hero-gradient-from: #0A1F44;
-    --hero-gradient-to: #132C5A;
-    --hero-top-line: #00B5E2;
-    --sticker-selected: #00B5E2;
-    --gold-accent: 195 100% 44%;
+    --tab-inactive: 0 0% 40%;
+    --auth-gradient-start: 0 0% 97%;
+    --auth-gradient-end: 0 0% 93%;
     --pending: 16 88% 55%;
+    --success: 142 72% 40%;
+    --error: 0 84% 50%;
+    --header-gradient-start: 0 0% 97%;
+    --header-gradient-end: 0 0% 93%;
+    --hero-bg: 0 0% 100%;
+    --hero-bg-end: 0 0% 97%;
+    --hero-glow: 195 100% 44%;
+    --hero-accent: 195 100% 44%;
+    --gold-accent: 195 100% 44%;
 
-    --nav-bg: #0D1B2A;
-    --header-bg: rgba(13, 27, 42, 0.95);
-    --btn-gradient-from: #132C5A;
-    --btn-gradient-to: #1A4A7A;
+    --page-bg: #F7F7F7;
+    --nav-bg: #FFFFFF;
+    --header-bg: rgba(247,247,247,0.95);
+    --dialog-bg: #FFFFFF;
+    --hero-gradient-from: #FFFFFF;
+    --hero-gradient-to: #F0F4F8;
+    --hero-top-line: transparent;
+    --hero-glow-center: rgba(0,181,226,0.06);
+    --hero-vignette-edge: rgba(0,0,0,0.01);
+    --hero-line-shadow: transparent;
+    --ring-track: #E5E5E5;
+    --ring-fill: #00B5E2;
+    --ring-glow-color: rgba(0,181,226,0.15);
+    --ring-marker: #F15A29;
+    --ring-complete: #8CC63F;
+    --accent-highlight: #00B5E2;
+    --sticker-selected: #00B5E2;
+
+    --btn-gradient-from: #00B5E2;
+    --btn-gradient-to: #0098BD;
     --avatar-gradient-from: #00B5E2;
     --avatar-gradient-to: #8CC63F;
-    --avatar-inner-bg: #0D1B2A;
-    --dialog-bg: #0D1B2A;
+    --avatar-inner-bg: #F0F0F0;
 
-    --sticker-owned-bg: rgba(0, 181, 226, 0.12);
+    --sticker-owned-bg: rgba(0,181,226,0.08);
     --sticker-owned-border: #00B5E2;
-    --sticker-owned-badge-bg: rgba(0, 181, 226, 0.20);
-    --sticker-owned-color: #00B5E2;
-    --sticker-owned-text: #7DDEF5;
-    --sticker-owned-subtext: rgba(125, 222, 245, 0.50);
-
-    --sticker-duplicate-bg: rgba(241, 90, 41, 0.08);
-    --sticker-duplicate-border: rgba(241, 90, 41, 0.30);
-    --sticker-duplicate-badge-bg: rgba(241, 90, 41, 0.15);
-    --sticker-duplicate-color: #F15A29;
-    --sticker-duplicate-text: #FFB599;
-    --sticker-duplicate-subtext: rgba(255, 181, 153, 0.55);
+    --sticker-owned-badge-bg: rgba(0,181,226,0.12);
+    --sticker-owned-color: #0098BD;
+    --sticker-owned-text: #006B87;
+    --sticker-owned-subtext: rgba(0,107,135,0.50);
+    --sticker-duplicate-bg: rgba(241,90,41,0.08);
+    --sticker-duplicate-border: #F15A29;
+    --sticker-duplicate-badge-bg: rgba(241,90,41,0.12);
+    --sticker-duplicate-color: #D44A1E;
+    --sticker-duplicate-text: #A83A15;
+    --sticker-duplicate-subtext: rgba(168,58,21,0.50);
 
     --input-focus-color: #00B5E2;
-    --input-focus-glow: rgba(0, 181, 226, 0.15);
-    --panel-gold-line: rgba(0, 181, 226, 0.6);
+    --input-focus-glow: rgba(0,181,226,0.15);
+    --panel-gold-line: linear-gradient(90deg, #00B5E2, #F15A29, #8CC63F, #FFD23F, #6A5ACD);
     --progress-bar-from: #00B5E2;
     --progress-bar-to: #F15A29;
 
@@ -512,20 +540,35 @@
     --celebration-4: #FFD23F;
     --celebration-5: #6A5ACD;
     --celebration-line: #00B5E2;
+    --celebration-flash-1: rgba(0,181,226,0.15);
+    --celebration-flash-2: rgba(241,90,41,0.10);
+    --celebration-flash-3: rgba(140,198,63,0.08);
 
-    --hero-glow-center: rgba(19, 44, 90, 0.35);
-    --hero-vignette-edge: rgba(10, 31, 68, 0.15);
-    --hero-line-shadow: rgba(0, 181, 226, 0.10);
-    --celebration-flash-1: rgba(0,181,226,0.3);
-    --celebration-flash-2: rgba(241,90,41,0.25);
-    --celebration-flash-3: rgba(140,198,63,0.1);
-
-    --stat-owned-color: 195 100% 44%;
-    --stat-owned-number: 195 100% 55%;
-    --stat-duplicate-color: 16 88% 55%;
-    --stat-duplicate-number: 16 88% 65%;
-    --stat-missing-color: 90 55% 50%;
+    --stat-owned-color: 195 100% 35%;
+    --stat-owned-number: 195 100% 30%;
+    --stat-duplicate-color: 16 88% 45%;
+    --stat-duplicate-number: 16 88% 40%;
+    --stat-missing-color: 90 55% 35%;
     --badge-bg: 195 100% 44%;
+
+    /* Light mode text & surface overrides */
+    --text-primary: #1A1A1A;
+    --text-secondary: rgba(0,0,0,0.55);
+    --text-muted: rgba(0,0,0,0.40);
+    --text-hint: rgba(0,0,0,0.25);
+    --text-faint: rgba(0,0,0,0.15);
+    --icon-default: #555555;
+    --icon-muted: rgba(0,0,0,0.35);
+    --icon-faint: rgba(0,0,0,0.15);
+    --surface-card: #FFFFFF;
+    --surface-card-hover: rgba(0,0,0,0.02);
+    --surface-card-border: rgba(0,0,0,0.08);
+    --surface-input: rgba(0,0,0,0.04);
+    --surface-input-border: rgba(0,0,0,0.12);
+    --surface-skeleton: rgba(0,0,0,0.06);
+    --surface-divider: rgba(0,0,0,0.08);
+    --overlay-gradient-start: rgba(0,0,0,0.04);
+    --nav-border-top: rgba(0,0,0,0.08);
   }
 }
 
