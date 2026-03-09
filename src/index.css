@@ -592,7 +592,7 @@
   .hero-vignette {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, transparent 60%, rgba(7, 28, 71, 0.15) 100%);
+    background: radial-gradient(ellipse at center, transparent 60%, var(--hero-vignette-edge) 100%);
     pointer-events: none;
     z-index: 0;
   }
