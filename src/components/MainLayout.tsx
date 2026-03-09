@@ -33,7 +33,7 @@ const MainLayout = () => {
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: '#071C47', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+      <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: 'var(--nav-bg)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
           {tabConfig.map((tab) => {
             const isActive = location.pathname === tab.path;

@@ -93,18 +93,18 @@ const Home = () => {
           <div className="premium-panel p-5">
             <div className="grid grid-cols-3 divide-x" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
               <div className="flex flex-col items-center gap-1 px-2">
-                <Check className="w-4 h-4" style={{ color: 'hsl(142, 72%, 46%)' }} />
-                <span className="text-2xl font-black" style={{ color: 'hsl(142, 72%, 55%)' }}>{stats.ownedCount}</span>
+                <Check className="w-4 h-4" style={{ color: 'hsl(var(--stat-owned-color))' }} />
+                <span className="text-2xl font-black" style={{ color: 'hsl(var(--stat-owned-number))' }}>{stats.ownedCount}</span>
                 <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.45)' }}>{t('home.owned')}</span>
               </div>
               <div className="flex flex-col items-center gap-1 px-2">
-                <Search className="w-4 h-4" style={{ color: 'hsl(30, 90%, 55%)' }} />
+                <Search className="w-4 h-4" style={{ color: 'hsl(var(--stat-missing-color))' }} />
                 <span className="text-2xl font-black" style={{ color: '#FFFFFF' }}>{stats.missingCount}</span>
                 <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.45)' }}>{t('home.missing')}</span>
               </div>
               <div className="flex flex-col items-center gap-1 px-2">
-                <Copy className="w-4 h-4" style={{ color: 'hsl(222, 100%, 56%)' }} />
-                <span className="text-2xl font-black" style={{ color: 'hsl(222, 100%, 65%)' }}>{stats.duplicateCount}</span>
+                <Copy className="w-4 h-4" style={{ color: 'hsl(var(--stat-duplicate-color))' }} />
+                <span className="text-2xl font-black" style={{ color: 'hsl(var(--stat-duplicate-number))' }}>{stats.duplicateCount}</span>
                 <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.45)' }}>{t('home.dupes')}</span>
               </div>
             </div>

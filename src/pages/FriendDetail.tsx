@@ -65,7 +65,7 @@ const FriendDetail = () => {
 
   return (
     <div className="flex flex-col min-h-screen page-bg">
-      <header className="sticky top-0 z-10 px-4 py-3" style={{ background: 'rgba(7,28,71,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <header className="sticky top-0 z-10 px-4 py-3 header-themed">
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
           <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
             <ArrowLeft className="h-5 w-5" style={{ color: 'rgba(255,255,255,0.7)' }} />
@@ -106,7 +106,7 @@ const FriendDetail = () => {
               return (
                 <button key={sticker.id} onClick={() => toggleSticker(sticker.id)}
                   className="relative aspect-[3/4] rounded-[14px] p-2 flex flex-col items-center justify-center text-center transition-all duration-150 active:scale-[0.96]"
-                  style={{ background: isSelected ? 'rgba(30,91,255,0.15)' : 'rgba(255,255,255,0.04)', border: isSelected ? '1px solid rgba(30,91,255,0.5)' : '1px solid rgba(255,255,255,0.08)' }}>
+                  style={{ background: isSelected ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)', border: isSelected ? `1px solid var(--sticker-selected)` : '1px solid rgba(255,255,255,0.08)' }}>
                   <div className="absolute top-2 right-2">
                     <Checkbox checked={isSelected} onCheckedChange={() => toggleSticker(sticker.id)} onClick={(e) => e.stopPropagation()} />
                   </div>
@@ -120,10 +120,9 @@ const FriendDetail = () => {
       </main>
 
       {count > 0 && (
-        <div className="fixed left-0 right-0 bottom-16 z-20 px-4 py-3" style={{ background: 'rgba(7,28,71,0.95)', borderTop: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}>
+        <div className="fixed left-0 right-0 bottom-16 z-20 px-4 py-3 header-themed" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           <div className="max-w-md mx-auto">
-            <button className="w-full h-11 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}
+            <button className="w-full h-11 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50 btn-themed"
               disabled={selectedCount === 0 || isCreating} onClick={handleRequestClick}>
               {isCreating ? (<><Loader2 className="h-4 w-4 animate-spin mr-2 inline" />{t('friendDetail.sending')}</>) : selectedCount === 0 ? t('friendDetail.selectStickers') : t('friendDetail.request', { count: selectedCount })}
             </button>

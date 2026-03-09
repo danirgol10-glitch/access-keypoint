@@ -18,7 +18,17 @@ interface CompletionCelebrationProps {
   onFinished?: () => void;
 }
 
-const COLORS = ['#4FA3FF', '#1E5BFF', '#FFD23F', '#FFE680', '#2B7FFF'];
+function getCelebrationColors(): string[] {
+  const style = getComputedStyle(document.documentElement);
+  return [
+    style.getPropertyValue('--celebration-1').trim() || '#4FA3FF',
+    style.getPropertyValue('--celebration-2').trim() || '#1E5BFF',
+    style.getPropertyValue('--celebration-3').trim() || '#FFD23F',
+    style.getPropertyValue('--celebration-4').trim() || '#FFE680',
+    style.getPropertyValue('--celebration-5').trim() || '#2B7FFF',
+  ];
+}
+
 const PARTICLE_COUNT = 40;
 const DURATION = 1500;
 
@@ -30,6 +40,7 @@ export const CompletionCelebration = ({ trigger, onFinished }: CompletionCelebra
   const { t } = useLanguage();
 
   const createParticles = useCallback((): Particle[] => {
+    const colors = getCelebrationColors();
     return Array.from({ length: PARTICLE_COUNT }, (_, i) => {
       const angle = (Math.PI * 2 * i) / PARTICLE_COUNT + (Math.random() - 0.5) * 0.5;
       const speed = 2 + Math.random() * 4;
@@ -40,7 +51,7 @@ export const CompletionCelebration = ({ trigger, onFinished }: CompletionCelebra
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         size: 2 + Math.random() * 4,
-        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        color: colors[Math.floor(Math.random() * colors.length)],
         opacity: 1,
         life: 1,
       };
@@ -85,7 +96,7 @@ export const CompletionCelebration = ({ trigger, onFinished }: CompletionCelebra
       parts = parts.map((p) => ({
         ...p,
         x: p.x + p.vx,
-        y: p.y + p.vy + 0.1, // slight gravity
+        y: p.y + p.vy + 0.1,
         vy: p.vy + 0.05,
         opacity: Math.max(0, 1 - progress * 1.2),
         life: 1 - progress,
@@ -112,26 +123,20 @@ export const CompletionCelebration = ({ trigger, onFinished }: CompletionCelebra
 
   if (!trigger) return null;
 
+  const celebrationLine = getComputedStyle(document.documentElement).getPropertyValue('--celebration-line').trim() || '#FFD23F';
+
   return (
     <div className="absolute inset-0 z-50 pointer-events-none">
-      {/* Screen flash */}
       {showFlash && (
         <div className="absolute inset-0 animate-[celebration-flash_0.4s_ease-out_forwards]" />
       )}
-
-      {/* Particle canvas */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-      />
-
-      {/* Completion message */}
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
       {showMessage && (
         <div className="absolute inset-0 flex flex-col items-center justify-center animate-[fade-in_0.5s_ease-out]">
           <h2 className="text-3xl font-black text-white tracking-wide mb-1">
             {t('celebration.title')}
           </h2>
-          <div className="w-16 h-0.5 bg-[#FFD23F] mx-auto mb-3" />
+          <div className="w-16 h-0.5 mx-auto mb-3" style={{ background: celebrationLine }} />
           <p className="text-sm font-medium text-white/60 tracking-widest uppercase">
             {t('celebration.subtitle')}
           </p>

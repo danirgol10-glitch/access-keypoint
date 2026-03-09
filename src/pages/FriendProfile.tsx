@@ -58,7 +58,7 @@ const FriendProfile = () => {
 
   return (
     <div className="flex flex-col min-h-screen page-bg">
-      <header className="sticky top-0 z-10 px-4 py-3" style={{ background: 'rgba(7,28,71,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <header className="sticky top-0 z-10 px-4 py-3 header-themed">
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
           <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
             <ArrowLeft className="h-5 w-5" style={{ color: 'rgba(255,255,255,0.7)' }} />
@@ -105,7 +105,7 @@ const FriendProfile = () => {
             return (
               <button key={f} onClick={() => setFilter(f)}
                 className="flex-1 py-2 text-[12px] font-medium transition-colors"
-                style={filter === f ? { background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}>
+                style={filter === f ? { background: `linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))`, color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}>
                 {filterLabels[f]} ({count})
               </button>
             );
@@ -128,7 +128,7 @@ const FriendProfile = () => {
             {filteredStickers.map((sticker) => (
               <div key={sticker.id} className="relative aspect-[3/4] rounded-[14px] p-2 flex flex-col items-center justify-center text-center" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div className="absolute top-2 right-2">
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: sticker.status === 'DUPLICATE' ? 'rgba(79,163,255,0.15)' : 'rgba(212,175,55,0.20)', color: sticker.status === 'DUPLICATE' ? 'hsl(222,100%,65%)' : '#D4AF37' }}>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: sticker.status === 'DUPLICATE' ? 'var(--sticker-duplicate-badge-bg)' : 'var(--sticker-owned-badge-bg)', color: sticker.status === 'DUPLICATE' ? 'var(--sticker-duplicate-color)' : 'var(--sticker-owned-color)' }}>
                     {sticker.status === 'DUPLICATE' ? t('sticker.duplicate') : t('sticker.have')}
                   </span>
                 </div>

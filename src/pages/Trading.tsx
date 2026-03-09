@@ -108,7 +108,7 @@ const Trading = () => {
     >
       {children}
       {badge > 0 && (
-        <span className="absolute -top-1 -right-1 text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1" style={{ background: 'hsl(222, 100%, 56%)', color: '#FFFFFF' }}>
+        <span className="absolute -top-1 -right-1 text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1" style={{ background: 'hsl(var(--badge-bg))', color: '#FFFFFF' }}>
           {badge > 99 ? '99+' : badge}
         </span>
       )}
@@ -144,7 +144,7 @@ const Trading = () => {
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-12 w-12 mb-3" style={{ color: 'rgba(255,255,255,0.2)' }} />
                   <p className="mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('home.addFriendsToDiscover')}</p>
-                  <button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }} className="px-4 py-2 rounded-xl text-sm font-semibold" style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>{t('home.addFriends')}</button>
+                  <button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }} className="px-4 py-2 rounded-xl text-sm font-semibold btn-themed">{t('home.addFriends')}</button>
                 </div>
               ) : friendsBadgeCount === 0 ? (
                 <div className="flex flex-col items-center py-8 text-center">
@@ -181,7 +181,7 @@ const Trading = () => {
                 <div className="flex flex-col items-center py-8 text-center">
                   <MapPin className="h-12 w-12 mb-3" style={{ color: 'rgba(255,255,255,0.2)' }} />
                   <p className="mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('home.setCityToFind')}</p>
-                  <button onClick={() => { setCitySheetOpen(false); navigate('/profile'); }} className="px-4 py-2 rounded-xl text-sm font-semibold" style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>{t('home.setCity')}</button>
+                  <button onClick={() => { setCitySheetOpen(false); navigate('/profile'); }} className="px-4 py-2 rounded-xl text-sm font-semibold btn-themed">{t('home.setCity')}</button>
                 </div>
               ) : !hasCityUsers ? (
                 <div className="flex flex-col items-center py-8 text-center">
@@ -228,7 +228,7 @@ const Trading = () => {
                 <div className="flex flex-col items-center py-8 text-center">
                   <GraduationCap className="h-12 w-12 mb-3" style={{ color: 'rgba(255,255,255,0.2)' }} />
                   <p className="mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('home.setUniToFind')}</p>
-                  <button onClick={() => { setUniSheetOpen(false); navigate('/profile'); }} className="px-4 py-2 rounded-xl text-sm font-semibold" style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>{t('home.setUniversity')}</button>
+                  <button onClick={() => { setUniSheetOpen(false); navigate('/profile'); }} className="px-4 py-2 rounded-xl text-sm font-semibold btn-themed">{t('home.setUniversity')}</button>
                 </div>
               ) : uniMatchesLoading ? (
                 <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }} />)}</div>
@@ -272,7 +272,7 @@ const Trading = () => {
               <h2 className="text-[16px] font-semibold" style={{ color: '#FFFFFF' }}>
                 {t('trading.receivedRequests')}
               </h2>
-              <span className="text-[11px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1.5" style={{ background: 'hsl(222, 100%, 56%)', color: '#FFFFFF' }}>
+              <span className="text-[11px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1.5" style={{ background: 'hsl(var(--badge-bg))', color: '#FFFFFF' }}>
                 {pendingReceived.length}
               </span>
             </div>
@@ -314,8 +314,7 @@ const Trading = () => {
                           }
                         }}
                         disabled={isUpdating}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[12px] font-medium transition-all duration-150 active:scale-95 disabled:opacity-50"
-                        style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[12px] font-medium transition-all duration-150 active:scale-95 disabled:opacity-50 btn-themed"
                       >
                         <Check className="h-3.5 w-3.5" />
                         {t('trade.accept')}
@@ -388,14 +387,14 @@ const Trading = () => {
 
       {/* Confirmation Dialog */}
       <AlertDialog open={confirmDialog?.open ?? false} onOpenChange={(open) => !open && setConfirmDialog(null)}>
-        <AlertDialogContent style={{ background: '#0A1A3A', border: '1px solid rgba(255,255,255,0.10)' }}>
+        <AlertDialogContent style={{ background: 'var(--dialog-bg)', border: '1px solid rgba(255,255,255,0.10)' }}>
           <AlertDialogHeader>
             <AlertDialogTitle style={{ color: '#FFFFFF' }}>{confirmDialog?.type === 'reject' ? t('trading.rejectRequest') : t('trading.cancelRequest')}</AlertDialogTitle>
             <AlertDialogDescription style={{ color: 'rgba(255,255,255,0.6)' }}>{confirmDialog?.type === 'reject' ? t('trading.confirmReject') : t('trading.confirmCancel')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: 'rgba(255,255,255,0.85)' }}>{t('trading.noGoBack')}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmAction} style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>{confirmDialog?.type === 'reject' ? t('trading.yesReject') : t('trading.yesCancel')}</AlertDialogAction>
+            <AlertDialogAction onClick={confirmAction} className="btn-themed">{confirmDialog?.type === 'reject' ? t('trading.yesReject') : t('trading.yesCancel')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

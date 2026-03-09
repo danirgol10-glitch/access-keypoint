@@ -156,7 +156,7 @@ const Album = () => {
       />
 
       {quickMode && (
-        <div className="sticky top-0 z-30 flex items-center justify-between py-2 px-4 -mx-4 -mt-4 mb-0 rounded-b-2xl" style={{ background: 'rgba(7,28,71,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="sticky top-0 z-30 flex items-center justify-between py-2 px-4 -mx-4 -mt-4 mb-0 rounded-b-2xl header-themed">
           <span className="text-sm font-medium" style={{ color: '#FFFFFF' }}>
             {t('album.duplicatesSelected', { count: quickDuplicateCount, s: quickDuplicateCount !== 1 ? 's' : '' })}
           </span>
@@ -182,7 +182,7 @@ const Album = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl outline-none transition-all duration-200"
               style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = '#4FA3FF'; e.currentTarget.style.boxShadow = '0 0 12px rgba(79,163,255,0.15)'; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; e.currentTarget.style.boxShadow = `0 0 12px var(--input-focus-glow)`; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; e.currentTarget.style.boxShadow = 'none'; }}
             />
           </div>

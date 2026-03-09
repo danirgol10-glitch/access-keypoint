@@ -23,8 +23,8 @@ export function FriendMatchCard({ username, matchCount, duplicateTotal, lastActi
       className="w-full flex items-center gap-3 p-3 rounded-[14px] text-left transition-all duration-150 active:scale-[0.98] active:opacity-80"
       style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
     >
-      <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #1E5BFF, #4FA3FF)', padding: '2px' }}>
-        <div className="w-full h-full rounded-full flex items-center justify-center" style={{ background: '#0A1A3A' }}>
+      <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 avatar-themed">
+        <div className="w-full h-full rounded-full flex items-center justify-center avatar-themed-inner">
           <User className="w-4 h-4" style={{ color: 'rgba(207,227,255,0.7)' }} />
         </div>
       </div>

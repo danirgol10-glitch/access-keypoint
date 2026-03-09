@@ -20,7 +20,7 @@ function PremiumCard({ children }: { children: React.ReactNode }) {
         border: '1px solid rgba(255,255,255,0.08)',
       }}
     >
-      <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'rgba(255,210,63,0.6)' }} />
+      <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'var(--panel-gold-line)' }} />
       {children}
     </div>
   );
@@ -37,8 +37,8 @@ function SectionHeader({ icon: Icon, title }: { icon: React.ElementType; title: 
 
 function AvatarCircle() {
   return (
-    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #1E5BFF, #4FA3FF)', padding: '2px' }}>
-      <div className="w-full h-full rounded-full flex items-center justify-center" style={{ background: '#0A1A3A' }}>
+    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 avatar-themed">
+      <div className="w-full h-full rounded-full flex items-center justify-center avatar-themed-inner">
         <User className="w-4 h-4" style={{ color: 'rgba(207,227,255,0.7)' }} />
       </div>
     </div>
@@ -72,8 +72,8 @@ function UserRow({ username, detail, action, onAdd, isPending, chip, addLabel, p
       )}
 
       {action === 'add' && (
-        <button onClick={onAdd} disabled={isPending} className="flex items-center gap-1 text-[12px] font-semibold px-3 py-1.5 rounded-xl flex-shrink-0 transition-all duration-150 active:scale-95 disabled:opacity-50 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)', color: '#FFFFFF' }}>
-          <span className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'rgba(255,210,63,0.35)' }} />
+        <button onClick={onAdd} disabled={isPending} className="flex items-center gap-1 text-[12px] font-semibold px-3 py-1.5 rounded-xl flex-shrink-0 transition-all duration-150 active:scale-95 disabled:opacity-50 relative overflow-hidden btn-themed">
+          <span className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'var(--panel-gold-line)' }} />
           <UserPlus className="w-3.5 h-3.5" />
           {addLabel}
         </button>
@@ -141,7 +141,7 @@ const Friends = () => {
   };
 
   return (
-    <div className="min-h-screen pb-28" style={{ background: '#071C47' }}>
+    <div className="min-h-screen pb-28 page-bg">
       <div className="pointer-events-none fixed top-0 left-0 right-0 h-32 z-10" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.25), transparent)' }} />
 
       <div className="relative z-20 px-4 pt-14 space-y-4 max-w-md mx-auto">
@@ -173,8 +173,7 @@ const Friends = () => {
                     <button
                       onClick={() => handleRespondToRequest(request.id, true)}
                       disabled={respondToRequest.isPending}
-                      className="h-8 w-8 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
-                      style={{ background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', border: '1px solid rgba(255,255,255,0.12)' }}
+                      className="h-8 w-8 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50 btn-themed"
                     >
                       <Check className="w-4 h-4" style={{ color: '#FFFFFF' }} />
                     </button>
@@ -205,7 +204,7 @@ const Friends = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl outline-none transition-all duration-200"
               style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = '#4FA3FF'; e.currentTarget.style.boxShadow = '0 0 12px rgba(79,163,255,0.15)'; }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; e.currentTarget.style.boxShadow = `0 0 12px var(--input-focus-glow)`; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; e.currentTarget.style.boxShadow = 'none'; }}
             />
           </div>
@@ -270,7 +269,7 @@ const Friends = () => {
                     <span className="text-[14px] font-semibold truncate block" style={{ color: '#FFFFFF' }}>@{friend.username}</span>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                        <div className="h-full rounded-full transition-all" style={{ width: `${friend.progressPercent}%`, background: 'linear-gradient(90deg, #1E5BFF, #4FA3FF)' }} />
+                        <div className="h-full rounded-full transition-all" style={{ width: `${friend.progressPercent}%`, background: `linear-gradient(90deg, var(--progress-bar-from), var(--progress-bar-to))` }} />
                       </div>
                       <span className="text-[11px] font-medium w-9 text-right" style={{ color: 'rgba(255,255,255,0.55)' }}>{friend.progressPercent.toFixed(0)}%</span>
                     </div>

@@ -46,7 +46,7 @@ const Chats = () => {
                       @{convo.other_username ?? 'Unknown'}
                     </span>
                     {convo.unread_count > 0 && (
-                      <span className="text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1" style={{ background: 'hsl(222, 100%, 56%)', color: '#FFFFFF' }}>
+                      <span className="text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1" style={{ background: 'hsl(var(--badge-bg))', color: '#FFFFFF' }}>
                         {convo.unread_count}
                       </span>
                     )}
