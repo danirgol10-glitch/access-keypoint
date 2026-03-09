@@ -301,6 +301,7 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.university': 'UNIVERSIDAD',
     'profile.city': 'CIUDAD',
     'profile.language': 'IDIOMA',
+    'profile.theme': 'TEMA DE LA APP',
     'profile.logout': 'Cerrar Sesión',
     'profile.addUniversity': 'Agregar Universidad',
     'profile.addCity': 'Agregar Ciudad',
