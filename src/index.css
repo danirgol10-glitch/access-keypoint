@@ -658,9 +658,9 @@
   }
 
   @keyframes celebration-flash {
-    0% { background: radial-gradient(circle, rgba(79,163,255,0.3) 0%, transparent 60%); }
-    40% { background: radial-gradient(circle, rgba(255,210,63,0.25) 0%, transparent 60%); }
-    100% { background: radial-gradient(circle, rgba(79,163,255,0.1) 0%, transparent 60%); opacity: 0; }
+    0% { background: radial-gradient(circle, var(--celebration-flash-1) 0%, transparent 60%); }
+    40% { background: radial-gradient(circle, var(--celebration-flash-2) 0%, transparent 60%); }
+    100% { background: radial-gradient(circle, var(--celebration-flash-3) 0%, transparent 60%); opacity: 0; }
   }
 
   /* Themed button gradient utility */
