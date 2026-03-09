@@ -513,6 +513,13 @@
     --celebration-5: #6A5ACD;
     --celebration-line: #00B5E2;
 
+    --hero-glow-center: rgba(19, 44, 90, 0.35);
+    --hero-vignette-edge: rgba(10, 31, 68, 0.15);
+    --hero-line-shadow: rgba(0, 181, 226, 0.10);
+    --celebration-flash-1: rgba(0,181,226,0.3);
+    --celebration-flash-2: rgba(241,90,41,0.25);
+    --celebration-flash-3: rgba(140,198,63,0.1);
+
     --stat-owned-color: 195 100% 44%;
     --stat-owned-number: 195 100% 55%;
     --stat-duplicate-color: 16 88% 55%;
