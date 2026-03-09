@@ -584,7 +584,7 @@
     right: 0;
     height: 2px;
     background: var(--hero-top-line);
-    box-shadow: 0 2px 8px rgba(255, 210, 63, 0.10);
+    box-shadow: 0 2px 8px var(--hero-line-shadow);
     pointer-events: none;
     z-index: 1;
   }
