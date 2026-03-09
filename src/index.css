@@ -471,6 +471,15 @@
     --stat-duplicate-number: 0 80% 85%;
     --stat-missing-color: 15 80% 55%;
     --badge-bg: 0 100% 62%;
+
+    --text-primary: #FFD6D6;
+    --text-secondary: rgba(255,214,214,0.65);
+    --text-muted: rgba(255,214,214,0.45);
+    --surface-card: rgba(255,59,59,0.08);
+    --surface-card-border: rgba(255,90,90,0.35);
+    --surface-input: rgba(255,59,59,0.12);
+    --surface-input-border: rgba(255,90,90,0.25);
+    --nav-border-top: rgba(255,59,59,0.25);
   }
 
   /* ─── Theme: World Cup 2026 (LIGHT) ─── */
