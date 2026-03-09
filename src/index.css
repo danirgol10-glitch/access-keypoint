@@ -379,6 +379,15 @@
     --stat-duplicate-number: 270 80% 85%;
     --stat-missing-color: 280 60% 65%;
     --badge-bg: 263 100% 68%;
+
+    --text-primary: #E6D5FF;
+    --text-secondary: rgba(230,213,255,0.65);
+    --text-muted: rgba(230,213,255,0.45);
+    --surface-card: rgba(155,92,255,0.08);
+    --surface-card-border: rgba(155,92,255,0.35);
+    --surface-input: rgba(155,92,255,0.12);
+    --surface-input-border: rgba(155,92,255,0.25);
+    --nav-border-top: rgba(155,92,255,0.25);
   }
 
   /* ─── Theme: Champions Red ─── */
