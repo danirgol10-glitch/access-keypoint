@@ -20,9 +20,9 @@ export function StickerCard({ code, teamName, status, onClick }: StickerCardProp
   const isOwned = status === 'HAVE' || status === 'DUPLICATE';
 
   const getCardStyle = () => {
-    if (status === 'HAVE') return { background: 'var(--sticker-owned-bg)', border: `1px solid var(--sticker-owned-border)` };
-    if (status === 'DUPLICATE') return { background: 'var(--sticker-duplicate-bg)', border: `1px solid var(--sticker-duplicate-border)` };
-    return { background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' };
+    if (status === 'HAVE') return { background: 'var(--sticker-owned-bg)', border: `2px solid var(--sticker-owned-border)` };
+    if (status === 'DUPLICATE') return { background: 'var(--sticker-duplicate-bg)', border: `2px solid var(--sticker-duplicate-border)` };
+    return { background: 'var(--surface-card)', border: '1.5px solid var(--surface-card-border)' };
   };
 
   const getBadgeStyle = () => {
