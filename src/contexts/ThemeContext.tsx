@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
-export type AppTheme = 'classic' | 'royal-purple' | 'champions-red' | 'world-cup-2026';
+export type AppTheme = 'classic' | 'world-cup-2026';
 
 interface ThemeContextType {
   theme: AppTheme;
@@ -11,10 +11,10 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+const VALID_THEMES: AppTheme[] = ['classic', 'world-cup-2026'];
+
 export const THEMES: { id: AppTheme; labelEn: string; labelEs: string; preview: { bg: string; card: string; accent: string } }[] = [
   { id: 'classic', labelEn: 'Classic', labelEs: 'Clásico', preview: { bg: '#071C47', card: '#123E8C', accent: '#FFD23F' } },
-  { id: 'royal-purple', labelEn: 'Royal Purple', labelEs: 'Púrpura Real', preview: { bg: '#1B0F3B', card: '#2A1E5C', accent: '#9B5CFF' } },
-  { id: 'champions-red', labelEn: 'Champions Red', labelEs: 'Rojo Campeón', preview: { bg: '#2A0A0A', card: '#5C1414', accent: '#FF3B3B' } },
   { id: 'world-cup-2026', labelEn: 'World Cup 2026', labelEs: 'Mundial 2026', preview: { bg: '#F7F7F7', card: '#FFFFFF', accent: '#00B5E2' } },
 ];
 
