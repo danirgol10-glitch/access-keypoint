@@ -359,7 +359,7 @@
 
   /* Unified page background */
   .page-bg {
-    background: #071C47;
+    background: var(--page-bg);
     min-height: 100vh;
   }
 
