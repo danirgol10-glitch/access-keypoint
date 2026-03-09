@@ -15,7 +15,7 @@ export const THEMES: { id: AppTheme; labelEn: string; labelEs: string; preview: 
   { id: 'classic', labelEn: 'Classic', labelEs: 'Clásico', preview: { bg: '#071C47', card: '#123E8C', accent: '#FFD23F' } },
   { id: 'royal-purple', labelEn: 'Royal Purple', labelEs: 'Púrpura Real', preview: { bg: '#1B0F3B', card: '#2A1E5C', accent: '#9B5CFF' } },
   { id: 'champions-red', labelEn: 'Champions Red', labelEs: 'Rojo Campeón', preview: { bg: '#2A0A0A', card: '#5C1414', accent: '#FF3B3B' } },
-  { id: 'world-cup-2026', labelEn: 'World Cup 2026', labelEs: 'Mundial 2026', preview: { bg: '#0A1F44', card: '#132C5A', accent: '#00B5E2' } },
+  { id: 'world-cup-2026', labelEn: 'World Cup 2026', labelEs: 'Mundial 2026', preview: { bg: '#F7F7F7', card: '#FFFFFF', accent: '#00B5E2' } },
 ];
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -24,7 +24,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return (localStorage.getItem('app-theme') as AppTheme) || 'classic';
   });
 
-  // Load theme from DB on login
   useEffect(() => {
     if (!user) return;
     supabase.from('users').select('theme').eq('id', user.id).maybeSingle().then(({ data }) => {
@@ -35,7 +34,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
   }, [user]);
 
-  // Apply theme class to document
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
