@@ -134,6 +134,16 @@
     --celebration-5: #2B7FFF;
     --celebration-line: #FFD23F;
 
+    /* Hero glow center */
+    --hero-glow-center: rgba(30, 76, 138, 0.35);
+    --hero-vignette-edge: rgba(7, 28, 71, 0.15);
+    --hero-line-shadow: rgba(255, 210, 63, 0.10);
+
+    /* Celebration flash */
+    --celebration-flash-1: rgba(79,163,255,0.3);
+    --celebration-flash-2: rgba(255,210,63,0.25);
+    --celebration-flash-3: rgba(79,163,255,0.1);
+
     /* Stats icon colors */
     --stat-owned-color: 142 72% 46%;
     --stat-owned-number: 142 72% 55%;
@@ -254,6 +264,13 @@
     --celebration-5: #2B7FFF;
     --celebration-line: #FFD23F;
 
+    --hero-glow-center: rgba(30, 76, 138, 0.35);
+    --hero-vignette-edge: rgba(7, 28, 71, 0.15);
+    --hero-line-shadow: rgba(255, 210, 63, 0.10);
+    --celebration-flash-1: rgba(79,163,255,0.3);
+    --celebration-flash-2: rgba(255,210,63,0.25);
+    --celebration-flash-3: rgba(79,163,255,0.1);
+
     --stat-owned-color: 142 72% 46%;
     --stat-owned-number: 142 72% 55%;
     --stat-duplicate-color: 222 100% 56%;
@@ -329,6 +346,13 @@
     --celebration-4: #C084FF;
     --celebration-5: #B47FFF;
     --celebration-line: #9B5CFF;
+
+    --hero-glow-center: rgba(42, 30, 92, 0.35);
+    --hero-vignette-edge: rgba(27, 15, 59, 0.15);
+    --hero-line-shadow: rgba(155, 92, 255, 0.10);
+    --celebration-flash-1: rgba(155,92,255,0.3);
+    --celebration-flash-2: rgba(230,213,255,0.25);
+    --celebration-flash-3: rgba(155,92,255,0.1);
 
     --stat-owned-color: 263 100% 68%;
     --stat-owned-number: 263 100% 78%;
@@ -406,6 +430,13 @@
     --celebration-5: #FF5A5A;
     --celebration-line: #FF3B3B;
 
+    --hero-glow-center: rgba(92, 20, 20, 0.35);
+    --hero-vignette-edge: rgba(42, 10, 10, 0.15);
+    --hero-line-shadow: rgba(255, 59, 59, 0.10);
+    --celebration-flash-1: rgba(255,59,59,0.3);
+    --celebration-flash-2: rgba(255,214,214,0.25);
+    --celebration-flash-3: rgba(255,59,59,0.1);
+
     --stat-owned-color: 0 100% 62%;
     --stat-owned-number: 0 100% 72%;
     --stat-duplicate-color: 0 80% 80%;
@@ -482,6 +513,13 @@
     --celebration-5: #6A5ACD;
     --celebration-line: #00B5E2;
 
+    --hero-glow-center: rgba(19, 44, 90, 0.35);
+    --hero-vignette-edge: rgba(10, 31, 68, 0.15);
+    --hero-line-shadow: rgba(0, 181, 226, 0.10);
+    --celebration-flash-1: rgba(0,181,226,0.3);
+    --celebration-flash-2: rgba(241,90,41,0.25);
+    --celebration-flash-3: rgba(140,198,63,0.1);
+
     --stat-owned-color: 195 100% 44%;
     --stat-owned-number: 195 100% 55%;
     --stat-duplicate-color: 16 88% 55%;
@@ -533,7 +571,7 @@
     transform: translate(-50%, -50%);
     width: 320px;
     height: 320px;
-    background: radial-gradient(circle, rgba(30, 76, 138, 0.35) 0%, transparent 70%);
+    background: radial-gradient(circle, var(--hero-glow-center) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
   }
@@ -546,7 +584,7 @@
     right: 0;
     height: 2px;
     background: var(--hero-top-line);
-    box-shadow: 0 2px 8px rgba(255, 210, 63, 0.10);
+    box-shadow: 0 2px 8px var(--hero-line-shadow);
     pointer-events: none;
     z-index: 1;
   }
@@ -554,7 +592,7 @@
   .hero-vignette {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, transparent 60%, rgba(7, 28, 71, 0.15) 100%);
+    background: radial-gradient(ellipse at center, transparent 60%, var(--hero-vignette-edge) 100%);
     pointer-events: none;
     z-index: 0;
   }
@@ -620,9 +658,9 @@
   }
 
   @keyframes celebration-flash {
-    0% { background: radial-gradient(circle, rgba(79,163,255,0.3) 0%, transparent 60%); }
-    40% { background: radial-gradient(circle, rgba(255,210,63,0.25) 0%, transparent 60%); }
-    100% { background: radial-gradient(circle, rgba(79,163,255,0.1) 0%, transparent 60%); opacity: 0; }
+    0% { background: radial-gradient(circle, var(--celebration-flash-1) 0%, transparent 60%); }
+    40% { background: radial-gradient(circle, var(--celebration-flash-2) 0%, transparent 60%); }
+    100% { background: radial-gradient(circle, var(--celebration-flash-3) 0%, transparent 60%); opacity: 0; }
   }
 
   /* Themed button gradient utility */
