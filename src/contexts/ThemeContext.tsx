@@ -21,7 +21,8 @@ export const THEMES: { id: AppTheme; labelEn: string; labelEs: string; preview: 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [theme, setThemeState] = useState<AppTheme>(() => {
-    return (localStorage.getItem('app-theme') as AppTheme) || 'classic';
+    const stored = localStorage.getItem('app-theme') as string;
+    return VALID_THEMES.includes(stored as AppTheme) ? (stored as AppTheme) : 'classic';
   });
 
   useEffect(() => {
