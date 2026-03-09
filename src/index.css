@@ -68,6 +68,19 @@
     --panel-bg: 220 50% 100%;
     --panel-border: 220 50% 100%;
     --gold-accent: 45 93% 58%;
+
+    /* Theme-able colors */
+    --page-bg: #071C47;
+    --ring-track: #123E8C;
+    --ring-fill: #4FA3FF;
+    --ring-glow-color: rgba(79, 163, 255, 0.25);
+    --ring-marker: #FFD23F;
+    --ring-complete: #FFD23F;
+    --accent-highlight: #FFD23F;
+    --hero-gradient-from: #0B2A55;
+    --hero-gradient-to: #1E4C8A;
+    --hero-top-line: #FFD23F;
+    --sticker-selected: #FFD23F;
   }
 
   .dark {
@@ -130,6 +143,117 @@
     --panel-bg: 220 50% 100%;
     --panel-border: 220 50% 100%;
     --gold-accent: 45 93% 58%;
+
+    --page-bg: #071C47;
+    --ring-track: #123E8C;
+    --ring-fill: #4FA3FF;
+    --ring-glow-color: rgba(79, 163, 255, 0.25);
+    --ring-marker: #FFD23F;
+    --ring-complete: #FFD23F;
+    --accent-highlight: #FFD23F;
+    --hero-gradient-from: #0B2A55;
+    --hero-gradient-to: #1E4C8A;
+    --hero-top-line: #FFD23F;
+    --sticker-selected: #FFD23F;
+  }
+
+  /* ─── Theme: Royal Purple ─── */
+  [data-theme="royal-purple"] {
+    --background: 263 60% 15%;
+    --card: 258 50% 24%;
+    --secondary: 258 50% 20%;
+    --muted: 258 50% 22%;
+    --primary: 263 100% 68%;
+    --primary-hover: 263 100% 58%;
+    --primary-soft: 263 40% 25%;
+    --accent: 263 100% 68%;
+    --border: 258 40% 28%;
+    --input: 258 40% 28%;
+    --ring: 263 100% 68%;
+    --sidebar-background: 263 65% 10%;
+    --sidebar-primary: 263 100% 68%;
+    --sidebar-accent: 258 50% 20%;
+    --sidebar-border: 258 40% 24%;
+    --tab-active: 263 100% 68%;
+    --page-bg: #1B0F3B;
+    --ring-track: #2A1E5C;
+    --ring-fill: #9B5CFF;
+    --ring-glow-color: rgba(155, 92, 255, 0.25);
+    --ring-marker: #E6D5FF;
+    --ring-complete: #9B5CFF;
+    --accent-highlight: #9B5CFF;
+    --hero-gradient-from: #1B0F3B;
+    --hero-gradient-to: #2A1E5C;
+    --hero-top-line: #9B5CFF;
+    --sticker-selected: #9B5CFF;
+    --gold-accent: 263 100% 68%;
+    --pending: 263 100% 68%;
+  }
+
+  /* ─── Theme: Champions Red ─── */
+  [data-theme="champions-red"] {
+    --background: 0 55% 10%;
+    --card: 0 60% 22%;
+    --secondary: 0 55% 18%;
+    --muted: 0 55% 20%;
+    --primary: 0 100% 62%;
+    --primary-hover: 0 100% 52%;
+    --primary-soft: 0 40% 22%;
+    --accent: 0 100% 62%;
+    --border: 0 45% 26%;
+    --input: 0 45% 26%;
+    --ring: 0 100% 62%;
+    --sidebar-background: 0 60% 8%;
+    --sidebar-primary: 0 100% 62%;
+    --sidebar-accent: 0 55% 18%;
+    --sidebar-border: 0 45% 22%;
+    --tab-active: 0 100% 62%;
+    --page-bg: #2A0A0A;
+    --ring-track: #5C1414;
+    --ring-fill: #FF3B3B;
+    --ring-glow-color: rgba(255, 59, 59, 0.25);
+    --ring-marker: #FFD6D6;
+    --ring-complete: #FF3B3B;
+    --accent-highlight: #FF3B3B;
+    --hero-gradient-from: #2A0A0A;
+    --hero-gradient-to: #5C1414;
+    --hero-top-line: #FF3B3B;
+    --sticker-selected: #FF3B3B;
+    --gold-accent: 0 100% 62%;
+    --pending: 0 100% 62%;
+  }
+
+  /* ─── Theme: World Cup 2026 ─── */
+  [data-theme="world-cup-2026"] {
+    --background: 215 70% 15%;
+    --card: 215 60% 22%;
+    --secondary: 215 60% 18%;
+    --muted: 215 60% 20%;
+    --primary: 195 100% 44%;
+    --primary-hover: 195 100% 36%;
+    --primary-soft: 195 50% 22%;
+    --accent: 195 100% 44%;
+    --border: 215 50% 26%;
+    --input: 215 50% 26%;
+    --ring: 195 100% 44%;
+    --sidebar-background: 215 75% 12%;
+    --sidebar-primary: 195 100% 44%;
+    --sidebar-accent: 215 60% 18%;
+    --sidebar-border: 215 50% 22%;
+    --tab-active: 195 100% 44%;
+    --page-bg: #0A1F44;
+    --ring-track: #132C5A;
+    --ring-fill: #00B5E2;
+    --ring-glow-color: rgba(0, 181, 226, 0.25);
+    --ring-marker: #F15A29;
+    --ring-complete: #00B5E2;
+    --accent-highlight: #00B5E2;
+    --hero-gradient-from: #0A1F44;
+    --hero-gradient-to: #132C5A;
+    --hero-top-line: #00B5E2;
+    --sticker-selected: #00B5E2;
+    --gold-accent: 195 100% 44%;
+    --pending: 16 88% 55%;
   }
 }
 
@@ -162,7 +286,7 @@
   }
 
   .hero-gradient {
-    background: linear-gradient(135deg, #0B2A55 0%, #1E4C8A 100%);
+    background: linear-gradient(135deg, var(--hero-gradient-from) 0%, var(--hero-gradient-to) 100%);
     position: relative;
     overflow: hidden;
   }
@@ -187,7 +311,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: #FFD23F;
+    background: var(--hero-top-line);
     box-shadow: 0 2px 8px rgba(255, 210, 63, 0.10);
     pointer-events: none;
     z-index: 1;
@@ -228,14 +352,14 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: rgba(255, 210, 63, 0.6);
+    background: var(--accent-highlight, rgba(255, 210, 63, 0.6));
     pointer-events: none;
     z-index: 1;
   }
 
   /* Unified page background */
   .page-bg {
-    background: #071C47;
+    background: var(--page-bg);
     min-height: 100vh;
   }
 

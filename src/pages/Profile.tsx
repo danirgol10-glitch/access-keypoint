@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUniversities } from '@/hooks/useUniversities';
 import { useLanguage, type Language } from '@/contexts/LanguageContext';
+import { useTheme, THEMES, type AppTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { COLOMBIAN_CITIES } from '@/constants/cities';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,13 +15,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { LogOut } from 'lucide-react';
+import { LogOut, Check } from 'lucide-react';
 
 const Profile = () => {
   const { user, signOut } = useAuth();
   const { profile, isLoading: profileLoading, refetchProfile } = useUserProfile();
   const { universities, isLoading: uniLoading } = useUniversities(profile?.city ?? null);
   const { language, setLanguage, t } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const [savingCity, setSavingCity] = useState(false);
   const [savingUni, setSavingUni] = useState(false);
@@ -109,6 +111,46 @@ const Profile = () => {
           )}
         </div>
 
+        {/* Theme */}
+        <div className="premium-panel p-4 space-y-3">
+          <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            {t('profile.theme')}
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            {THEMES.map((t_item) => {
+              const isActive = theme === t_item.id;
+              return (
+                <button
+                  key={t_item.id}
+                  onClick={() => setTheme(t_item.id)}
+                  className="relative rounded-2xl p-3 text-left transition-all duration-200 active:scale-[0.97]"
+                  style={{
+                    background: t_item.preview.bg,
+                    border: isActive ? `2px solid ${t_item.preview.accent}` : '2px solid rgba(255,255,255,0.08)',
+                  }}
+                >
+                  {isActive && (
+                    <div
+                      className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
+                      style={{ background: t_item.preview.accent }}
+                    >
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                  )}
+                  {/* Mini preview */}
+                  <div className="flex gap-1.5 mb-2">
+                    <div className="w-4 h-4 rounded-md" style={{ background: t_item.preview.card }} />
+                    <div className="w-4 h-4 rounded-md" style={{ background: t_item.preview.accent }} />
+                  </div>
+                  <span className="text-[11px] font-bold text-white/90">
+                    {language === 'es' ? t_item.labelEs : t_item.labelEn}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Language */}
         <div className="premium-panel p-4 space-y-3">
           <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'rgba(255,255,255,0.45)' }}>
@@ -118,14 +160,14 @@ const Profile = () => {
             <button
               onClick={() => setLanguage('en')}
               className="flex-1 py-3 text-sm font-medium transition-colors"
-              style={language === 'en' ? { background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}
+              style={language === 'en' ? { background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)))', color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}
             >
               English
             </button>
             <button
               onClick={() => setLanguage('es')}
               className="flex-1 py-3 text-sm font-medium transition-colors"
-              style={language === 'es' ? { background: 'linear-gradient(135deg, #0A2B73, #1E5AA6)', color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}
+              style={language === 'es' ? { background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)))', color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)' }}
             >
               Español
             </button>

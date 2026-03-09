@@ -470,6 +470,7 @@ export type Database = {
           first_login_flag: boolean
           id: string
           last_active_at: string | null
+          theme: string
           university_id: string | null
           username: string | null
         }
@@ -480,6 +481,7 @@ export type Database = {
           first_login_flag?: boolean
           id: string
           last_active_at?: string | null
+          theme?: string
           university_id?: string | null
           username?: string | null
         }
@@ -490,6 +492,7 @@ export type Database = {
           first_login_flag?: boolean
           id?: string
           last_active_at?: string | null
+          theme?: string
           university_id?: string | null
           username?: string | null
         }

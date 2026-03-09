@@ -61,13 +61,22 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
   const tickX = CENTER + (RADIUS) * Math.cos(tickRad);
   const tickY = CENTER + (RADIUS) * Math.sin(tickRad);
 
+  // Read CSS custom properties for theme colors
+  const style = getComputedStyle(document.documentElement);
+  const ringTrack = style.getPropertyValue('--ring-track').trim() || '#123E8C';
+  const ringFill = style.getPropertyValue('--ring-fill').trim() || '#4FA3FF';
+  const ringGlowColor = style.getPropertyValue('--ring-glow-color').trim() || 'rgba(79,163,255,0.25)';
+  const ringMarker = style.getPropertyValue('--ring-marker').trim() || '#FFD23F';
+  const ringComplete = style.getPropertyValue('--ring-complete').trim() || '#FFD23F';
+  const accentHighlight = style.getPropertyValue('--accent-highlight').trim() || '#FFD23F';
+
   return (
     <div className="relative flex items-center justify-center">
       <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="drop-shadow-lg">
         <defs>
           <filter id="ring-glow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="3" result="blur" />
-            <feFlood floodColor="#4FA3FF" floodOpacity="0.25" />
+            <feFlood floodColor={ringFill} floodOpacity="0.25" />
             <feComposite in2="blur" operator="in" />
             <feMerge>
               <feMergeNode />
@@ -81,7 +90,7 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
           cy={CENTER}
           r={RADIUS + STROKE / 2 + 3}
           fill="none"
-          stroke="#FFD23F"
+          stroke={accentHighlight}
           strokeWidth={1.5}
           opacity={0.4}
         />
@@ -91,7 +100,7 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
           cy={CENTER}
           r={RADIUS}
           fill="none"
-          stroke="#123E8C"
+          stroke={ringTrack}
           strokeWidth={STROKE}
           opacity={0.6}
         />
@@ -101,7 +110,7 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
           cy={CENTER}
           r={RADIUS}
           fill="none"
-          stroke="#4FA3FF"
+          stroke={ringFill}
           strokeWidth={STROKE}
           strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}
@@ -118,7 +127,7 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
             cy={CENTER}
             r={RADIUS + STROKE / 2 + 3}
             fill="none"
-            stroke="#FFD23F"
+            stroke={ringComplete}
             strokeWidth={2}
             opacity={0.7}
           />
@@ -129,7 +138,7 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
             cx={tickX}
             cy={tickY}
             r={3.5}
-            fill="#FFD23F"
+            fill={ringMarker}
             opacity={0.8}
           />
         )}
@@ -139,7 +148,7 @@ export const ProgressRing = ({ percent, ownedCount, totalStickers, onComplete }:
         <span className="text-[3.5rem] font-black text-white tracking-tight leading-none">
           {animatedPercent.toFixed(1)}%
         </span>
-        <div className="w-10 h-[2px] bg-[#FFD23F] opacity-50 mt-2.5 mb-2 rounded-full" />
+        <div className="w-10 h-[2px] opacity-50 mt-2.5 mb-2 rounded-full" style={{ background: accentHighlight }} />
         <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50">
           {t('home.roadTo100')}
         </span>
