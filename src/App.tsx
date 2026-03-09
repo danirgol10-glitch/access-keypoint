@@ -34,6 +34,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <LanguageProvider>
+          <ThemeProvider>
           <CityGateModal />
           <Routes>
             <Route path="/auth" element={<Auth />} />
