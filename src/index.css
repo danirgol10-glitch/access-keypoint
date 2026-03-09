@@ -729,4 +729,55 @@
     backdrop-filter: blur(8px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
+  /* ─── World Cup 2026 light-mode overrides ─── */
+  [data-theme="world-cup-2026"] .premium-panel {
+    background: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  [data-theme="world-cup-2026"] .premium-panel-gold::before {
+    height: 3px;
+    background: linear-gradient(90deg, #00B5E2, #F15A29, #8CC63F, #FFD23F, #6A5ACD);
+  }
+
+  [data-theme="world-cup-2026"] .btn-themed {
+    background: linear-gradient(135deg, #00B5E2, #0098BD);
+    border: 1px solid rgba(0,181,226,0.3);
+    color: #FFFFFF;
+  }
+
+  [data-theme="world-cup-2026"] .avatar-themed {
+    background: linear-gradient(135deg, #00B5E2, #8CC63F);
+  }
+
+  [data-theme="world-cup-2026"] .avatar-themed-inner {
+    background: #F0F0F0;
+  }
+
+  [data-theme="world-cup-2026"] .header-themed {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+
+  [data-theme="world-cup-2026"] .hero-gradient {
+    background: #FFFFFF;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  [data-theme="world-cup-2026"] .hero-gradient::before {
+    background: none;
+  }
+
+  [data-theme="world-cup-2026"] .hero-gradient::after {
+    height: 3px;
+    background: linear-gradient(90deg, #00B5E2, #F15A29, #8CC63F, #FFD23F, #6A5ACD);
+    box-shadow: none;
+  }
+
+  [data-theme="world-cup-2026"] .page-vignette {
+    background: none;
+  }
 }

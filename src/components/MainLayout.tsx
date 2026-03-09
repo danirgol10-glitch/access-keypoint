@@ -6,6 +6,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { useConversations } from '@/hooks/useConversations';
 import { useLastActive } from '@/hooks/useLastActive';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const tabConfig = [
   { path: '/', labelKey: 'nav.progress', icon: Home },
@@ -13,6 +14,8 @@ const tabConfig = [
   { path: '/trading', labelKey: 'nav.trading', icon: Handshake },
   { path: '/friends', labelKey: 'nav.friends', icon: Users },
 ];
+
+const WC2026_TAB_COLORS = ['#00B5E2', '#8CC63F', '#F15A29', '#6A5ACD'];
 
 const MainLayout = () => {
   const location = useLocation();
@@ -22,6 +25,8 @@ const MainLayout = () => {
   const tradingBadge = unreadCount + chatUnreadCount;
   const { touch } = useLastActive();
   const { t } = useLanguage();
+  const { theme } = useTheme();
+  const isWC2026 = theme === 'world-cup-2026';
 
   useEffect(() => {
     touch();
@@ -33,28 +38,29 @@ const MainLayout = () => {
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: 'var(--nav-bg)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+      <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: 'var(--nav-bg)', borderTop: '1px solid var(--nav-border-top)' }}>
         <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
-          {tabConfig.map((tab) => {
+          {tabConfig.map((tab, index) => {
             const isActive = location.pathname === tab.path;
             const Icon = tab.icon;
             const showBadge = tab.path === '/trading' && tradingBadge > 0;
             const badgeNum = tradingBadge;
 
+            const activeColor = isWC2026 ? WC2026_TAB_COLORS[index] : undefined;
+
             return (
               <NavLink
                 key={tab.path}
                 to={tab.path}
-                className={cn(
-                  'flex flex-col items-center justify-center w-full h-full transition-colors relative',
-                )}
+                className="flex flex-col items-center justify-center w-full h-full transition-colors relative"
               >
                 <div className="relative">
                   <Icon
                     className={cn(
                       'w-5 h-5 mb-1 transition-colors',
-                      isActive ? 'text-tab-active' : 'text-tab-inactive'
+                      !isWC2026 && (isActive ? 'text-tab-active' : 'text-tab-inactive')
                     )}
+                    style={isWC2026 ? { color: isActive ? activeColor : '#999999' } : undefined}
                   />
                   {showBadge && (
                     <span className="absolute -top-1 -right-2 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full h-4 min-w-4 flex items-center justify-center px-1">
@@ -65,8 +71,9 @@ const MainLayout = () => {
                 <span
                   className={cn(
                     'text-xs font-medium transition-colors',
-                    isActive ? 'text-tab-active' : 'text-tab-inactive'
+                    !isWC2026 && (isActive ? 'text-tab-active' : 'text-tab-inactive')
                   )}
+                  style={isWC2026 ? { color: isActive ? activeColor : '#999999' } : undefined}
                 >
                   {t(tab.labelKey)}
                 </span>

@@ -16,7 +16,6 @@ const ChatDetail = () => {
   const { t } = useLanguage();
   const [text, setText] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
-
   const { messages, isLoading, sendMessage, isSending, markAsRead } = useMessages(conversationId);
 
   const { data: convoInfo } = useQuery({
@@ -35,46 +34,36 @@ const ChatDetail = () => {
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
   useEffect(() => { if (conversationId && messages.length > 0) markAsRead(); }, [conversationId, messages.length, markAsRead]);
 
-  const handleSend = async () => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-    setText('');
-    try { await sendMessage(trimmed); } catch (err) { console.error('Failed to send:', err); }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
-  };
+  const handleSend = async () => { const trimmed = text.trim(); if (!trimmed) return; setText(''); try { await sendMessage(trimmed); } catch (err) { console.error('Failed to send:', err); } };
+  const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
 
   return (
     <div className="flex flex-col h-screen page-bg">
       <header className="sticky top-0 z-10 px-4 py-3 header-themed">
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
-          <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
-            <ArrowLeft className="h-5 w-5" style={{ color: 'rgba(255,255,255,0.7)' }} />
+          <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'var(--surface-input)' }}>
+            <ArrowLeft className="h-5 w-5" style={{ color: 'var(--icon-default)' }} />
           </button>
-          <h1 className="text-[16px] font-semibold" style={{ color: '#FFFFFF' }}>
-            @{convoInfo?.otherUsername ?? <Skeleton className="h-5 w-24 inline-block" style={{ background: 'rgba(255,255,255,0.06)' }} />}
+          <h1 className="text-[16px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+            @{convoInfo?.otherUsername ?? <Skeleton className="h-5 w-24 inline-block" style={{ background: 'var(--surface-skeleton)' }} />}
           </h1>
         </div>
       </header>
 
       <main className="flex-1 overflow-y-auto p-4 space-y-3">
         {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-10 w-48 rounded-lg" style={{ background: 'rgba(255,255,255,0.06)' }} />)}
-          </div>
+          <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-10 w-48 rounded-lg" style={{ background: 'var(--surface-skeleton)' }} />)}</div>
         ) : messages.length === 0 ? (
-          <p className="text-center py-8" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('chat.sayHello')}</p>
+          <p className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>{t('chat.sayHello')}</p>
         ) : (
           messages.map((msg) => {
             const isMe = msg.sender_id === user?.id;
             return (
               <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${isMe ? 'rounded-br-md' : 'rounded-bl-md'}`}
-                  style={isMe ? { background: `linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))`, color: '#FFFFFF' } : { background: 'rgba(255,255,255,0.06)', color: '#FFFFFF' }}>
+                  style={isMe ? { background: `linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))`, color: '#FFFFFF' } : { background: 'var(--surface-input)', color: 'var(--text-primary)' }}>
                   <p className="text-sm break-words">{msg.text}</p>
-                  <p className="text-[10px] mt-1" style={{ color: isMe ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.4)' }}>
+                  <p className="text-[10px] mt-1" style={{ color: isMe ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)' }}>
                     {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}
                   </p>
                 </div>
@@ -85,14 +74,11 @@ const ChatDetail = () => {
         <div ref={bottomRef} />
       </main>
 
-      <div className="p-3 header-themed" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+      <div className="p-3 header-themed" style={{ borderTop: '1px solid var(--surface-divider)' }}>
         <div className="flex gap-2 max-w-2xl mx-auto">
           <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown}
-            placeholder={t('chat.placeholder')}
-            className="flex-1 px-4 py-2.5 text-[14px] rounded-2xl outline-none"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', color: '#FFFFFF' }}
-            disabled={isSending}
-          />
+            placeholder={t('chat.placeholder')} className="flex-1 px-4 py-2.5 text-[14px] rounded-2xl outline-none"
+            style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }} disabled={isSending} />
           <button onClick={handleSend} disabled={!text.trim() || isSending}
             className="h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-150 active:scale-95 disabled:opacity-50 btn-themed">
             <Send className="h-4 w-4" />
