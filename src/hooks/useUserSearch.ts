@@ -55,14 +55,17 @@ export function useUserSearch(query: string) {
         if (f.status === 'PENDING') pendingSet.add(otherId);
       });
 
-      return data.map(u => ({
-        id: u.id,
-        username: u.username,
-        city: u.city,
-        university_name: u.university_id ? (uniMap[u.university_id] ?? null) : null,
-        isFriend: friendSet.has(u.id),
-        isPending: pendingSet.has(u.id),
-      }));
+      const blockedSet = new Set(blockedIds);
+      return data
+        .filter(u => !blockedSet.has(u.id))
+        .map(u => ({
+          id: u.id,
+          username: u.username,
+          city: u.city,
+          university_name: u.university_id ? (uniMap[u.university_id] ?? null) : null,
+          isFriend: friendSet.has(u.id),
+          isPending: pendingSet.has(u.id),
+        }));
     },
     enabled: !!user && trimmed.length >= 2,
   });

@@ -26,7 +26,7 @@ const ChatDetail = () => {
       if (!convo) return null;
       const otherUserId = convo.user_a_id === user.id ? convo.user_b_id : convo.user_a_id;
       const { data: otherUser } = await supabase.from('users').select('username').eq('id', otherUserId).single();
-      return { otherUsername: otherUser?.username ?? t('common.unknown') };
+      return { otherUserId, otherUsername: otherUser?.username ?? t('common.unknown') };
     },
     enabled: !!conversationId && !!user?.id,
   });
