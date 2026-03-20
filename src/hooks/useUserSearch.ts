@@ -16,6 +16,7 @@ export interface SearchResult {
 export function useUserSearch(query: string) {
   const { user } = useAuth();
   const { data: friendships } = useFriendships();
+  const { blockedIds } = useBlockedUsers();
 
   const trimmed = query.trim();
 
