@@ -610,6 +610,24 @@ const translations: Record<Language, Record<string, string>> = {
     'friendDetail.noValidDesc': 'Los stickers seleccionados ya no están disponibles.',
     'friendDetail.failSend': 'Error al enviar solicitud.',
 
+    // Account Management
+    'profile.deleteAccount': 'Eliminar Cuenta',
+    'profile.deleteConfirmTitle': '¿Estás seguro?',
+    'profile.deleteConfirmMessage': 'Esta acción eliminará tu cuenta y todos tus datos de forma permanente.',
+    'profile.deleteConfirmButton': 'Eliminar Cuenta',
+    'profile.deleteTypingPrompt': 'Escribe ELIMINAR para confirmar',
+    'profile.cancel': 'Cancelar',
+    'profile.deleting': 'Eliminando...',
+    'profile.support': 'Soporte',
+    'profile.supportSubject': 'Asunto',
+    'profile.supportMessage': 'Mensaje',
+    'profile.supportSend': 'Enviar Mensaje',
+    'profile.supportSending': 'Enviando...',
+    'profile.supportSent': 'Mensaje Enviado',
+    'profile.supportSentDesc': 'Tu mensaje fue enviado correctamente.',
+    'profile.supportSubjectRequired': 'El asunto es obligatorio',
+    'profile.supportMessageRequired': 'El mensaje es obligatorio',
+
     // Common
     'common.unknown': 'desconocido',
     'common.error': 'Error',
