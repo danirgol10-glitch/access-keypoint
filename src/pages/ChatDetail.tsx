@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMessages } from '@/hooks/useMessages';
 import { Skeleton } from '@/components/ui/skeleton';
+import { BlockUserMenu } from '@/components/BlockUserMenu';
 import { ArrowLeft, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
