@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useFriendships } from './useFriendships';
+import { useBlockedUsers } from './useBlockedUsers';
 
 export interface SearchResult {
   id: string;
