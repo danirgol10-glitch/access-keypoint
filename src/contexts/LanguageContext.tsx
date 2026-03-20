@@ -473,6 +473,20 @@ const translations: Record<Language, Record<string, string>> = {
     'block.cancel': 'Cancelar',
     'block.confirm': 'Bloquear',
 
+    // Report User
+    'report.reportUser': 'Reportar usuario',
+    'report.title': 'Reportar a @{username}',
+    'report.spam': 'Spam',
+    'report.inappropriate': 'Comportamiento inapropiado',
+    'report.scam': 'Intento de estafa',
+    'report.other': 'Otro',
+    'report.optionalMessage': 'Detalles adicionales (opcional)',
+    'report.submit': 'Enviar reporte',
+    'report.cancel': 'Cancelar',
+    'report.success': 'Reporte enviado',
+    'report.successDesc': 'Gracias. Revisaremos este reporte.',
+    'report.fail': 'Error al enviar reporte',
+
     // City Gate Modal
     'cityGate.title': 'Selecciona tu ciudad',
     'cityGate.desc': 'Elige tu ciudad para habilitar funciones de intercambio local.',
