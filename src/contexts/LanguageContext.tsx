@@ -298,6 +298,24 @@ const translations: Record<Language, Record<string, string>> = {
     'friendDetail.noValidDesc': 'The selected stickers are no longer available.',
     'friendDetail.failSend': 'Failed to send request.',
 
+    // Account Management
+    'profile.deleteAccount': 'Delete Account',
+    'profile.deleteConfirmTitle': 'Are you sure?',
+    'profile.deleteConfirmMessage': 'This action will permanently delete your account and all your data.',
+    'profile.deleteConfirmButton': 'Delete Account',
+    'profile.deleteTypingPrompt': 'Type DELETE to confirm',
+    'profile.cancel': 'Cancel',
+    'profile.deleting': 'Deleting...',
+    'profile.support': 'Support',
+    'profile.supportSubject': 'Subject',
+    'profile.supportMessage': 'Message',
+    'profile.supportSend': 'Send Message',
+    'profile.supportSending': 'Sending...',
+    'profile.supportSent': 'Message Sent',
+    'profile.supportSentDesc': 'Your message was sent successfully.',
+    'profile.supportSubjectRequired': 'Subject is required',
+    'profile.supportMessageRequired': 'Message is required',
+
     // Common
     'common.unknown': 'unknown',
     'common.error': 'Error',
@@ -591,6 +609,24 @@ const translations: Record<Language, Record<string, string>> = {
     'friendDetail.noValid': 'Sin stickers válidos',
     'friendDetail.noValidDesc': 'Los stickers seleccionados ya no están disponibles.',
     'friendDetail.failSend': 'Error al enviar solicitud.',
+
+    // Account Management
+    'profile.deleteAccount': 'Eliminar Cuenta',
+    'profile.deleteConfirmTitle': '¿Estás seguro?',
+    'profile.deleteConfirmMessage': 'Esta acción eliminará tu cuenta y todos tus datos de forma permanente.',
+    'profile.deleteConfirmButton': 'Eliminar Cuenta',
+    'profile.deleteTypingPrompt': 'Escribe ELIMINAR para confirmar',
+    'profile.cancel': 'Cancelar',
+    'profile.deleting': 'Eliminando...',
+    'profile.support': 'Soporte',
+    'profile.supportSubject': 'Asunto',
+    'profile.supportMessage': 'Mensaje',
+    'profile.supportSend': 'Enviar Mensaje',
+    'profile.supportSending': 'Enviando...',
+    'profile.supportSent': 'Mensaje Enviado',
+    'profile.supportSentDesc': 'Tu mensaje fue enviado correctamente.',
+    'profile.supportSubjectRequired': 'El asunto es obligatorio',
+    'profile.supportMessageRequired': 'El mensaje es obligatorio',
 
     // Common
     'common.unknown': 'desconocido',
