@@ -230,6 +230,48 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          created_at: string
+          id: string
+          optional_message: string | null
+          reason: string
+          reported_user_id: string
+          reporter_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          optional_message?: string | null
+          reason: string
+          reported_user_id: string
+          reporter_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          optional_message?: string | null
+          reason?: string
+          reported_user_id?: string
+          reporter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_reported_user_id_fkey"
+            columns: ["reported_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stickers: {
         Row: {
           code: string
@@ -511,7 +553,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_report_count: { Args: { target_user_id: string }; Returns: number }
     }
     Enums: {
       [_ in never]: never
