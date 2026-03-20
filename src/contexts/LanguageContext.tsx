@@ -179,6 +179,20 @@ const translations: Record<Language, Record<string, string>> = {
     'block.cancel': 'Cancel',
     'block.confirm': 'Block',
 
+    // Report User
+    'report.reportUser': 'Report user',
+    'report.title': 'Report @{username}',
+    'report.spam': 'Spam',
+    'report.inappropriate': 'Inappropriate behavior',
+    'report.scam': 'Scam attempt',
+    'report.other': 'Other',
+    'report.optionalMessage': 'Additional details (optional)',
+    'report.submit': 'Submit Report',
+    'report.cancel': 'Cancel',
+    'report.success': 'Report submitted',
+    'report.successDesc': 'Thank you. We will review this report.',
+    'report.fail': 'Failed to submit report',
+
     // City Gate Modal
     'cityGate.title': 'Select your city',
     'cityGate.desc': 'Choose your city to enable local exchange features.',
@@ -458,6 +472,20 @@ const translations: Record<Language, Record<string, string>> = {
     'block.confirmDesc': 'No aparecerá en tus coincidencias, chats ni solicitudes. Puedes desbloquearlo después.',
     'block.cancel': 'Cancelar',
     'block.confirm': 'Bloquear',
+
+    // Report User
+    'report.reportUser': 'Reportar usuario',
+    'report.title': 'Reportar a @{username}',
+    'report.spam': 'Spam',
+    'report.inappropriate': 'Comportamiento inapropiado',
+    'report.scam': 'Intento de estafa',
+    'report.other': 'Otro',
+    'report.optionalMessage': 'Detalles adicionales (opcional)',
+    'report.submit': 'Enviar reporte',
+    'report.cancel': 'Cancelar',
+    'report.success': 'Reporte enviado',
+    'report.successDesc': 'Gracias. Revisaremos este reporte.',
+    'report.fail': 'Error al enviar reporte',
 
     // City Gate Modal
     'cityGate.title': 'Selecciona tu ciudad',

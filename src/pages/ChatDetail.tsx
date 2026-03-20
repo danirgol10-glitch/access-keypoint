@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useMessages } from '@/hooks/useMessages';
 import { Skeleton } from '@/components/ui/skeleton';
+import { BlockUserMenu } from '@/components/BlockUserMenu';
 import { ArrowLeft, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -26,7 +27,7 @@ const ChatDetail = () => {
       if (!convo) return null;
       const otherUserId = convo.user_a_id === user.id ? convo.user_b_id : convo.user_a_id;
       const { data: otherUser } = await supabase.from('users').select('username').eq('id', otherUserId).single();
-      return { otherUsername: otherUser?.username ?? t('common.unknown') };
+      return { otherUserId, otherUsername: otherUser?.username ?? t('common.unknown') };
     },
     enabled: !!conversationId && !!user?.id,
   });
@@ -44,9 +45,10 @@ const ChatDetail = () => {
           <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'var(--surface-input)' }}>
             <ArrowLeft className="h-5 w-5" style={{ color: 'var(--icon-default)' }} />
           </button>
-          <h1 className="text-[16px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+          <h1 className="text-[16px] font-semibold flex-1" style={{ color: 'var(--text-primary)' }}>
             @{convoInfo?.otherUsername ?? <Skeleton className="h-5 w-24 inline-block" style={{ background: 'var(--surface-skeleton)' }} />}
           </h1>
+          {convoInfo?.otherUserId && <BlockUserMenu userId={convoInfo.otherUserId} username={convoInfo.otherUsername} />}
         </div>
       </header>
 

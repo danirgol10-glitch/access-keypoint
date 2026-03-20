@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useFriendships } from './useFriendships';
+import { useBlockedUsers } from './useBlockedUsers';
 
 export interface SearchResult {
   id: string;
@@ -15,6 +16,7 @@ export interface SearchResult {
 export function useUserSearch(query: string) {
   const { user } = useAuth();
   const { data: friendships } = useFriendships();
+  const { blockedIds } = useBlockedUsers();
 
   const trimmed = query.trim();
 
@@ -53,14 +55,17 @@ export function useUserSearch(query: string) {
         if (f.status === 'PENDING') pendingSet.add(otherId);
       });
 
-      return data.map(u => ({
-        id: u.id,
-        username: u.username,
-        city: u.city,
-        university_name: u.university_id ? (uniMap[u.university_id] ?? null) : null,
-        isFriend: friendSet.has(u.id),
-        isPending: pendingSet.has(u.id),
-      }));
+      const blockedSet = new Set(blockedIds);
+      return data
+        .filter(u => !blockedSet.has(u.id))
+        .map(u => ({
+          id: u.id,
+          username: u.username,
+          city: u.city,
+          university_name: u.university_id ? (uniMap[u.university_id] ?? null) : null,
+          isFriend: friendSet.has(u.id),
+          isPending: pendingSet.has(u.id),
+        }));
     },
     enabled: !!user && trimmed.length >= 2,
   });
