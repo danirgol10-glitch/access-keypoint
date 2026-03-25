@@ -117,13 +117,19 @@ export function useTradeRequests() {
       const enrichedRequests = await Promise.all(
         requests.filter(req => !blockedSet.has(req.from_user_id)).map(async (req) => {
           const [userRes, itemRes] = await Promise.all([
-            supabase.from('users').select('username').eq('id', req.from_user_id).single(),
+            supabase.from('users').select('username, city, university_id').eq('id', req.from_user_id).single(),
             supabase.from('trade_request_items').select('id').eq('trade_request_id', req.id),
           ]);
 
+          let university_name: string | null = null;
+          if (userRes.data?.university_id) {
+            const { data: uni } = await supabase.from('universities').select('name').eq('id', userRes.data.university_id).single();
+            university_name = uni?.name ?? null;
+          }
+
           return {
             ...req,
-            other_user: userRes.data,
+            other_user: { username: userRes.data?.username ?? null, city: userRes.data?.city ?? null, university_name },
             item_count: itemRes.data?.length ?? 0,
           } as TradeRequest;
         })
