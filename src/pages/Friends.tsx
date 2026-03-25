@@ -214,7 +214,7 @@ const Friends = () => {
         {suggestions.length > 0 && (
           <PremiumCard>
             <SectionHeader icon={Sparkles} title={t('friends.suggested')} />
-            <p className="text-[12px] -mt-1 mb-3" style={{ color: 'var(--text-muted)' }}>Same city and university first</p>
+            <p className="text-[12px] -mt-1 mb-3" style={{ color: 'var(--text-muted)' }}>{t('friends.suggestedDesc')}</p>
             {suggestionsLoading ? (
               <Skeleton className="h-14 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} />
             ) : (
