@@ -391,7 +391,7 @@ export function useTradeRequestDetail(requestId: string | undefined) {
 
       return {
         ...request,
-        other_user: otherUser,
+        other_user: { username: otherUser?.username ?? null, city: otherUser?.city ?? null, university_name },
         items: enrichedItems,
         isFromMe: request.from_user_id === user?.id,
       };
