@@ -644,6 +644,9 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.supportSentDesc': 'Tu mensaje fue enviado correctamente.',
     'profile.supportSubjectRequired': 'El asunto es obligatorio',
     'profile.supportMessageRequired': 'El mensaje es obligatorio',
+    'profile.legal': 'LEGAL',
+    'profile.termsAndConditions': 'Términos y Condiciones',
+    'profile.privacyPolicy': 'Política de Privacidad',
 
     // Common
     'common.unknown': 'desconocido',
