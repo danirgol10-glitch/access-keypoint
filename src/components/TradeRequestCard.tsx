@@ -60,6 +60,11 @@ export function TradeRequestCard({
               {t(statusInfo.labelKey)}
             </Badge>
           </div>
+          {request.other_user?.city && (
+            <div className="text-xs text-muted-foreground truncate">
+              {request.other_user.city}{request.other_user.university_name ? ` • ${request.other_user.university_name}` : ''}
+            </div>
+          )}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>{t('trade.stickers', { count: request.item_count, s: request.item_count !== 1 ? 's' : '' })}</span>
             <span>•</span>

@@ -73,7 +73,14 @@ const RequestDetail = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[12px]" style={{ color: 'var(--text-secondary)' }}>{request.isFromMe ? t('trade.to') : t('trade.from')}</span>
-                <span className="font-medium text-[14px]" style={{ color: 'var(--text-primary)' }}>@{request.other_user?.username ?? t('common.unknown')}</span>
+                <div className="text-right">
+                  <span className="font-medium text-[14px]" style={{ color: 'var(--text-primary)' }}>@{request.other_user?.username ?? t('common.unknown')}</span>
+                  {request.other_user?.city && (
+                    <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                      {request.other_user.city}{request.other_user.university_name ? ` • ${request.other_user.university_name}` : ''}
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[12px]" style={{ color: 'var(--text-secondary)' }}>{t('requestDetail.created')}</span>

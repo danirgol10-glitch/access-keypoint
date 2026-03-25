@@ -54,6 +54,9 @@ const ChatDetail = () => {
           <h1 className="text-[16px] font-semibold flex-1" style={{ color: 'var(--text-primary)' }}>
             @{convoInfo?.otherUsername ?? <Skeleton className="h-5 w-24 inline-block" style={{ background: 'var(--surface-skeleton)' }} />}
           </h1>
+          {convoInfo?.cityUni && (
+            <span className="text-[11px] truncate max-w-[180px]" style={{ color: 'var(--text-muted)' }}>{convoInfo.cityUni}</span>
+          )}
           {convoInfo?.otherUserId && <BlockUserMenu userId={convoInfo.otherUserId} username={convoInfo.otherUsername} />}
         </div>
       </header>
