@@ -105,7 +105,6 @@ const Friends = () => {
   };
 
   const getSuggestionChip = (u: { city?: string | null; university_name?: string | null }) => {
-    if (u.city) return { label: 'Same city', icon: MapPin };
     if (u.university_name) return { label: 'Same university', icon: GraduationCap };
     return { label: 'Active', icon: Activity };
   };
