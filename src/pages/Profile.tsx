@@ -9,7 +9,7 @@ import { COLOMBIAN_CITIES } from '@/constants/cities';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { LogOut, Check, Trash2, HelpCircle, FileText, Shield } from 'lucide-react';
+import { LogOut, Check, Trash2, FileText, Shield } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
