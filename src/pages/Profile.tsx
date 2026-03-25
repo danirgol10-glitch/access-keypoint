@@ -110,7 +110,7 @@ const Profile = () => {
       <div className="page-vignette" />
       <div className="relative z-20 space-y-6">
         <div className="text-center mb-2">
-          <h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>{t('nav.progress')}</h1>
+          <h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>{t('profile.yourProfile')}</h1>
           {profileLoading ? (
             <Skeleton className="h-5 w-36 mx-auto mt-2" style={{ background: 'var(--surface-skeleton)' }} />
           ) : (
