@@ -37,6 +37,7 @@ const Profile = () => {
   const [supportSubject, setSupportSubject] = useState('');
   const [supportMessage, setSupportMessage] = useState('');
   const [isSendingSupport, setIsSendingSupport] = useState(false);
+  const [legalModal, setLegalModal] = useState<'terms' | 'privacy' | null>(null);
 
   const handleSignOut = async () => { await signOut(); };
 
