@@ -332,6 +332,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Profile
     'profile.title': 'Perfil',
+    'profile.yourProfile': 'Tu perfil',
     'profile.university': 'UNIVERSIDAD',
     'profile.city': 'CIUDAD',
     'profile.language': 'IDIOMA',
