@@ -1,4 +1,3 @@
-import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
@@ -8,39 +7,29 @@ import { useAlbumConfig } from '@/hooks/useAlbumStats';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { BlockUserMenu } from '@/components/BlockUserMenu';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Search, Package, User } from 'lucide-react';
-
-type FilterType = 'all' | 'have' | 'duplicate';
+import { Progress } from '@/components/ui/progress';
+import { ArrowLeft, Check, Copy, Search } from 'lucide-react';
 
 const FriendProfile = () => {
   const { friendId } = useParams<{ friendId: string }>();
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [filter, setFilter] = useState<FilterType>('all');
-  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: friendProfile, isLoading: profileLoading } = useQuery({
     queryKey: ['friend-profile', friendId],
-    queryFn: async () => { if (!friendId) return null; const { data } = await supabase.from('users').select('username, last_active_at').eq('id', friendId).single(); return data; },
+    queryFn: async () => {
+      if (!friendId) return null;
+      const { data } = await supabase.from('users').select('username, last_active_at').eq('id', friendId).single();
+      return data;
+    },
     enabled: !!friendId,
   });
 
-  const { stickers, ownedCount, duplicateCount, haveCount, isLoading: stickersLoading } = useFriendStickers(friendId);
+  const { ownedCount, duplicateCount, haveCount, isLoading: stickersLoading } = useFriendStickers(friendId);
   const { data: totalStickers } = useAlbumConfig();
   const isLoading = profileLoading || stickersLoading;
   const missingCount = (totalStickers ?? 0) - ownedCount;
   const progressPercent = totalStickers ? (ownedCount / totalStickers) * 100 : 0;
-
-  const filterLabels: Record<FilterType, string> = { all: t('friendProfile.all'), have: t('friendProfile.have'), duplicate: t('friendProfile.duplicate') };
-
-  const filteredStickers = useMemo(() => {
-    let result = stickers;
-    if (filter === 'have') result = result.filter((s) => s.status === 'HAVE');
-    else if (filter === 'duplicate') result = result.filter((s) => s.status === 'DUPLICATE');
-    if (searchQuery.trim()) { const query = searchQuery.toLowerCase().trim(); result = result.filter((s) => s.code.toLowerCase().includes(query) || s.display_name?.toLowerCase().includes(query) || s.team_name?.toLowerCase().includes(query)); }
-    result.sort((a, b) => a.code.localeCompare(b.code));
-    return result;
-  }, [stickers, filter, searchQuery]);
 
   return (
     <div className="flex flex-col min-h-screen page-bg">
@@ -61,60 +50,43 @@ const FriendProfile = () => {
         </div>
       </header>
 
-      <main className="flex-1 px-4 pt-4 pb-24 max-w-md mx-auto w-full space-y-4">
-        <div className="premium-panel premium-panel-gold p-5">
-          {isLoading ? (
-            <div className="space-y-2"><Skeleton className="h-8 w-24 mx-auto" style={{ background: 'var(--surface-skeleton)' }} /><Skeleton className="h-4 w-48 mx-auto" style={{ background: 'var(--surface-skeleton)' }} /></div>
-          ) : (
-            <div className="text-center space-y-2">
-              <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{progressPercent.toFixed(1)}%</p>
-              <div className="flex justify-center gap-4 text-[12px]" style={{ color: 'var(--text-secondary)' }}>
-                <span>{t('friendProfile.owned')} {ownedCount}</span><span>•</span><span>{t('friendProfile.duplicates')} {duplicateCount}</span><span>•</span><span>{t('friendProfile.missing')} {missingCount}</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--text-muted)' }} />
-          <input placeholder={t('friendProfile.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl outline-none"
-            style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }} />
-        </div>
-
-        <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid var(--surface-input-border)' }}>
-          {(['all', 'have', 'duplicate'] as FilterType[]).map((f) => {
-            const count = f === 'all' ? stickers.length : f === 'have' ? haveCount : duplicateCount;
-            return (
-              <button key={f} onClick={() => setFilter(f)} className="flex-1 py-2 text-[12px] font-medium transition-colors"
-                style={filter === f ? { background: `linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))`, color: '#FFFFFF' } : { background: 'var(--surface-card)', color: 'var(--text-secondary)' }}>
-                {filterLabels[f]} ({count})
-              </button>
-            );
-          })}
-        </div>
-
+      <main className="flex-1 px-4 pt-8 pb-24 max-w-md mx-auto w-full flex flex-col items-center justify-start gap-6">
         {isLoading ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">{[1, 2, 3, 4, 5, 6].map((i) => <Skeleton key={i} className="aspect-[3/4] rounded-[14px]" style={{ background: 'var(--surface-skeleton)' }} />)}</div>
-        ) : filteredStickers.length === 0 ? (
-          <div className="premium-panel p-8 flex flex-col items-center text-center">
-            <Package className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
-            <p className="text-[14px]" style={{ color: 'var(--text-secondary)' }}>{searchQuery.trim() ? t('friendProfile.noMatch') : filter !== 'all' ? t('friendProfile.noFilter', { filter: filterLabels[filter] }) : t('friendProfile.noMarked')}</p>
+          <div className="w-full premium-panel p-8 space-y-4">
+            <Skeleton className="h-12 w-24 mx-auto" style={{ background: 'var(--surface-skeleton)' }} />
+            <Skeleton className="h-3 w-full" style={{ background: 'var(--surface-skeleton)' }} />
+            <Skeleton className="h-8 w-full" style={{ background: 'var(--surface-skeleton)' }} />
           </div>
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-            {filteredStickers.map((sticker) => (
-              <div key={sticker.id} className="relative aspect-[3/4] rounded-[14px] p-2 flex flex-col items-center justify-center text-center"
-                style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
-                <div className="absolute top-2 right-2">
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: sticker.status === 'DUPLICATE' ? 'var(--sticker-duplicate-badge-bg)' : 'var(--sticker-owned-badge-bg)', color: sticker.status === 'DUPLICATE' ? 'var(--sticker-duplicate-color)' : 'var(--sticker-owned-color)' }}>
-                    {sticker.status === 'DUPLICATE' ? t('sticker.duplicate') : t('sticker.have')}
-                  </span>
-                </div>
-                <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{sticker.code}</span>
-                {sticker.team_name && <span className="text-[10px] mt-1 truncate w-full px-1" style={{ color: 'var(--text-muted)' }}>{sticker.team_name}</span>}
+          <div className="w-full premium-panel premium-panel-gold p-6 space-y-5">
+            <div className="text-center">
+              <p className="text-5xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                {progressPercent.toFixed(1)}%
+              </p>
+              <p className="text-[13px] mt-1" style={{ color: 'var(--text-muted)' }}>
+                {t('stats.ofStickers', { owned: ownedCount, total: totalStickers ?? 0 })}
+              </p>
+            </div>
+
+            <Progress value={progressPercent} className="h-2.5" />
+
+            <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col items-center p-3 rounded-xl" style={{ background: 'var(--surface-card)' }}>
+                <Check className="w-5 h-5 mb-1" style={{ color: 'var(--sticker-owned-color)' }} />
+                <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{haveCount}</span>
+                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{t('friendProfile.owned')}</span>
               </div>
-            ))}
+              <div className="flex flex-col items-center p-3 rounded-xl" style={{ background: 'var(--surface-card)' }}>
+                <Copy className="w-5 h-5 mb-1" style={{ color: 'var(--sticker-duplicate-color)' }} />
+                <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{duplicateCount}</span>
+                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{t('friendProfile.duplicates')}</span>
+              </div>
+              <div className="flex flex-col items-center p-3 rounded-xl" style={{ background: 'var(--surface-card)' }}>
+                <Search className="w-5 h-5 mb-1" style={{ color: 'var(--icon-faint)' }} />
+                <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{missingCount}</span>
+                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{t('friendProfile.missing')}</span>
+              </div>
+            </div>
           </div>
         )}
       </main>
