@@ -185,6 +185,23 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Legal section */}
+        <div className="premium-panel p-4 space-y-3">
+          <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('profile.legal')}</label>
+          <button onClick={() => setLegalModal('terms')}
+            className="w-full h-12 flex items-center gap-3 px-4 rounded-xl text-sm font-medium transition-all duration-150 active:scale-[0.98]"
+            style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+            <FileText className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
+            {t('profile.termsAndConditions')}
+          </button>
+          <button onClick={() => setLegalModal('privacy')}
+            className="w-full h-12 flex items-center gap-3 px-4 rounded-xl text-sm font-medium transition-all duration-150 active:scale-[0.98]"
+            style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+            <Shield className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
+            {t('profile.privacyPolicy')}
+          </button>
+        </div>
+
         {/* Support button */}
         <button onClick={() => setShowSupportDialog(true)}
           className="w-full h-12 flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-150 active:scale-[0.98]"
@@ -192,6 +209,7 @@ const Profile = () => {
           <HelpCircle className="w-4 h-4" />
           {t('profile.support')}
         </button>
+        <p className="text-center text-[11px]" style={{ color: 'var(--text-muted)' }}>support.trade11@gmail.com</p>
 
         <div className="pt-2 space-y-3">
           <button onClick={handleSignOut}
