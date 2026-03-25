@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Search, UserPlus, User, ChevronRight, Sparkles, MapPin, GraduationCap, Activity, Check, X, Bell } from 'lucide-react';
+import { Users, Search, UserPlus, User, ChevronRight, Sparkles, GraduationCap, Activity, Check, X, Bell } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFriendAlbumStats } from '@/hooks/useFriendAlbumStats';
 import { useSendFriendRequest, useIncomingRequests, useRespondToRequest } from '@/hooks/useFriendships';
@@ -105,7 +105,6 @@ const Friends = () => {
   };
 
   const getSuggestionChip = (u: { city?: string | null; university_name?: string | null }) => {
-    if (u.city) return { label: 'Same city', icon: MapPin };
     if (u.university_name) return { label: 'Same university', icon: GraduationCap };
     return { label: 'Active', icon: Activity };
   };
@@ -215,7 +214,7 @@ const Friends = () => {
         {suggestions.length > 0 && (
           <PremiumCard>
             <SectionHeader icon={Sparkles} title={t('friends.suggested')} />
-            <p className="text-[12px] -mt-1 mb-3" style={{ color: 'var(--text-muted)' }}>Same city and university first</p>
+            <p className="text-[12px] -mt-1 mb-3" style={{ color: 'var(--text-muted)' }}>{t('friends.suggestedDesc')}</p>
             {suggestionsLoading ? (
               <Skeleton className="h-14 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} />
             ) : (

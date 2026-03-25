@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { useCityMatches, sortMatches, type SortMode } from '@/hooks/useCityMatches';
+import { sortMatches, type SortMode } from '@/hooks/useCityMatches';
 import { useFriendMatches } from '@/hooks/useFriendMatches';
 import { useUniversityMatches } from '@/hooks/useUniversityMatches';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Users, MapPin, GraduationCap, ChevronRight, Check, X, Inbox } from 'lucide-react';
+import { Users, GraduationCap, ChevronRight, Check, X, Inbox } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Trading = () => {
@@ -21,18 +21,14 @@ const Trading = () => {
   const { t } = useLanguage();
 
   const { sentRequests, receivedRequests, isLoading: tradeLoading, updateStatus, isUpdating } = useTradeRequests();
-  const { usersWithMatches, isLoading: matchesLoading, city, hasCityUsers } = useCityMatches();
   const { friendsWithMatches, isLoading: friendsMatchesLoading, hasFriends } = useFriendMatches();
   const { usersWithMatches: uniUsersWithMatches, isLoading: uniMatchesLoading, universityId } = useUniversityMatches();
 
-  const [citySheetOpen, setCitySheetOpen] = useState(false);
   const [friendsSheetOpen, setFriendsSheetOpen] = useState(false);
   const [uniSheetOpen, setUniSheetOpen] = useState(false);
-  const [citySortMode, setCitySortMode] = useState<SortMode>('default');
   const [friendsSortMode, setFriendsSortMode] = useState<SortMode>('default');
   const [uniSortMode, setUniSortMode] = useState<SortMode>('default');
 
-  const sortedCityMatches = useMemo(() => sortMatches(usersWithMatches, citySortMode), [usersWithMatches, citySortMode]);
   const sortedFriendMatches = useMemo(() => sortMatches(friendsWithMatches, friendsSortMode), [friendsWithMatches, friendsSortMode]);
   const sortedUniMatches = useMemo(() => sortMatches(uniUsersWithMatches.map(m => ({ ...m, sameUniversity: true as const })), uniSortMode), [uniUsersWithMatches, uniSortMode]);
 
@@ -46,11 +42,9 @@ const Trading = () => {
     catch { toast.error(t('trading.error')); } finally { setConfirmDialog(null); }
   };
 
-  const cityBadgeCount = usersWithMatches.length;
   const friendsBadgeCount = friendsWithMatches.length;
   const uniBadgeCount = uniUsersWithMatches.length;
 
-  const handleViewCityUser = (userId: string) => { setCitySheetOpen(false); navigate(`/friend/${userId}`); };
   const handleViewFriend = (friendId: string) => { setFriendsSheetOpen(false); navigate(`/friend/${friendId}`); };
   const handleViewUniUser = (userId: string) => { setUniSheetOpen(false); navigate(`/friend/${userId}`); };
 
@@ -87,10 +81,10 @@ const Trading = () => {
 
       <div className="relative z-20 text-center mb-2">
         <h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>{t('nav.trading')}</h1>
-        <p className="text-[13px] mt-1" style={{ color: 'var(--text-secondary)' }}>Discover collectors and trade stickers</p>
+        <p className="text-[13px] mt-1" style={{ color: 'var(--text-secondary)' }}>{t('trading.discoverySubtitle')}</p>
       </div>
 
-      <div className="relative z-20 flex items-center justify-center gap-4">
+      <div className="relative z-20 flex items-center justify-center gap-6">
         <Sheet open={friendsSheetOpen} onOpenChange={setFriendsSheetOpen}>
           <SheetTrigger asChild>
             <DiscoveryButton badge={friendsBadgeCount}>
@@ -117,44 +111,6 @@ const Trading = () => {
                 <>
                   <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}><span>{t('home.sortBy')}</span><SortDropdown value={friendsSortMode} onChange={setFriendsSortMode} /></div>
                   {sortedFriendMatches.map((match) => <FriendMatchCard key={match.friendId} username={match.username} matchCount={match.matchCount} duplicateTotal={match.duplicateTotal} lastActiveAt={match.lastActiveAt} onView={() => handleViewFriend(match.friendId)} />)}
-                </>
-              )}
-            </div>
-          </SheetContent>
-        </Sheet>
-
-        <Sheet open={citySheetOpen} onOpenChange={setCitySheetOpen}>
-          <SheetTrigger asChild>
-            <DiscoveryButton badge={cityBadgeCount}>
-              <MapPin className="h-6 w-6 stroke-[2.2]" style={{ color: 'var(--icon-default)' }} />
-            </DiscoveryButton>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:max-w-md page-bg border-l" style={{ borderColor: 'var(--surface-divider)' }}>
-            <SheetHeader><SheetTitle style={{ color: 'var(--text-primary)' }}>{city ? t('home.peopleInCityWhoCanHelp', { city }) : t('home.localMatches')}</SheetTitle></SheetHeader>
-            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
-              {matchesLoading ? (
-                <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} />)}</div>
-              ) : !city ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <MapPin className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>{t('home.setCityToFind')}</p>
-                  <button onClick={() => { setCitySheetOpen(false); navigate('/profile'); }} className="px-4 py-2 rounded-xl text-sm font-semibold btn-themed">{t('home.setCity')}</button>
-                </div>
-              ) : !hasCityUsers ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <MapPin className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
-                  <p style={{ color: 'var(--text-secondary)' }}>{t('home.noCollectorsInCity', { city })}</p>
-                </div>
-              ) : usersWithMatches.length === 0 ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <Users className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
-                  <p className="mb-2" style={{ color: 'var(--text-secondary)' }}>{t('home.noMatchesInCity', { city })}</p>
-                  <p className="text-sm" style={{ color: 'var(--text-hint)' }}>{t('home.noMatchesInCityDetail')}</p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}><span>{t('home.sortBy')}</span><SortDropdown value={citySortMode} onChange={setCitySortMode} /></div>
-                  {sortedCityMatches.map((match) => <FriendMatchCard key={match.userId} username={match.username} matchCount={match.matchCount} duplicateTotal={match.duplicateTotal} lastActiveAt={match.lastActiveAt} onView={() => handleViewCityUser(match.userId)} />)}
                 </>
               )}
             </div>
@@ -196,9 +152,8 @@ const Trading = () => {
         </Sheet>
       </div>
 
-      <div className="relative z-20 flex items-center justify-center gap-4 -mt-4">
+      <div className="relative z-20 flex items-center justify-center gap-6 -mt-4">
         <span className="w-14 text-center text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('trading.friends')}</span>
-        <span className="w-14 text-center text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('trading.cityLabel')}</span>
         <span className="w-14 text-center text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('trading.uniLabel')}</span>
       </div>
 

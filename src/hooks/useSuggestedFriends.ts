@@ -27,29 +27,21 @@ export function useSuggestedFriends() {
   blockedIds.forEach(id => excludeIds.add(id));
 
   const { data: suggestions = [], isLoading } = useQuery({
-    queryKey: ['suggested-friends', profile?.city, profile?.university_id, Array.from(excludeIds).sort().join(',')],
+    queryKey: ['suggested-friends', profile?.university_id, Array.from(excludeIds).sort().join(',')],
     queryFn: async (): Promise<SuggestedUser[]> => {
       if (!user || !profile) return [];
 
-      // Fetch users from same city or university
-      let query = supabase
+      // Only suggest users from the same university
+      if (!profile.university_id) return [];
+
+      const { data, error } = await supabase
         .from('users')
         .select('id, username, city, university_id')
         .neq('id', user.id)
         .not('username', 'is', null)
+        .eq('university_id', profile.university_id)
         .limit(20);
 
-      if (profile.city && profile.university_id) {
-        query = query.or(`city.eq.${profile.city},university_id.eq.${profile.university_id}`);
-      } else if (profile.city) {
-        query = query.eq('city', profile.city);
-      } else if (profile.university_id) {
-        query = query.eq('university_id', profile.university_id);
-      } else {
-        return [];
-      }
-
-      const { data, error } = await query;
       if (error) throw error;
 
       // Filter out excluded
