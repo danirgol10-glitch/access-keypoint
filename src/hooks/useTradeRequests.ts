@@ -10,8 +10,11 @@ export interface TradeRequest {
   status: 'SENT' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED';
   created_at: string;
   updated_at: string;
+  conversation_id?: string | null;
   other_user?: {
     username: string | null;
+    city: string | null;
+    university_name: string | null;
   };
   item_count?: number;
 }
