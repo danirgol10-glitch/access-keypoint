@@ -10,8 +10,11 @@ export interface TradeRequest {
   status: 'SENT' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED';
   created_at: string;
   updated_at: string;
+  conversation_id?: string | null;
   other_user?: {
     username: string | null;
+    city: string | null;
+    university_name: string | null;
   };
   item_count?: number;
 }
@@ -69,13 +72,19 @@ export function useTradeRequests() {
       const enrichedRequests = await Promise.all(
         requests.filter(req => !blockedSet.has(req.to_user_id)).map(async (req) => {
           const [userRes, itemRes] = await Promise.all([
-            supabase.from('users').select('username').eq('id', req.to_user_id).single(),
+            supabase.from('users').select('username, city, university_id').eq('id', req.to_user_id).single(),
             supabase.from('trade_request_items').select('id').eq('trade_request_id', req.id),
           ]);
 
+          let university_name: string | null = null;
+          if (userRes.data?.university_id) {
+            const { data: uni } = await supabase.from('universities').select('name').eq('id', userRes.data.university_id).single();
+            university_name = uni?.name ?? null;
+          }
+
           return {
             ...req,
-            other_user: userRes.data,
+            other_user: { username: userRes.data?.username ?? null, city: userRes.data?.city ?? null, university_name },
             item_count: itemRes.data?.length ?? 0,
           } as TradeRequest;
         })
@@ -108,13 +117,19 @@ export function useTradeRequests() {
       const enrichedRequests = await Promise.all(
         requests.filter(req => !blockedSet.has(req.from_user_id)).map(async (req) => {
           const [userRes, itemRes] = await Promise.all([
-            supabase.from('users').select('username').eq('id', req.from_user_id).single(),
+            supabase.from('users').select('username, city, university_id').eq('id', req.from_user_id).single(),
             supabase.from('trade_request_items').select('id').eq('trade_request_id', req.id),
           ]);
 
+          let university_name: string | null = null;
+          if (userRes.data?.university_id) {
+            const { data: uni } = await supabase.from('universities').select('name').eq('id', userRes.data.university_id).single();
+            university_name = uni?.name ?? null;
+          }
+
           return {
             ...req,
-            other_user: userRes.data,
+            other_user: { username: userRes.data?.username ?? null, city: userRes.data?.city ?? null, university_name },
             item_count: itemRes.data?.length ?? 0,
           } as TradeRequest;
         })
@@ -339,9 +354,15 @@ export function useTradeRequestDetail(requestId: string | undefined) {
 
       const { data: otherUser } = await supabase
         .from('users')
-        .select('username')
+        .select('username, city, university_id')
         .eq('id', otherUserId)
         .single();
+
+      let university_name: string | null = null;
+      if (otherUser?.university_id) {
+        const { data: uni } = await supabase.from('universities').select('name').eq('id', otherUser.university_id).single();
+        university_name = uni?.name ?? null;
+      }
 
       // Get the items with sticker info
       const { data: items, error: itemsError } = await supabase
@@ -370,7 +391,7 @@ export function useTradeRequestDetail(requestId: string | undefined) {
 
       return {
         ...request,
-        other_user: otherUser,
+        other_user: { username: otherUser?.username ?? null, city: otherUser?.city ?? null, university_name },
         items: enrichedItems,
         isFromMe: request.from_user_id === user?.id,
       };

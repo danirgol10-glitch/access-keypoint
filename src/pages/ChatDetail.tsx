@@ -26,8 +26,14 @@ const ChatDetail = () => {
       const { data: convo } = await supabase.from('conversations').select('*').eq('id', conversationId).single();
       if (!convo) return null;
       const otherUserId = convo.user_a_id === user.id ? convo.user_b_id : convo.user_a_id;
-      const { data: otherUser } = await supabase.from('users').select('username').eq('id', otherUserId).single();
-      return { otherUserId, otherUsername: otherUser?.username ?? t('common.unknown') };
+      const { data: otherUser } = await supabase.from('users').select('username, city, university_id').eq('id', otherUserId).single();
+      let universityName: string | null = null;
+      if (otherUser?.university_id) {
+        const { data: uni } = await supabase.from('universities').select('name').eq('id', otherUser.university_id).single();
+        universityName = uni?.name ?? null;
+      }
+      const cityUni = [otherUser?.city, universityName].filter(Boolean).join(' • ') || null;
+      return { otherUserId, otherUsername: otherUser?.username ?? t('common.unknown'), cityUni };
     },
     enabled: !!conversationId && !!user?.id,
   });
@@ -45,9 +51,14 @@ const ChatDetail = () => {
           <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'var(--surface-input)' }}>
             <ArrowLeft className="h-5 w-5" style={{ color: 'var(--icon-default)' }} />
           </button>
-          <h1 className="text-[16px] font-semibold flex-1" style={{ color: 'var(--text-primary)' }}>
-            @{convoInfo?.otherUsername ?? <Skeleton className="h-5 w-24 inline-block" style={{ background: 'var(--surface-skeleton)' }} />}
-          </h1>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-[16px] font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
+              @{convoInfo?.otherUsername ?? <Skeleton className="h-5 w-24 inline-block" style={{ background: 'var(--surface-skeleton)' }} />}
+            </h1>
+            {convoInfo?.cityUni && (
+              <p className="text-[11px] truncate" style={{ color: 'var(--text-muted)' }}>{convoInfo.cityUni}</p>
+            )}
+          </div>
           {convoInfo?.otherUserId && <BlockUserMenu userId={convoInfo.otherUserId} username={convoInfo.otherUsername} />}
         </div>
       </header>
