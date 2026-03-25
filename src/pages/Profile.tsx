@@ -9,10 +9,9 @@ import { COLOMBIAN_CITIES } from '@/constants/cities';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { LogOut, Check, Trash2, HelpCircle, FileText, Shield } from 'lucide-react';
+import { LogOut, Check, Trash2, FileText, Shield } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { LegalModal } from '@/components/LegalContent';
 
@@ -31,12 +30,6 @@ const Profile = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-
-  // Support state
-  const [showSupportDialog, setShowSupportDialog] = useState(false);
-  const [supportSubject, setSupportSubject] = useState('');
-  const [supportMessage, setSupportMessage] = useState('');
-  const [isSendingSupport, setIsSendingSupport] = useState(false);
   const [legalModal, setLegalModal] = useState<'terms' | 'privacy' | null>(null);
 
   const handleSignOut = async () => { await signOut(); };
@@ -80,32 +73,6 @@ const Profile = () => {
     }
   };
 
-  const handleSendSupport = async () => {
-    if (!supportSubject.trim()) {
-      toast({ variant: 'destructive', title: t('common.error'), description: t('profile.supportSubjectRequired') });
-      return;
-    }
-    if (!supportMessage.trim()) {
-      toast({ variant: 'destructive', title: t('common.error'), description: t('profile.supportMessageRequired') });
-      return;
-    }
-    if (!user) return;
-    setIsSendingSupport(true);
-    const { error } = await supabase.from('support_requests').insert({
-      user_id: user.id,
-      subject: supportSubject.trim(),
-      message: supportMessage.trim(),
-    });
-    setIsSendingSupport(false);
-    if (error) {
-      toast({ variant: 'destructive', title: t('common.error'), description: error.message });
-    } else {
-      toast({ title: t('profile.supportSent'), description: t('profile.supportSentDesc') });
-      setSupportSubject('');
-      setSupportMessage('');
-      setShowSupportDialog(false);
-    }
-  };
 
   return (
     <div className="relative px-4 pt-14 pb-28 max-w-md mx-auto">
@@ -202,14 +169,6 @@ const Profile = () => {
           </button>
         </div>
 
-        {/* Support button */}
-        <button onClick={() => setShowSupportDialog(true)}
-          className="w-full h-12 flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-150 active:scale-[0.98]"
-          style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)', color: 'var(--text-primary)' }}>
-          <HelpCircle className="w-4 h-4" />
-          {t('profile.support')}
-        </button>
-        <p className="text-center text-[11px]" style={{ color: 'var(--text-muted)' }}>support.trade11@gmail.com</p>
 
         <div className="pt-2 space-y-3">
           <button onClick={handleSignOut}
@@ -278,45 +237,6 @@ const Profile = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Support Dialog */}
-      <Dialog open={showSupportDialog} onOpenChange={setShowSupportDialog}>
-        <DialogContent className="rounded-2xl" style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
-          <DialogHeader>
-            <DialogTitle style={{ color: 'var(--text-primary)' }}>{t('profile.support')}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--text-muted)' }}>{t('profile.supportSubject')}</label>
-              <Input
-                value={supportSubject}
-                onChange={(e) => setSupportSubject(e.target.value)}
-                className="rounded-xl"
-                style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium mb-1 block" style={{ color: 'var(--text-muted)' }}>{t('profile.supportMessage')}</label>
-              <Textarea
-                value={supportMessage}
-                onChange={(e) => setSupportMessage(e.target.value)}
-                rows={4}
-                className="rounded-xl resize-none"
-                style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
-              />
-            </div>
-          </div>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setShowSupportDialog(false)} disabled={isSendingSupport}
-              style={{ borderColor: 'var(--surface-card-border)', color: 'var(--text-primary)' }}>
-              {t('profile.cancel')}
-            </Button>
-            <Button onClick={handleSendSupport} disabled={isSendingSupport}
-              style={{ background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)))', color: '#fff' }}>
-              {isSendingSupport ? t('profile.supportSending') : t('profile.supportSend')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
     </div>
