@@ -354,9 +354,15 @@ export function useTradeRequestDetail(requestId: string | undefined) {
 
       const { data: otherUser } = await supabase
         .from('users')
-        .select('username')
+        .select('username, city, university_id')
         .eq('id', otherUserId)
         .single();
+
+      let university_name: string | null = null;
+      if (otherUser?.university_id) {
+        const { data: uni } = await supabase.from('universities').select('name').eq('id', otherUser.university_id).single();
+        university_name = uni?.name ?? null;
+      }
 
       // Get the items with sticker info
       const { data: items, error: itemsError } = await supabase
