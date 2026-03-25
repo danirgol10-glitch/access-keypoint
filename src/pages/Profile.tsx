@@ -73,32 +73,6 @@ const Profile = () => {
     }
   };
 
-  const handleSendSupport = async () => {
-    if (!supportSubject.trim()) {
-      toast({ variant: 'destructive', title: t('common.error'), description: t('profile.supportSubjectRequired') });
-      return;
-    }
-    if (!supportMessage.trim()) {
-      toast({ variant: 'destructive', title: t('common.error'), description: t('profile.supportMessageRequired') });
-      return;
-    }
-    if (!user) return;
-    setIsSendingSupport(true);
-    const { error } = await supabase.from('support_requests').insert({
-      user_id: user.id,
-      subject: supportSubject.trim(),
-      message: supportMessage.trim(),
-    });
-    setIsSendingSupport(false);
-    if (error) {
-      toast({ variant: 'destructive', title: t('common.error'), description: error.message });
-    } else {
-      toast({ title: t('profile.supportSent'), description: t('profile.supportSentDesc') });
-      setSupportSubject('');
-      setSupportMessage('');
-      setShowSupportDialog(false);
-    }
-  };
 
   return (
     <div className="relative px-4 pt-14 pb-28 max-w-md mx-auto">
