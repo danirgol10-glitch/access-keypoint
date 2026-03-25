@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Search, UserPlus, User, ChevronRight, Sparkles, MapPin, GraduationCap, Activity, Check, X, Bell } from 'lucide-react';
+import { Users, Search, UserPlus, User, ChevronRight, Sparkles, GraduationCap, Activity, Check, X, Bell } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFriendAlbumStats } from '@/hooks/useFriendAlbumStats';
 import { useSendFriendRequest, useIncomingRequests, useRespondToRequest } from '@/hooks/useFriendships';
