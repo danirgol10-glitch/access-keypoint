@@ -169,14 +169,6 @@ const Profile = () => {
           </button>
         </div>
 
-        {/* Support button */}
-        <button onClick={() => setShowSupportDialog(true)}
-          className="w-full h-12 flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-150 active:scale-[0.98]"
-          style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)', color: 'var(--text-primary)' }}>
-          <HelpCircle className="w-4 h-4" />
-          {t('profile.support')}
-        </button>
-        <p className="text-center text-[11px]" style={{ color: 'var(--text-muted)' }}>support.trade11@gmail.com</p>
 
         <div className="pt-2 space-y-3">
           <button onClick={handleSignOut}
