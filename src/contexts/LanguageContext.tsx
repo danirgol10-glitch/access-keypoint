@@ -229,6 +229,11 @@ const translations: Record<Language, Record<string, string>> = {
     'auth.checkEmail': 'Check Your Email',
     'auth.confirmationSent': 'We sent you a confirmation link.',
     'auth.unexpectedError': 'An unexpected error occurred.',
+    'auth.acceptTermsPrefix': 'I have read and accept the',
+    'auth.termsLink': 'Terms and Conditions',
+    'auth.privacyLink': 'Privacy Policy',
+    'auth.and': 'and the',
+    'auth.mustAcceptTerms': 'You must accept the Terms and Conditions and Privacy Policy.',
 
     // Chat
     'chat.sayHello': 'Say hello! 👋',
