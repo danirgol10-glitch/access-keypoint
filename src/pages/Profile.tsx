@@ -12,7 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import { LogOut, Check, Trash2, FileText, Shield } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { LegalModal } from '@/components/LegalContent';
 
