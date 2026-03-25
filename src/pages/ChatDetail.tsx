@@ -26,8 +26,14 @@ const ChatDetail = () => {
       const { data: convo } = await supabase.from('conversations').select('*').eq('id', conversationId).single();
       if (!convo) return null;
       const otherUserId = convo.user_a_id === user.id ? convo.user_b_id : convo.user_a_id;
-      const { data: otherUser } = await supabase.from('users').select('username').eq('id', otherUserId).single();
-      return { otherUserId, otherUsername: otherUser?.username ?? t('common.unknown') };
+      const { data: otherUser } = await supabase.from('users').select('username, city, university_id').eq('id', otherUserId).single();
+      let universityName: string | null = null;
+      if (otherUser?.university_id) {
+        const { data: uni } = await supabase.from('universities').select('name').eq('id', otherUser.university_id).single();
+        universityName = uni?.name ?? null;
+      }
+      const cityUni = [otherUser?.city, universityName].filter(Boolean).join(' • ') || null;
+      return { otherUserId, otherUsername: otherUser?.username ?? t('common.unknown'), cityUni };
     },
     enabled: !!conversationId && !!user?.id,
   });
