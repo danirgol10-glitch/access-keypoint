@@ -229,6 +229,11 @@ const translations: Record<Language, Record<string, string>> = {
     'auth.checkEmail': 'Check Your Email',
     'auth.confirmationSent': 'We sent you a confirmation link.',
     'auth.unexpectedError': 'An unexpected error occurred.',
+    'auth.acceptTermsPrefix': 'I have read and accept the',
+    'auth.termsLink': 'Terms and Conditions',
+    'auth.privacyLink': 'Privacy Policy',
+    'auth.and': 'and the',
+    'auth.mustAcceptTerms': 'You must accept the Terms and Conditions and Privacy Policy.',
 
     // Chat
     'chat.sayHello': 'Say hello! 👋',
@@ -317,6 +322,9 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.supportSentDesc': 'Your message was sent successfully.',
     'profile.supportSubjectRequired': 'Subject is required',
     'profile.supportMessageRequired': 'Message is required',
+    'profile.legal': 'LEGAL',
+    'profile.termsAndConditions': 'Terms and Conditions',
+    'profile.privacyPolicy': 'Privacy Policy',
 
     // Common
     'common.unknown': 'unknown',
@@ -543,6 +551,11 @@ const translations: Record<Language, Record<string, string>> = {
     'auth.checkEmail': 'Revisa tu correo',
     'auth.confirmationSent': 'Te enviamos un enlace de confirmación.',
     'auth.unexpectedError': 'Ocurrió un error inesperado.',
+    'auth.acceptTermsPrefix': 'He leído y acepto los',
+    'auth.termsLink': 'Términos y Condiciones',
+    'auth.privacyLink': 'Política de Privacidad',
+    'auth.and': 'y la',
+    'auth.mustAcceptTerms': 'Debes aceptar los Términos y Condiciones y la Política de Privacidad.',
 
     // Chat
     'chat.sayHello': '¡Saluda! 👋',
@@ -631,6 +644,9 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.supportSentDesc': 'Tu mensaje fue enviado correctamente.',
     'profile.supportSubjectRequired': 'El asunto es obligatorio',
     'profile.supportMessageRequired': 'El mensaje es obligatorio',
+    'profile.legal': 'LEGAL',
+    'profile.termsAndConditions': 'Términos y Condiciones',
+    'profile.privacyPolicy': 'Política de Privacidad',
 
     // Common
     'common.unknown': 'desconocido',

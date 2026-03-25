@@ -4,6 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
+import { Checkbox } from '@/components/ui/checkbox';
+import { LegalModal } from '@/components/LegalContent';
 
 const authSchema = z.object({ email: z.string().email('Please enter a valid email address'), password: z.string().min(6, 'Password must be at least 6 characters') });
 
@@ -12,6 +14,8 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [legalModal, setLegalModal] = useState<'terms' | 'privacy' | null>(null);
   const { user, loading, signIn, signUp } = useAuth();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -20,6 +24,10 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLogin && !acceptedTerms) {
+      toast({ variant: 'destructive', title: t('common.error'), description: t('auth.mustAcceptTerms') });
+      return;
+    }
     setIsSubmitting(true);
     const validation = authSchema.safeParse({ email, password });
     if (!validation.success) { toast({ variant: 'destructive', title: t('auth.validationError'), description: validation.error.errors[0].message }); setIsSubmitting(false); return; }
@@ -56,7 +64,29 @@ const Auth = () => {
               onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--surface-input-border)'; }} />
           </div>
-          <button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50 btn-themed" disabled={isSubmitting}>
+
+          {!isLogin && (
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="terms"
+                checked={acceptedTerms}
+                onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+                className="mt-0.5"
+              />
+              <label htmlFor="terms" className="text-[12px] leading-relaxed cursor-pointer" style={{ color: 'var(--text-secondary)' }}>
+                {t('auth.acceptTermsPrefix')}{' '}
+                <button type="button" onClick={() => setLegalModal('terms')} className="underline font-medium" style={{ color: 'hsl(var(--primary))' }}>
+                  {t('auth.termsLink')}
+                </button>{' '}
+                {t('auth.and')}{' '}
+                <button type="button" onClick={() => setLegalModal('privacy')} className="underline font-medium" style={{ color: 'hsl(var(--primary))' }}>
+                  {t('auth.privacyLink')}
+                </button>
+              </label>
+            </div>
+          )}
+
+          <button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50 btn-themed" disabled={isSubmitting || (!isLogin && !acceptedTerms)}>
             {isSubmitting ? t('auth.pleaseWait') : isLogin ? t('auth.signIn') : t('auth.signUp')}
           </button>
         </form>
@@ -66,6 +96,8 @@ const Auth = () => {
           </button>
         </div>
       </div>
+
+      {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
     </div>
   );
 };
