@@ -31,12 +31,6 @@ const Profile = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-
-  // Support state
-  const [showSupportDialog, setShowSupportDialog] = useState(false);
-  const [supportSubject, setSupportSubject] = useState('');
-  const [supportMessage, setSupportMessage] = useState('');
-  const [isSendingSupport, setIsSendingSupport] = useState(false);
   const [legalModal, setLegalModal] = useState<'terms' | 'privacy' | null>(null);
 
   const handleSignOut = async () => { await signOut(); };
