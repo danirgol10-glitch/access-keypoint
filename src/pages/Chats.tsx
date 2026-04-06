@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useConversations } from '@/hooks/useConversations';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MessageCircle } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgoEs } from '@/lib/dateUtils';
 
 const Chats = () => {
   const navigate = useNavigate();
@@ -30,14 +30,14 @@ const Chats = () => {
                 style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }} onClick={() => navigate(`/chat/${convo.id}`)}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[14px] truncate" style={{ color: 'var(--text-primary)' }}>@{convo.other_username ?? 'Unknown'}</span>
+                    <span className="font-semibold text-[14px] truncate" style={{ color: 'var(--text-primary)' }}>@{convo.other_username ?? 'Desconocido'}</span>
                     {convo.unread_count > 0 && (
                       <span className="text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1" style={{ background: 'hsl(var(--badge-bg))', color: '#FFFFFF' }}>{convo.unread_count}</span>
                     )}
                   </div>
-                  <p className="text-[13px] truncate mt-1" style={{ color: 'var(--text-muted)' }}>{convo.last_message_text ?? 'No messages yet'}</p>
+                  <p className="text-[13px] truncate mt-1" style={{ color: 'var(--text-muted)' }}>{convo.last_message_text ?? 'Sin mensajes aún'}</p>
                 </div>
-                {convo.last_message_at && <span className="text-[11px] whitespace-nowrap" style={{ color: 'var(--text-hint)' }}>{formatDistanceToNow(new Date(convo.last_message_at), { addSuffix: true })}</span>}
+                {convo.last_message_at && <span className="text-[11px] whitespace-nowrap" style={{ color: 'var(--text-hint)' }}>{formatTimeAgoEs(convo.last_message_at)}</span>}
               </button>
             ))}
           </div>
