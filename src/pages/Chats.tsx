@@ -20,8 +20,8 @@ const Chats = () => {
         ) : conversations.length === 0 ? (
           <div className="premium-panel p-8 flex flex-col items-center text-center">
             <MessageCircle className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
-            <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>No chats yet</p>
-            <p className="text-[12px] mt-1" style={{ color: 'var(--text-hint)' }}>Chats unlock when a trade request is accepted.</p>
+            <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>No hay chats aún</p>
+            <p className="text-[12px] mt-1" style={{ color: 'var(--text-hint)' }}>Los chats se desbloquean al aceptar una solicitud de intercambio.</p>
           </div>
         ) : (
           <div className="space-y-2">
