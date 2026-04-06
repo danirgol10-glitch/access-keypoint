@@ -67,7 +67,7 @@ const Profile = () => {
       if (res.error) throw res.error;
       await signOut();
     } catch (err: any) {
-      toast({ variant: 'destructive', title: 'Error', description: err.message || 'Failed to delete account' });
+      toast({ variant: 'destructive', title: t('common.error'), description: err.message || 'Error al eliminar la cuenta' });
       setIsDeleting(false);
     }
   };
