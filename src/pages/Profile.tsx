@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUniversities } from '@/hooks/useUniversities';
-import { useLanguage, type Language } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme, THEMES, type AppTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { COLOMBIAN_CITIES } from '@/constants/cities';
@@ -19,7 +19,7 @@ const Profile = () => {
   const { user, signOut } = useAuth();
   const { profile, isLoading: profileLoading, refetchProfile } = useUserProfile();
   const { universities, isLoading: uniLoading } = useUniversities(profile?.city ?? null);
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const [savingCity, setSavingCity] = useState(false);
@@ -57,8 +57,7 @@ const Profile = () => {
   };
 
   const handleDeleteAccount = async () => {
-    const confirmWord = language === 'es' ? 'ELIMINAR' : 'DELETE';
-    if (deleteInput !== confirmWord) return;
+    if (deleteInput !== 'ELIMINAR') return;
     setIsDeleting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -130,7 +129,7 @@ const Profile = () => {
                     <div className="w-4 h-4 rounded-md" style={{ background: t_item.preview.accent }} />
                   </div>
                   <span className="text-[11px] font-bold" style={{ color: t_item.id === 'world-cup-2026' ? '#1A1A1A' : 'rgba(255,255,255,0.9)' }}>
-                    {language === 'es' ? t_item.labelEs : t_item.labelEn}
+                    {t_item.labelEs}
                   </span>
                 </button>
               );
@@ -138,19 +137,6 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="premium-panel p-4 space-y-3">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('profile.language')}</label>
-          <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid var(--surface-input-border)' }}>
-            <button onClick={() => setLanguage('en')} className="flex-1 py-3 text-sm font-medium transition-colors"
-              style={language === 'en' ? { background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)))', color: '#FFFFFF' } : { background: 'var(--surface-card)', color: 'var(--text-secondary)' }}>
-              English
-            </button>
-            <button onClick={() => setLanguage('es')} className="flex-1 py-3 text-sm font-medium transition-colors"
-              style={language === 'es' ? { background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)))', color: '#FFFFFF' } : { background: 'var(--surface-card)', color: 'var(--text-secondary)' }}>
-              Español
-            </button>
-          </div>
-        </div>
 
         {/* Legal section */}
         <div className="premium-panel p-4 space-y-3">
@@ -217,7 +203,7 @@ const Profile = () => {
               <Input
                 value={deleteInput}
                 onChange={(e) => setDeleteInput(e.target.value)}
-                placeholder={language === 'es' ? 'ELIMINAR' : 'DELETE'}
+                placeholder="ELIMINAR"
                 className="rounded-xl"
                 style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
               />
@@ -227,7 +213,7 @@ const Profile = () => {
                   {t('profile.cancel')}
                 </Button>
                 <Button variant="destructive"
-                  disabled={deleteInput !== (language === 'es' ? 'ELIMINAR' : 'DELETE') || isDeleting}
+                  disabled={deleteInput !== 'ELIMINAR' || isDeleting}
                   onClick={handleDeleteAccount}>
                   {isDeleting ? t('profile.deleting') : t('profile.deleteConfirmButton')}
                 </Button>
