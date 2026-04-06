@@ -13,7 +13,7 @@ const Chats = () => {
       <div className="page-vignette" />
       <div className="relative z-20 space-y-4">
         <div className="text-center mb-2">
-          <h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>Chats</h1>
+          <h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>Conversaciones</h1>
         </div>
         {isLoading ? (
           <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} />)}</div>
