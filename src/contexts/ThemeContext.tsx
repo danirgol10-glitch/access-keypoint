@@ -13,9 +13,9 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const VALID_THEMES: AppTheme[] = ['classic', 'world-cup-2026'];
 
-export const THEMES: { id: AppTheme; labelEn: string; labelEs: string; preview: { bg: string; card: string; accent: string } }[] = [
-  { id: 'classic', labelEn: 'Classic', labelEs: 'Clásico', preview: { bg: '#071C47', card: '#123E8C', accent: '#FFD23F' } },
-  { id: 'world-cup-2026', labelEn: 'World Cup 2026', labelEs: 'Mundial 2026', preview: { bg: '#F7F7F7', card: '#FFFFFF', accent: '#00B5E2' } },
+export const THEMES: { id: AppTheme; labelEs: string; preview: { bg: string; card: string; accent: string } }[] = [
+  { id: 'classic', labelEs: 'Clásico', preview: { bg: '#071C47', card: '#123E8C', accent: '#FFD23F' } },
+  { id: 'world-cup-2026', labelEs: 'Mundial 2026', preview: { bg: '#F7F7F7', card: '#FFFFFF', accent: '#00B5E2' } },
 ];
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
