@@ -35,10 +35,10 @@ export const FriendsSection = () => {
     const result = await sendRequest.mutateAsync(usernameInput.trim());
 
     if (result.success) {
-      toast({ title: 'Request sent', description: `Friend request sent to @${usernameInput}` });
+      toast({ title: 'Solicitud enviada', description: `Solicitud de amistad enviada a @${usernameInput}` });
       setUsernameInput('');
     } else {
-      setInputError(result.error ?? 'Failed to send request');
+      setInputError(result.error ?? 'Error al enviar solicitud');
     }
   };
 
@@ -46,11 +46,11 @@ export const FriendsSection = () => {
     try {
       await respondToRequest.mutateAsync({ friendshipId, accept });
       toast({
-        title: accept ? 'Friend added' : 'Request rejected',
-        description: accept ? 'You are now friends!' : 'The request has been rejected.',
+        title: accept ? 'Amigo agregado' : 'Solicitud rechazada',
+        description: accept ? '¡Ahora son amigos!' : 'La solicitud ha sido rechazada.',
       });
     } catch {
-      toast({ title: 'Error', description: 'Failed to respond to request', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Error al responder', variant: 'destructive' });
     }
   };
 
