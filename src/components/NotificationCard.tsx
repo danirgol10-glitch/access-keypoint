@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgoEs } from '@/lib/dateUtils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Notification } from '@/hooks/useNotifications';
@@ -46,7 +46,7 @@ export const NotificationCard = ({ notification, onRead }: NotificationCardProps
             {notification.message}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+            {formatTimeAgoEs(notification.created_at)}
           </p>
         </div>
         {isUnread && (

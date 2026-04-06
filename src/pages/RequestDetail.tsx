@@ -7,7 +7,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ArrowLeft, Package, Check, X, MessageCircle } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgoEs } from '@/lib/dateUtils';
 import { toast } from 'sonner';
 
 const RequestDetail = () => {
@@ -84,7 +84,7 @@ const RequestDetail = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[12px]" style={{ color: 'var(--text-secondary)' }}>{t('requestDetail.created')}</span>
-                <span className="text-[12px]" style={{ color: 'var(--text-secondary)' }}>{formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}</span>
+                <span className="text-[12px]" style={{ color: 'var(--text-secondary)' }}>{formatTimeAgoEs(request.created_at)}</span>
               </div>
             </div>
 

@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgoEs } from '@/lib/dateUtils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -37,7 +37,7 @@ export function TradeRequestCard({
 }: TradeRequestCardProps) {
   const { t } = useLanguage();
   const statusInfo = statusVariants[request.status];
-  const relativeTime = formatDistanceToNow(new Date(request.created_at), { addSuffix: true });
+  const relativeTime = formatTimeAgoEs(request.created_at);
   const canAct = request.status === 'SENT';
 
   const handleAction = (e: React.MouseEvent, action: () => void) => {

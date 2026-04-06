@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgoEs } from '@/lib/dateUtils';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { sortMatches, type SortMode } from '@/hooks/useCityMatches';
@@ -169,7 +169,7 @@ const Trading = () => {
             </div>
             <div className="space-y-2">
               {pendingReceived.map((request) => {
-                const relativeTime = formatDistanceToNow(new Date(request.created_at), { addSuffix: true });
+                const relativeTime = formatTimeAgoEs(request.created_at);
                 return (
                   <div key={request.id} className="flex items-center justify-between p-4 rounded-[16px] transition-all duration-150"
                     style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>

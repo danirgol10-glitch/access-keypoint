@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgoEs } from '@/lib/dateUtils';
 import { User, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -12,7 +12,7 @@ interface FriendMatchCardProps {
 
 export function FriendMatchCard({ username, matchCount, duplicateTotal, lastActiveAt, onView }: FriendMatchCardProps) {
   const { t } = useLanguage();
-  const activeLabel = lastActiveAt ? t('match.active', { time: formatDistanceToNow(new Date(lastActiveAt), { addSuffix: true }) }) : null;
+  const activeLabel = lastActiveAt ? t('match.active', { time: formatTimeAgoEs(lastActiveAt) }) : null;
 
   return (
     <button onClick={onView}
