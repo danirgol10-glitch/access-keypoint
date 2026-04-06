@@ -163,17 +163,17 @@ const LegalModal = ({ type, onClose }: LegalModalProps) => {
   const content = type === 'terms' ? TERMS_CONTENT : PRIVACY_CONTENT;
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col" style={{ background: 'var(--surface-card)' }}>
-      <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--surface-card-border)' }}>
-        <h2 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
+    <div className="fixed inset-0 z-[100] flex flex-col" style={{ background: '#FFFFFF' }}>
+      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-white">
+        <h2 className="text-[17px] font-bold text-gray-900">
           {type === 'terms' ? 'Términos y Condiciones' : 'Política de Privacidad'}
         </h2>
-        <button onClick={onClose} className="p-2 rounded-full transition-colors" style={{ color: 'var(--text-secondary)' }}>
+        <button onClick={onClose} className="p-2 -mr-2 rounded-full transition-colors text-gray-500 hover:text-gray-800 hover:bg-gray-100">
           <X className="w-5 h-5" />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        <pre className="whitespace-pre-wrap text-[13px] leading-relaxed font-sans" style={{ color: 'var(--text-primary)' }}>
+      <div className="flex-1 overflow-y-auto px-5 md:px-6 py-6 bg-white">
+        <pre className="whitespace-pre-wrap text-[14px] leading-[1.7] font-sans text-gray-800">
           {content}
         </pre>
       </div>
