@@ -138,19 +138,6 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="premium-panel p-4 space-y-3">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('profile.language')}</label>
-          <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid var(--surface-input-border)' }}>
-            <button onClick={() => setLanguage('en')} className="flex-1 py-3 text-sm font-medium transition-colors"
-              style={language === 'en' ? { background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)))', color: '#FFFFFF' } : { background: 'var(--surface-card)', color: 'var(--text-secondary)' }}>
-              English
-            </button>
-            <button onClick={() => setLanguage('es')} className="flex-1 py-3 text-sm font-medium transition-colors"
-              style={language === 'es' ? { background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)))', color: '#FFFFFF' } : { background: 'var(--surface-card)', color: 'var(--text-secondary)' }}>
-              Español
-            </button>
-          </div>
-        </div>
 
         {/* Legal section */}
         <div className="premium-panel p-4 space-y-3">
