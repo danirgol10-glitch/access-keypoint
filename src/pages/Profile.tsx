@@ -82,7 +82,7 @@ const Profile = () => {
           {profileLoading ? (
             <Skeleton className="h-5 w-36 mx-auto mt-2" style={{ background: 'var(--surface-skeleton)' }} />
           ) : (
-            <p className="text-[15px] font-semibold mt-2" style={{ color: 'var(--text-primary)' }}>@{profile?.username ?? 'unknown'}</p>
+            <p className="text-[15px] font-semibold mt-2" style={{ color: 'var(--text-primary)' }}>@{profile?.username ?? 'desconocido'}</p>
           )}
         </div>
 
