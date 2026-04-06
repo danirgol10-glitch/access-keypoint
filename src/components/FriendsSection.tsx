@@ -35,10 +35,10 @@ export const FriendsSection = () => {
     const result = await sendRequest.mutateAsync(usernameInput.trim());
 
     if (result.success) {
-      toast({ title: 'Request sent', description: `Friend request sent to @${usernameInput}` });
+      toast({ title: 'Solicitud enviada', description: `Solicitud de amistad enviada a @${usernameInput}` });
       setUsernameInput('');
     } else {
-      setInputError(result.error ?? 'Failed to send request');
+      setInputError(result.error ?? 'Error al enviar solicitud');
     }
   };
 
@@ -46,11 +46,11 @@ export const FriendsSection = () => {
     try {
       await respondToRequest.mutateAsync({ friendshipId, accept });
       toast({
-        title: accept ? 'Friend added' : 'Request rejected',
-        description: accept ? 'You are now friends!' : 'The request has been rejected.',
+        title: accept ? 'Amigo agregado' : 'Solicitud rechazada',
+        description: accept ? '¡Ahora son amigos!' : 'La solicitud ha sido rechazada.',
       });
     } catch {
-      toast({ title: 'Error', description: 'Failed to respond to request', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Error al responder', variant: 'destructive' });
     }
   };
 
@@ -61,7 +61,7 @@ export const FriendsSection = () => {
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <Users className="w-5 h-5" />
-          Friends
+           Amigos
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -69,7 +69,7 @@ export const FriendsSection = () => {
         <div className="space-y-2">
           <div className="flex gap-2">
             <Input
-              placeholder="Add friend by username"
+              placeholder="Agregar amigo por usuario"
               value={usernameInput}
               onChange={(e) => {
                 setUsernameInput(e.target.value);
@@ -84,7 +84,7 @@ export const FriendsSection = () => {
               size="sm"
             >
               <UserPlus className="w-4 h-4 mr-1" />
-              Send
+               Enviar
             </Button>
           </div>
           {inputError && (
@@ -103,7 +103,7 @@ export const FriendsSection = () => {
             {incomingRequests.length > 0 && (
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-muted-foreground">
-                  Incoming Requests
+                  Solicitudes Entrantes
                 </h4>
                 <div className="space-y-2">
                   {incomingRequests.map((request) => (
@@ -114,7 +114,7 @@ export const FriendsSection = () => {
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-muted-foreground" />
                         <span className="font-medium">
-                          @{request.requester?.username ?? 'unknown'}
+                          @{request.requester?.username ?? 'desconocido'}
                         </span>
                       </div>
                       <div className="flex gap-1">
@@ -147,7 +147,7 @@ export const FriendsSection = () => {
             {outgoingRequests.length > 0 && (
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-muted-foreground">
-                  Pending Requests
+                  Solicitudes Pendientes
                 </h4>
                 <div className="space-y-2">
                   {outgoingRequests.map((request) => (
@@ -158,12 +158,12 @@ export const FriendsSection = () => {
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-muted-foreground" />
                         <span className="font-medium">
-                          @{request.addressee?.username ?? 'unknown'}
+                          @{request.addressee?.username ?? 'desconocido'}
                         </span>
                       </div>
                       <Badge variant="secondary" className="gap-1">
                         <Clock className="w-3 h-3" />
-                        Pending
+                         Pendiente
                       </Badge>
                     </div>
                   ))}
@@ -174,11 +174,11 @@ export const FriendsSection = () => {
             {/* Friends list */}
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-muted-foreground">
-                My Friends ({friends.length})
+                Mis Amigos ({friends.length})
               </h4>
               {friends.length === 0 ? (
                 <p className="text-sm text-muted-foreground py-4 text-center">
-                  No friends yet. Add someone by username!
+                  Aún no tienes amigos. ¡Agrega a alguien por su usuario!
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -189,7 +189,7 @@ export const FriendsSection = () => {
                     >
                       <User className="w-4 h-4 text-muted-foreground" />
                       <span className="font-medium">
-                        @{friend.username ?? 'unknown'}
+                        @{friend.username ?? 'desconocido'}
                       </span>
                     </div>
                   ))}

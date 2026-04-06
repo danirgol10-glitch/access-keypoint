@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgoEs } from '@/lib/dateUtils';
 import { supabase } from '@/integrations/supabase/client';
 import { useFriendStickers } from '@/hooks/useFriendStickers';
 import { useAlbumConfig } from '@/hooks/useAlbumStats';
@@ -42,7 +42,7 @@ const FriendProfile = () => {
             {profileLoading ? <Skeleton className="h-6 w-32" style={{ background: 'var(--surface-skeleton)' }} /> : (
               <div>
                 <h1 className="text-[16px] font-semibold" style={{ color: 'var(--text-primary)' }}>@{friendProfile?.username ?? t('common.unknown')}</h1>
-                {friendProfile?.last_active_at && <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{t('match.active', { time: formatDistanceToNow(new Date(friendProfile.last_active_at), { addSuffix: true }) })}</p>}
+                {friendProfile?.last_active_at && <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{t('match.active', { time: formatTimeAgoEs(friendProfile.last_active_at) })}</p>}
               </div>
             )}
           </div>
@@ -74,7 +74,7 @@ const FriendProfile = () => {
               <div className="flex flex-col items-center p-3 rounded-xl" style={{ background: 'var(--surface-card)' }}>
                 <Check className="w-5 h-5 mb-1" style={{ color: 'var(--sticker-owned-color)' }} />
                 <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{haveCount}</span>
-                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{t('friendProfile.owned')}</span>
+                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{t('friendProfile.has')}</span>
               </div>
               <div className="flex flex-col items-center p-3 rounded-xl" style={{ background: 'var(--surface-card)' }}>
                 <Copy className="w-5 h-5 mb-1" style={{ color: 'var(--sticker-duplicate-color)' }} />
@@ -84,7 +84,7 @@ const FriendProfile = () => {
               <div className="flex flex-col items-center p-3 rounded-xl" style={{ background: 'var(--surface-card)' }}>
                 <Search className="w-5 h-5 mb-1" style={{ color: 'var(--icon-faint)' }} />
                 <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{missingCount}</span>
-                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{t('friendProfile.missing')}</span>
+                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{t('friendProfile.isMissing')}</span>
               </div>
             </div>
           </div>

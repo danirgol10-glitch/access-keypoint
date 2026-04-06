@@ -99,15 +99,15 @@ export const useSendFriendRequest = () => {
 
       if (findError) {
         console.error('Error finding user:', findError);
-        return { success: false, error: 'Error searching for user' };
+        return { success: false, error: 'Error al buscar usuario' };
       }
 
       if (!targetUser) {
-        return { success: false, error: 'User not found' };
+        return { success: false, error: 'Usuario no encontrado' };
       }
 
       if (targetUser.id === user.id) {
-        return { success: false, error: "You can't add yourself" };
+        return { success: false, error: 'No puedes agregarte a ti mismo' };
       }
 
       // Check for existing relationship
@@ -119,13 +119,13 @@ export const useSendFriendRequest = () => {
 
       if (existing) {
         if (existing.status === 'ACCEPTED') {
-          return { success: false, error: 'Already friends' };
+          return { success: false, error: 'Ya son amigos' };
         }
         if (existing.status === 'PENDING') {
-          return { success: false, error: 'Request already pending' };
+          return { success: false, error: 'Solicitud ya pendiente' };
         }
         if (existing.status === 'REJECTED') {
-          return { success: false, error: 'Request was previously rejected' };
+          return { success: false, error: 'La solicitud fue rechazada anteriormente' };
         }
       }
 
@@ -140,7 +140,7 @@ export const useSendFriendRequest = () => {
 
       if (insertError) {
         console.error('Error creating friendship:', insertError);
-        return { success: false, error: 'Failed to send request' };
+        return { success: false, error: 'Error al enviar solicitud' };
       }
 
       return { success: true };

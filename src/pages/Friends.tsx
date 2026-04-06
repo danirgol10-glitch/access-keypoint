@@ -100,13 +100,13 @@ const Friends = () => {
   const handleRespondToRequest = async (friendshipId: string, accept: boolean) => {
     try {
       await respondToRequest.mutateAsync({ friendshipId, accept });
-      toast({ title: accept ? 'Friend added!' : 'Request rejected', description: accept ? 'You are now friends!' : 'The request has been rejected.' });
-    } catch { toast({ title: 'Error', description: 'Failed to respond to request', variant: 'destructive' }); }
+      toast({ title: accept ? t('trading.friendAdded') : t('trading.requestRejected'), description: accept ? t('trading.youAreNowFriends') : t('trading.theRequestRejected') });
+    } catch { toast({ title: t('trading.error'), description: t('trading.failedToRespond'), variant: 'destructive' }); }
   };
 
   const getSuggestionChip = (u: { city?: string | null; university_name?: string | null }) => {
-    if (u.university_name) return { label: 'Same university', icon: GraduationCap };
-    return { label: 'Active', icon: Activity };
+    if (u.university_name) return { label: 'Misma universidad', icon: GraduationCap };
+    return { label: 'Activo', icon: Activity };
   };
 
   const labels = { add: t('friends.add'), pending: t('trading.pending'), friends: t('friends.alreadyFriends') };

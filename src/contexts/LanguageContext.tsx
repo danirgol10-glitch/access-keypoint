@@ -280,10 +280,10 @@ const translations: Record<string, string> = {
   'setup.usernameTakenDesc': 'Este usuario ya está en uso.',
   'setup.back': 'Volver',
 
-  // Friend Profile
-  'friendProfile.owned': 'Tengo',
+  // Friend Profile (third person)
+  'friendProfile.has': 'Tiene',
   'friendProfile.duplicates': 'Repetidas',
-  'friendProfile.missing': 'Faltan',
+  'friendProfile.isMissing': 'Le faltan',
   'friendProfile.searchPlaceholder': 'Buscar por código, nombre, equipo...',
   'friendProfile.all': 'Todos',
   'friendProfile.have': 'Tengo',

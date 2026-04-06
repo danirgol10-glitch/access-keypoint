@@ -8,7 +8,7 @@ import { useMessages } from '@/hooks/useMessages';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlockUserMenu } from '@/components/BlockUserMenu';
 import { ArrowLeft, Send } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgoEs } from '@/lib/dateUtils';
 
 const ChatDetail = () => {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -77,7 +77,7 @@ const ChatDetail = () => {
                   style={isMe ? { background: `linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))`, color: '#FFFFFF' } : { background: 'var(--surface-input)', color: 'var(--text-primary)' }}>
                   <p className="text-sm break-words">{msg.text}</p>
                   <p className="text-[10px] mt-1" style={{ color: isMe ? 'rgba(255,255,255,0.6)' : 'var(--text-muted)' }}>
-                    {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true })}
+                    {formatTimeAgoEs(msg.created_at)}
                   </p>
                 </div>
               </div>
