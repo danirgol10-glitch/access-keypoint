@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 const Trading = () => {
   const navigate = useNavigate();
   const { profile: myProfile } = useUserProfile();
+  const { user } = useAuth();
   const { t } = useLanguage();
 
   const { sentRequests, receivedRequests, isLoading: tradeLoading, updateStatus, isUpdating } = useTradeRequests();
@@ -34,8 +35,37 @@ const Trading = () => {
   const sortedUniMatches = useMemo(() => sortMatches(uniUsersWithMatches.map(m => ({ ...m, sameUniversity: true as const })), uniSortMode), [uniUsersWithMatches, uniSortMode]);
 
   const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; type: 'reject' | 'cancel'; requestId: string; otherUserId: string; otherUsername?: string; } | null>(null);
+  const [archiveDialog, setArchiveDialog] = useState<{ open: boolean; requestId: string } | null>(null);
 
-  const activeTrades = [...sentRequests.filter((r) => r.status === 'ACCEPTED'), ...receivedRequests.filter((r) => r.status === 'ACCEPTED')];
+  const archiveKey = user?.id ? `archived_active_trades_${user.id}` : null;
+  const [archivedIds, setArchivedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!archiveKey) return;
+    try {
+      const raw = localStorage.getItem(archiveKey);
+      if (raw) setArchivedIds(new Set(JSON.parse(raw)));
+    } catch { /* ignore */ }
+  }, [archiveKey]);
+
+  const persistArchived = (next: Set<string>) => {
+    setArchivedIds(next);
+    if (archiveKey) {
+      try { localStorage.setItem(archiveKey, JSON.stringify(Array.from(next))); } catch { /* ignore */ }
+    }
+  };
+
+  const allActiveTrades = [...sentRequests.filter((r) => r.status === 'ACCEPTED'), ...receivedRequests.filter((r) => r.status === 'ACCEPTED')];
+  const activeTrades = allActiveTrades.filter((trade) => !archivedIds.has(trade.id));
+
+  const confirmArchive = () => {
+    if (!archiveDialog) return;
+    const next = new Set(archivedIds);
+    next.add(archiveDialog.requestId);
+    persistArchived(next);
+    setArchiveDialog(null);
+    toast.success(t('trading.tradeArchived'));
+  };
 
   const confirmAction = async () => {
     if (!confirmDialog) return;
