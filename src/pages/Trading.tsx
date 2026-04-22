@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatTimeAgoEs } from '@/lib/dateUtils';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useAuth } from '@/contexts/AuthContext';
 import { sortMatches, type SortMode } from '@/hooks/useCityMatches';
 import { useFriendMatches } from '@/hooks/useFriendMatches';
 import { useUniversityMatches } from '@/hooks/useUniversityMatches';
