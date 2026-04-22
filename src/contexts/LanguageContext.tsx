@@ -121,6 +121,10 @@ const translations: Record<string, string> = {
   'trading.noGoBack': 'No, volver',
   'trading.yesReject': 'Sí, rechazar',
   'trading.yesCancel': 'Sí, cancelar',
+  'trading.removeActiveTrade': 'Quitar intercambio activo',
+  'trading.archiveTitle': '¿Eliminar intercambio activo?',
+  'trading.archiveMessage': 'Este intercambio se quitará de tu lista de intercambios activos.',
+  'trading.tradeArchived': 'Intercambio quitado de tu lista',
 
   // Trade Request Card
   'trade.to': 'Para',
