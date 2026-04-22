@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatTimeAgoEs } from '@/lib/dateUtils';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useAuth } from '@/contexts/AuthContext';
 import { sortMatches, type SortMode } from '@/hooks/useCityMatches';
 import { useFriendMatches } from '@/hooks/useFriendMatches';
 import { useUniversityMatches } from '@/hooks/useUniversityMatches';
@@ -18,6 +19,7 @@ import { toast } from 'sonner';
 const Trading = () => {
   const navigate = useNavigate();
   const { profile: myProfile } = useUserProfile();
+  const { user } = useAuth();
   const { t } = useLanguage();
 
   const { sentRequests, receivedRequests, isLoading: tradeLoading, updateStatus, isUpdating } = useTradeRequests();
@@ -33,8 +35,37 @@ const Trading = () => {
   const sortedUniMatches = useMemo(() => sortMatches(uniUsersWithMatches.map(m => ({ ...m, sameUniversity: true as const })), uniSortMode), [uniUsersWithMatches, uniSortMode]);
 
   const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; type: 'reject' | 'cancel'; requestId: string; otherUserId: string; otherUsername?: string; } | null>(null);
+  const [archiveDialog, setArchiveDialog] = useState<{ open: boolean; requestId: string } | null>(null);
 
-  const activeTrades = [...sentRequests.filter((r) => r.status === 'ACCEPTED'), ...receivedRequests.filter((r) => r.status === 'ACCEPTED')];
+  const archiveKey = user?.id ? `archived_active_trades_${user.id}` : null;
+  const [archivedIds, setArchivedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!archiveKey) return;
+    try {
+      const raw = localStorage.getItem(archiveKey);
+      if (raw) setArchivedIds(new Set(JSON.parse(raw)));
+    } catch { /* ignore */ }
+  }, [archiveKey]);
+
+  const persistArchived = (next: Set<string>) => {
+    setArchivedIds(next);
+    if (archiveKey) {
+      try { localStorage.setItem(archiveKey, JSON.stringify(Array.from(next))); } catch { /* ignore */ }
+    }
+  };
+
+  const allActiveTrades = [...sentRequests.filter((r) => r.status === 'ACCEPTED'), ...receivedRequests.filter((r) => r.status === 'ACCEPTED')];
+  const activeTrades = allActiveTrades.filter((trade) => !archivedIds.has(trade.id));
+
+  const confirmArchive = () => {
+    if (!archiveDialog) return;
+    const next = new Set(archivedIds);
+    next.add(archiveDialog.requestId);
+    persistArchived(next);
+    setArchiveDialog(null);
+    toast.success(t('trading.tradeArchived'));
+  };
 
   const confirmAction = async () => {
     if (!confirmDialog) return;
@@ -212,17 +243,29 @@ const Trading = () => {
         ) : (
           <div className="space-y-2">
             {activeTrades.map((trade) => (
-              <button key={trade.id} className="w-full flex items-center justify-between p-4 rounded-[16px] text-left transition-all duration-150 active:scale-[0.98]"
-                style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }} onClick={() => navigate(`/request/${trade.id}`)}>
-                <div>
-                  <span className="font-medium text-[14px]" style={{ color: 'var(--text-primary)' }}>@{trade.other_user?.username ?? t('common.unknown')}</span>
-                  <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{t('trading.chatAvailable')}</p>
-                </div>
-                <div className="flex items-center gap-1 text-[12px] font-medium px-3 py-1.5 rounded-xl"
-                  style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
-                  {t('trading.open')}<ChevronRight className="h-3 w-3" />
-                </div>
-              </button>
+              <div key={trade.id} className="relative w-full rounded-[16px]"
+                style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
+                <button
+                  type="button"
+                  aria-label={t('trading.removeActiveTrade')}
+                  onClick={(e) => { e.stopPropagation(); setArchiveDialog({ open: true, requestId: trade.id }); }}
+                  className="absolute top-2 right-2 z-10 h-7 w-7 flex items-center justify-center rounded-full transition-all duration-150 active:scale-90 hover:opacity-100 opacity-70"
+                  style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-secondary)' }}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+                <button className="w-full flex items-center justify-between p-4 pr-12 rounded-[16px] text-left transition-all duration-150 active:scale-[0.98]"
+                  onClick={() => navigate(`/request/${trade.id}`)}>
+                  <div>
+                    <span className="font-medium text-[14px]" style={{ color: 'var(--text-primary)' }}>@{trade.other_user?.username ?? t('common.unknown')}</span>
+                    <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{t('trading.chatAvailable')}</p>
+                  </div>
+                  <div className="flex items-center gap-1 text-[12px] font-medium px-3 py-1.5 rounded-xl"
+                    style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+                    {t('trading.open')}<ChevronRight className="h-3 w-3" />
+                  </div>
+                </button>
+              </div>
             ))}
           </div>
         )}
@@ -237,6 +280,19 @@ const Trading = () => {
           <AlertDialogFooter>
             <AlertDialogCancel style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>{t('trading.noGoBack')}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmAction} className="btn-themed">{confirmDialog?.type === 'reject' ? t('trading.yesReject') : t('trading.yesCancel')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={archiveDialog?.open ?? false} onOpenChange={(open) => !open && setArchiveDialog(null)}>
+        <AlertDialogContent style={{ background: 'var(--dialog-bg)', border: '1px solid var(--surface-input-border)' }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle style={{ color: 'var(--text-primary)' }}>{t('trading.archiveTitle')}</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-secondary)' }}>{t('trading.archiveMessage')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmArchive} className="btn-themed">{t('common.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -121,6 +121,10 @@ const translations: Record<string, string> = {
   'trading.noGoBack': 'No, volver',
   'trading.yesReject': 'Sí, rechazar',
   'trading.yesCancel': 'Sí, cancelar',
+  'trading.removeActiveTrade': 'Quitar intercambio activo',
+  'trading.archiveTitle': '¿Eliminar intercambio activo?',
+  'trading.archiveMessage': 'Este intercambio se quitará de tu lista de intercambios activos.',
+  'trading.tradeArchived': 'Intercambio quitado de tu lista',
 
   // Trade Request Card
   'trade.to': 'Para',
@@ -319,6 +323,8 @@ const translations: Record<string, string> = {
   'common.unknown': 'desconocido',
   'common.error': 'Error',
   'common.send': 'Enviar',
+  'common.cancel': 'Cancelar',
+  'common.delete': 'Eliminar',
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
