@@ -323,6 +323,8 @@ const translations: Record<string, string> = {
   'common.unknown': 'desconocido',
   'common.error': 'Error',
   'common.send': 'Enviar',
+  'common.cancel': 'Cancelar',
+  'common.delete': 'Eliminar',
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
