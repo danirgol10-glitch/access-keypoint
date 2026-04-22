@@ -283,6 +283,19 @@ const Trading = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={archiveDialog?.open ?? false} onOpenChange={(open) => !open && setArchiveDialog(null)}>
+        <AlertDialogContent style={{ background: 'var(--dialog-bg)', border: '1px solid var(--surface-input-border)' }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle style={{ color: 'var(--text-primary)' }}>{t('trading.archiveTitle')}</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-secondary)' }}>{t('trading.archiveMessage')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmArchive} className="btn-themed">{t('common.delete')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
