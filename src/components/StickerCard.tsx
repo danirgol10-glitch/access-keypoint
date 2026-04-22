@@ -45,15 +45,26 @@ export function StickerCard({ code, teamName, status, onClick }: StickerCardProp
 
   return (
     <button onClick={onClick}
-      className="relative aspect-[3/4] rounded-[14px] p-2 flex flex-col items-center justify-center text-center transition-colors duration-150 active:scale-[0.96] focus:outline-none"
+      className="relative aspect-[3/4] w-full rounded-[14px] p-2 flex flex-col items-center text-center transition-colors duration-150 active:scale-[0.96] focus:outline-none overflow-hidden"
       style={getCardStyle()}>
       {isOwned && (
-        <Check className="absolute top-1.5 right-1.5" size={12} strokeWidth={3}
+        <Check className="absolute top-1.5 right-1.5 shrink-0" size={12} strokeWidth={3}
           style={{ color: status === 'HAVE' ? 'var(--sticker-owned-color)' : 'var(--sticker-duplicate-color)' }} />
       )}
-      <span className="font-semibold text-sm" style={{ color: getTextColor() }}>{code}</span>
-      {teamName && <span className="text-[10px] mt-1 truncate w-full" style={{ color: getSubtextColor() }}>{teamName}</span>}
-      <span className="mt-2 text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={getBadgeStyle()}>{t(statusLabelKeys[status])}</span>
+      <span className="font-semibold text-sm shrink-0 w-full truncate" style={{ color: getTextColor() }}>{code}</span>
+      <span
+        className="text-[10px] mt-1 w-full overflow-hidden flex-1 leading-tight"
+        style={{
+          color: getSubtextColor(),
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          minHeight: 0,
+        }}
+      >
+        {teamName ?? ''}
+      </span>
+      <span className="mt-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0 max-w-full truncate" style={getBadgeStyle()}>{t(statusLabelKeys[status])}</span>
     </button>
   );
 }
