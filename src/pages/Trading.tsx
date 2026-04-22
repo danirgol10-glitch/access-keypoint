@@ -243,17 +243,29 @@ const Trading = () => {
         ) : (
           <div className="space-y-2">
             {activeTrades.map((trade) => (
-              <button key={trade.id} className="w-full flex items-center justify-between p-4 rounded-[16px] text-left transition-all duration-150 active:scale-[0.98]"
-                style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }} onClick={() => navigate(`/request/${trade.id}`)}>
-                <div>
-                  <span className="font-medium text-[14px]" style={{ color: 'var(--text-primary)' }}>@{trade.other_user?.username ?? t('common.unknown')}</span>
-                  <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{t('trading.chatAvailable')}</p>
-                </div>
-                <div className="flex items-center gap-1 text-[12px] font-medium px-3 py-1.5 rounded-xl"
-                  style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
-                  {t('trading.open')}<ChevronRight className="h-3 w-3" />
-                </div>
-              </button>
+              <div key={trade.id} className="relative w-full rounded-[16px]"
+                style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
+                <button
+                  type="button"
+                  aria-label={t('trading.removeActiveTrade')}
+                  onClick={(e) => { e.stopPropagation(); setArchiveDialog({ open: true, requestId: trade.id }); }}
+                  className="absolute top-2 right-2 z-10 h-7 w-7 flex items-center justify-center rounded-full transition-all duration-150 active:scale-90 hover:opacity-100 opacity-70"
+                  style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-secondary)' }}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+                <button className="w-full flex items-center justify-between p-4 pr-12 rounded-[16px] text-left transition-all duration-150 active:scale-[0.98]"
+                  onClick={() => navigate(`/request/${trade.id}`)}>
+                  <div>
+                    <span className="font-medium text-[14px]" style={{ color: 'var(--text-primary)' }}>@{trade.other_user?.username ?? t('common.unknown')}</span>
+                    <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{t('trading.chatAvailable')}</p>
+                  </div>
+                  <div className="flex items-center gap-1 text-[12px] font-medium px-3 py-1.5 rounded-xl"
+                    style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+                    {t('trading.open')}<ChevronRight className="h-3 w-3" />
+                  </div>
+                </button>
+              </div>
             ))}
           </div>
         )}
