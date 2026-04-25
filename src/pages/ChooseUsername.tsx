@@ -45,7 +45,7 @@ const ChooseUsername = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center page-bg p-4">
+    <div className="app-screen flex items-center justify-center page-bg p-4">
       <div className="w-full max-w-md premium-panel premium-panel-gold p-6 space-y-6">
         <div className="relative text-center space-y-1">
           <button type="button" onClick={async () => { await signOut(); navigate('/auth', { replace: true }); }}
@@ -61,7 +61,7 @@ const ChooseUsername = () => {
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }}>@</span>
               <input type="text" placeholder={t('setup.usernamePlaceholder')} value={username} onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
-                className="w-full h-11 pl-8 pr-4 text-[14px] rounded-xl outline-none"
+                className="w-full h-11 pl-8 pr-4 text-base rounded-xl outline-none"
                 style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }} maxLength={20} />
             </div>
             <p className="text-[11px]" style={{ color: 'var(--text-hint)' }}>{t('setup.usernameHint')}</p>

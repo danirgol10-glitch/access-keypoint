@@ -37,7 +37,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   // Still loading
   if (authLoading || (user && profileLoading) || creatingRow) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="app-screen flex items-center justify-center bg-background">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
       </div>
     );

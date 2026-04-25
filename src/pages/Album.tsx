@@ -78,8 +78,8 @@ const Album = () => {
 
   const quickDuplicateCount = useMemo(() => Object.values(userStickers).filter((s) => s.status === 'DUPLICATE').length, [userStickers]);
 
-  if (isLoading) return <div className="flex items-center justify-center min-h-[calc(100vh-5rem)] p-6"><p className="animate-pulse" style={{ color: 'var(--text-secondary)' }}>{t('album.loading')}</p></div>;
-  if (error) return <div className="flex items-center justify-center min-h-[calc(100vh-5rem)] p-6"><p className="text-destructive">{t('album.failed')}</p></div>;
+  if (isLoading) return <div className="min-h-page-state flex items-center justify-center p-6"><p className="animate-pulse" style={{ color: 'var(--text-secondary)' }}>{t('album.loading')}</p></div>;
+  if (error) return <div className="min-h-page-state flex items-center justify-center p-6"><p className="text-destructive">{t('album.failed')}</p></div>;
 
   return (
     <div className="relative px-4 pt-14 pb-28 space-y-4 max-w-md mx-auto">
@@ -104,7 +104,7 @@ const Album = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--text-muted)' }} />
             <input placeholder={t('album.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl outline-none transition-all duration-200"
+              className="w-full pl-10 pr-4 py-2.5 text-base rounded-2xl outline-none transition-all duration-200"
               style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
               onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; e.currentTarget.style.boxShadow = `0 0 12px var(--input-focus-glow)`; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--surface-input-border)'; e.currentTarget.style.boxShadow = 'none'; }} />
@@ -112,7 +112,7 @@ const Album = () => {
 
           <div className="flex gap-2 flex-wrap">
             <Select value={selectedScope} onValueChange={handleScopeChange}>
-              <SelectTrigger className="flex-1 min-w-[100px] h-9 text-xs rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+              <SelectTrigger className="flex-1 min-w-[100px] h-10 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
                 <SelectValue placeholder="Scope" />
               </SelectTrigger>
               <SelectContent>
@@ -124,7 +124,7 @@ const Album = () => {
 
             {selectedScope !== 'FWC' && groups.length > 0 && (
               <Select value={selectedGroup} onValueChange={handleGroupChange}>
-                <SelectTrigger className="flex-1 min-w-[100px] h-9 text-xs rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+                <SelectTrigger className="flex-1 min-w-[100px] h-10 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
                   <SelectValue placeholder="Group" />
                 </SelectTrigger>
                 <SelectContent>
@@ -136,7 +136,7 @@ const Album = () => {
 
             {selectedGroup !== 'all' && teamsForGroup.length > 0 && (
               <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-                <SelectTrigger className="flex-1 min-w-[120px] h-9 text-xs rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+                <SelectTrigger className="flex-1 min-w-[120px] h-10 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
                   <SelectValue placeholder="Team" />
                 </SelectTrigger>
                 <SelectContent>
@@ -147,7 +147,7 @@ const Album = () => {
             )}
 
             <Select value={selectedStatus} onValueChange={(v) => setSelectedStatus(v as StatusFilter)}>
-              <SelectTrigger className="flex-1 min-w-[100px] h-9 text-xs rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+              <SelectTrigger className="flex-1 min-w-[100px] h-10 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>

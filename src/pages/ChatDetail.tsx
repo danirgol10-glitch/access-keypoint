@@ -45,8 +45,8 @@ const ChatDetail = () => {
   const handleKeyDown = (e: React.KeyboardEvent) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
 
   return (
-    <div className="flex flex-col h-screen page-bg">
-      <header className="sticky top-0 z-10 px-4 py-3 header-themed">
+    <div className="flex h-full min-h-0 w-full max-w-full flex-col page-bg">
+      <header className="z-10 flex-shrink-0 px-4 pb-3 safe-header header-themed">
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
           <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'var(--surface-input)' }}>
             <ArrowLeft className="h-5 w-5" style={{ color: 'var(--icon-default)' }} />
@@ -63,7 +63,7 @@ const ChatDetail = () => {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 space-y-3">
+      <main className="min-h-0 flex-1 overflow-y-auto p-4 space-y-3">
         {isLoading ? (
           <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-10 w-48 rounded-lg" style={{ background: 'var(--surface-skeleton)' }} />)}</div>
         ) : messages.length === 0 ? (
@@ -87,10 +87,10 @@ const ChatDetail = () => {
         <div ref={bottomRef} />
       </main>
 
-      <div className="p-3 header-themed" style={{ borderTop: '1px solid var(--surface-divider)' }}>
+      <div className="flex-shrink-0 p-3 header-themed" style={{ borderTop: '1px solid var(--surface-divider)' }}>
         <div className="flex gap-2 max-w-2xl mx-auto">
           <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={handleKeyDown}
-            placeholder={t('chat.placeholder')} className="flex-1 px-4 py-2.5 text-[14px] rounded-2xl outline-none"
+            placeholder={t('chat.placeholder')} className="flex-1 px-4 py-2.5 text-base rounded-2xl outline-none"
             style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }} disabled={isSending} />
           <button onClick={handleSend} disabled={!text.trim() || isSending}
             className="h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-150 active:scale-95 disabled:opacity-50 btn-themed">

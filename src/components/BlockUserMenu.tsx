@@ -125,7 +125,7 @@ export function BlockUserMenu({ userId, username }: BlockUserMenuProps) {
               value={reportMessage}
               onChange={(e) => setReportMessage(e.target.value)}
               rows={3}
-              className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
+              className="w-full px-4 py-3 rounded-xl text-base outline-none resize-none"
               style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
             />
           </div>

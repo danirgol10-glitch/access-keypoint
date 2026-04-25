@@ -89,7 +89,7 @@ const Profile = () => {
         <div className="premium-panel premium-panel-gold p-4 space-y-3">
           <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('profile.city')}</label>
           <Select value={profile?.city ?? ''} onValueChange={handleCityChange} disabled={savingCity || profileLoading}>
-            <SelectTrigger className="w-full h-12 text-sm rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+            <SelectTrigger className="w-full h-12 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
               <SelectValue placeholder={t('profile.addCity')} />
             </SelectTrigger>
             <SelectContent>{COLOMBIAN_CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
@@ -99,7 +99,7 @@ const Profile = () => {
         <div className="premium-panel p-4 space-y-3">
           <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('profile.university')}</label>
           <Select value={profile?.university_id ?? 'none'} onValueChange={handleUniversityChange} disabled={savingUni || uniLoading || !profile?.city}>
-            <SelectTrigger className="w-full h-12 text-sm rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+            <SelectTrigger className="w-full h-12 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
               <SelectValue placeholder={!profile?.city ? t('profile.setCityFirst') : t('profile.addUniversity')} />
             </SelectTrigger>
             <SelectContent>

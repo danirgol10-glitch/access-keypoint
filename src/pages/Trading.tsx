@@ -81,7 +81,7 @@ const Trading = () => {
 
   const SortDropdown = ({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) => (
     <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
-      <SelectTrigger className="w-auto h-7 text-xs px-2.5 gap-1 border-none" style={{ background: 'var(--surface-input)', color: 'var(--text-secondary)' }}>
+      <SelectTrigger className="w-auto h-9 text-base px-3 gap-1 border-none" style={{ background: 'var(--surface-input)', color: 'var(--text-secondary)' }}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -124,7 +124,7 @@ const Trading = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-full sm:max-w-md page-bg border-l" style={{ borderColor: 'var(--surface-divider)' }}>
             <SheetHeader><SheetTitle style={{ color: 'var(--text-primary)' }}>{t('home.friendsWhoCanHelp')}</SheetTitle></SheetHeader>
-            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
+            <div className="sheet-scroll-area mt-4 space-y-3 overflow-y-auto">
               {friendsMatchesLoading ? (
                 <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} />)}</div>
               ) : !hasFriends ? (
@@ -158,7 +158,7 @@ const Trading = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-full sm:max-w-md page-bg border-l" style={{ borderColor: 'var(--surface-divider)' }}>
             <SheetHeader><SheetTitle style={{ color: 'var(--text-primary)' }}>{t('home.uniWhoCanHelp')}</SheetTitle></SheetHeader>
-            <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-120px)]">
+            <div className="sheet-scroll-area mt-4 space-y-3 overflow-y-auto">
               {!universityId ? (
                 <div className="flex flex-col items-center py-8 text-center">
                   <GraduationCap className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />

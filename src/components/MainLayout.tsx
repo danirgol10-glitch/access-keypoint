@@ -32,13 +32,15 @@ const MainLayout = () => {
     touch();
   }, [location.pathname, touch]);
 
+  const isChatDetail = location.pathname.startsWith('/chat/');
+
   return (
-    <div className="flex flex-col min-h-screen page-bg">
-      <main className="flex-1 pb-20 overflow-auto">
+    <div className="app-full-screen flex flex-col overflow-hidden page-bg">
+      <main className={cn("flex-1 min-h-0 w-full max-w-full overflow-x-hidden", isChatDetail ? "overflow-hidden" : "overflow-y-auto")}>
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50" style={{ background: 'var(--nav-bg)', borderTop: '1px solid var(--nav-border-top)' }}>
+      <nav className="z-50 flex-shrink-0 safe-bottom" style={{ background: 'var(--nav-bg)', borderTop: '1px solid var(--nav-border-top)' }}>
         <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
           {tabConfig.map((tab, index) => {
             const isActive = location.pathname === tab.path;

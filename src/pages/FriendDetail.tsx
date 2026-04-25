@@ -43,8 +43,8 @@ const FriendDetail = () => {
   const selectedCount = selectedStickers.size;
 
   return (
-    <div className="flex flex-col min-h-screen page-bg">
-      <header className="sticky top-0 z-10 px-4 py-3 header-themed">
+    <div className="flex min-h-full flex-col page-bg">
+      <header className="sticky top-0 z-10 px-4 pb-3 safe-header header-themed">
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
           <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'var(--surface-input)' }}>
             <ArrowLeft className="h-5 w-5" style={{ color: 'var(--icon-default)' }} />
@@ -97,7 +97,7 @@ const FriendDetail = () => {
       </main>
 
       {count > 0 && (
-        <div className="fixed left-0 right-0 bottom-16 z-20 px-4 py-3 header-themed" style={{ borderTop: '1px solid var(--surface-divider)' }}>
+        <div className="fixed left-0 right-0 bottom-app-nav z-20 px-4 py-3 header-themed" style={{ borderTop: '1px solid var(--surface-divider)' }}>
           <div className="max-w-md mx-auto">
             <button className="w-full h-11 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50 btn-themed"
               disabled={selectedCount === 0 || isCreating} onClick={handleRequestClick}>

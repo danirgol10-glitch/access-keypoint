@@ -112,7 +112,7 @@ const Friends = () => {
   const labels = { add: t('friends.add'), pending: t('trading.pending'), friends: t('friends.alreadyFriends') };
 
   return (
-    <div className="min-h-screen pb-28 page-bg">
+    <div className="min-h-full pb-28 page-bg">
       <div className="pointer-events-none fixed top-0 left-0 right-0 h-32 z-10" style={{ background: `linear-gradient(to bottom, var(--overlay-gradient-start), transparent)` }} />
       <div className="relative z-20 px-4 pt-14 space-y-4 max-w-md mx-auto">
         <div className="text-center mb-2">
@@ -154,7 +154,7 @@ const Friends = () => {
           <div className="relative mt-3">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
             <input type="text" placeholder={t('friends.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-[14px] rounded-2xl outline-none transition-all duration-200"
+              className="w-full pl-10 pr-4 py-2.5 text-base rounded-2xl outline-none transition-all duration-200"
               style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
               onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; e.currentTarget.style.boxShadow = `0 0 12px var(--input-focus-glow)`; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--surface-input-border)'; e.currentTarget.style.boxShadow = 'none'; }} />

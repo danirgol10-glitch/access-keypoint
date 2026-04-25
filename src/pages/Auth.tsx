@@ -38,10 +38,10 @@ const Auth = () => {
     finally { setIsSubmitting(false); }
   };
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center page-bg"><div className="animate-pulse" style={{ color: 'var(--text-secondary)' }}>{t('auth.loading')}</div></div>;
+  if (loading) return <div className="app-screen flex items-center justify-center page-bg"><div className="animate-pulse" style={{ color: 'var(--text-secondary)' }}>{t('auth.loading')}</div></div>;
 
   return (
-    <div className="flex min-h-screen items-center justify-center page-bg p-4">
+    <div className="app-screen flex items-center justify-center page-bg p-4">
       <div className="w-full max-w-md premium-panel premium-panel-gold p-6 space-y-6">
         <div className="text-center space-y-1">
           <h1 className="text-[22px] font-bold" style={{ color: 'var(--text-primary)' }}>{isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}</h1>
@@ -51,7 +51,7 @@ const Auth = () => {
           <div className="space-y-2">
             <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('auth.email')}</label>
             <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
-              className="w-full h-11 px-4 text-[14px] rounded-xl outline-none transition-all duration-200"
+              className="w-full h-11 px-4 text-base rounded-xl outline-none transition-all duration-200"
               style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
               onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--surface-input-border)'; }} />
@@ -59,7 +59,7 @@ const Auth = () => {
           <div className="space-y-2">
             <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('auth.password')}</label>
             <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete={isLogin ? 'current-password' : 'new-password'}
-              className="w-full h-11 px-4 text-[14px] rounded-xl outline-none transition-all duration-200"
+              className="w-full h-11 px-4 text-base rounded-xl outline-none transition-all duration-200"
               style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
               onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--surface-input-border)'; }} />
