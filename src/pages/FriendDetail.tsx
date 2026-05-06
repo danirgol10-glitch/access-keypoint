@@ -46,7 +46,7 @@ const FriendDetail = () => {
     <div className="flex min-h-full flex-col page-bg">
       <header className="sticky top-0 z-10 px-4 pb-3 safe-header header-themed">
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
-          <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'var(--surface-input)' }}>
+          <button onClick={() => navigate(-1)} className="rounded-full h-11 w-11 flex items-center justify-center" style={{ background: 'var(--surface-input)' }}>
             <ArrowLeft className="h-5 w-5" style={{ color: 'var(--icon-default)' }} />
           </button>
           <div className="flex-1">

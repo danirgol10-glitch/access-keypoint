@@ -81,7 +81,7 @@ const Trading = () => {
 
   const SortDropdown = ({ value, onChange }: { value: SortMode; onChange: (v: SortMode) => void }) => (
     <Select value={value} onValueChange={(v) => onChange(v as SortMode)}>
-      <SelectTrigger className="w-auto h-9 text-base px-3 gap-1 border-none" style={{ background: 'var(--surface-input)', color: 'var(--text-secondary)' }}>
+      <SelectTrigger className="w-auto min-h-11 text-base px-3 gap-1 border-none" style={{ background: 'var(--surface-input)', color: 'var(--text-secondary)' }}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -107,7 +107,7 @@ const Trading = () => {
   const isLoading = tradeLoading;
 
   return (
-    <div className="relative px-4 pt-14 pb-28 space-y-6 max-w-md mx-auto">
+    <div className="relative px-4 safe-page space-y-6 max-w-md mx-auto">
       <div className="page-vignette" />
 
       <div className="relative z-20 text-center mb-2">
@@ -131,7 +131,7 @@ const Trading = () => {
                 <div className="flex flex-col items-center py-8 text-center">
                   <Users className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
                   <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>{t('home.addFriendsToDiscover')}</p>
-                  <button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }} className="px-4 py-2 rounded-xl text-sm font-semibold btn-themed">{t('home.addFriends')}</button>
+                  <button onClick={() => { setFriendsSheetOpen(false); navigate('/friends'); }} className="min-h-11 px-4 rounded-xl text-sm font-semibold btn-themed">{t('home.addFriends')}</button>
                 </div>
               ) : friendsBadgeCount === 0 ? (
                 <div className="flex flex-col items-center py-8 text-center">
@@ -163,7 +163,7 @@ const Trading = () => {
                 <div className="flex flex-col items-center py-8 text-center">
                   <GraduationCap className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
                   <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>{t('home.setUniToFind')}</p>
-                  <button onClick={() => { setUniSheetOpen(false); navigate('/profile'); }} className="px-4 py-2 rounded-xl text-sm font-semibold btn-themed">{t('home.setUniversity')}</button>
+                  <button onClick={() => { setUniSheetOpen(false); navigate('/profile'); }} className="min-h-11 px-4 rounded-xl text-sm font-semibold btn-themed">{t('home.setUniversity')}</button>
                 </div>
               ) : uniMatchesLoading ? (
                 <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} />)}</div>
@@ -214,11 +214,11 @@ const Trading = () => {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <button onClick={async () => { try { await updateStatus({ requestId: request.id, newStatus: 'ACCEPTED', otherUserId: request.from_user_id, otherUsername: request.other_user?.username ?? undefined, myUsername: myProfile?.username ?? undefined }); toast.success(t('requestDetail.accepted')); } catch { toast.error(t('trading.error')); } }}
-                        disabled={isUpdating} className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[12px] font-medium transition-all duration-150 active:scale-95 disabled:opacity-50 btn-themed">
+                        disabled={isUpdating} className="flex min-h-11 items-center gap-1 px-3 rounded-xl text-[12px] font-medium transition-all duration-150 active:scale-95 disabled:opacity-50 btn-themed">
                         <Check className="h-3.5 w-3.5" />{t('trade.accept')}
                       </button>
                       <button onClick={() => setConfirmDialog({ open: true, type: 'reject', requestId: request.id, otherUserId: request.from_user_id, otherUsername: request.other_user?.username ?? undefined })}
-                        disabled={isUpdating} className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[12px] font-medium transition-all duration-150 active:scale-95 disabled:opacity-50"
+                        disabled={isUpdating} className="flex min-h-11 items-center gap-1 px-3 rounded-xl text-[12px] font-medium transition-all duration-150 active:scale-95 disabled:opacity-50"
                         style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-secondary)' }}>
                         <X className="h-3.5 w-3.5" />{t('trade.reject')}
                       </button>
@@ -239,6 +239,15 @@ const Trading = () => {
           <div className="premium-panel p-6 flex flex-col items-center text-center">
             <p className="text-[14px]" style={{ color: 'var(--text-secondary)' }}>{t('trading.noActiveTrades')}</p>
             <p className="text-[12px] mt-2" style={{ color: 'var(--text-hint)' }}>{t('trading.findCollectors')}</p>
+            <div className="mt-4 grid w-full grid-cols-2 gap-2">
+              <button onClick={() => setFriendsSheetOpen(true)} className="min-h-11 rounded-xl text-xs font-semibold btn-themed">
+                {t('trading.exploreFriends')}
+              </button>
+              <button onClick={() => universityId ? setUniSheetOpen(true) : navigate('/profile')} className="min-h-11 rounded-xl text-xs font-semibold"
+                style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+                {t('trading.exploreUniversity')}
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-2">
@@ -249,7 +258,7 @@ const Trading = () => {
                   type="button"
                   aria-label={t('trading.removeActiveTrade')}
                   onClick={(e) => { e.stopPropagation(); setArchiveDialog({ open: true, requestId: trade.id }); }}
-                  className="absolute top-2 right-2 z-10 h-7 w-7 flex items-center justify-center rounded-full transition-all duration-150 active:scale-90 hover:opacity-100 opacity-70"
+                  className="absolute top-1 right-1 z-10 h-11 w-11 flex items-center justify-center rounded-full transition-all duration-150 active:scale-90 hover:opacity-100 opacity-70"
                   style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-secondary)' }}
                 >
                   <X className="h-3.5 w-3.5" />
@@ -278,8 +287,8 @@ const Trading = () => {
             <AlertDialogDescription style={{ color: 'var(--text-secondary)' }}>{confirmDialog?.type === 'reject' ? t('trading.confirmReject') : t('trading.confirmCancel')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>{t('trading.noGoBack')}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmAction} className="btn-themed">{confirmDialog?.type === 'reject' ? t('trading.yesReject') : t('trading.yesCancel')}</AlertDialogAction>
+            <AlertDialogCancel className="min-h-11" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>{t('trading.noGoBack')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmAction} className="min-h-11 btn-themed">{confirmDialog?.type === 'reject' ? t('trading.yesReject') : t('trading.yesCancel')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -291,8 +300,8 @@ const Trading = () => {
             <AlertDialogDescription style={{ color: 'var(--text-secondary)' }}>{t('trading.archiveMessage')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmArchive} className="btn-themed">{t('common.delete')}</AlertDialogAction>
+            <AlertDialogCancel className="min-h-11" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmArchive} className="min-h-11 btn-themed">{t('common.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

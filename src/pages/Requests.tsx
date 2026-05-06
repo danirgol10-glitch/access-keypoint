@@ -18,32 +18,32 @@ const Requests = () => {
 
   const handleRequestClick = (requestId: string) => navigate(`/request/${requestId}`);
   const handleAccept = async (requestId: string, request: typeof receivedRequests[0]) => {
-    try { await updateStatus({ requestId, newStatus: 'ACCEPTED', otherUserId: request.from_user_id, otherUsername: request.other_user?.username ?? undefined, myUsername: myProfile?.username ?? undefined }); toast.success('Request accepted'); }
-    catch { toast.error('Failed to accept request'); }
+    try { await updateStatus({ requestId, newStatus: 'ACCEPTED', otherUserId: request.from_user_id, otherUsername: request.other_user?.username ?? undefined, myUsername: myProfile?.username ?? undefined }); toast.success('Solicitud aceptada'); }
+    catch { toast.error('Error al aceptar la solicitud'); }
   };
   const handleReject = (requestId: string, request: typeof receivedRequests[0]) => { setConfirmDialog({ open: true, type: 'reject', requestId, otherUserId: request.from_user_id, otherUsername: request.other_user?.username ?? undefined }); };
   const handleCancel = (requestId: string, request: typeof sentRequests[0]) => { setConfirmDialog({ open: true, type: 'cancel', requestId, otherUserId: request.to_user_id, otherUsername: request.other_user?.username ?? undefined }); };
   const confirmAction = async () => {
     if (!confirmDialog) return;
-    try { const newStatus = confirmDialog.type === 'reject' ? 'REJECTED' : 'CANCELLED'; await updateStatus({ requestId: confirmDialog.requestId, newStatus, otherUserId: confirmDialog.otherUserId, otherUsername: confirmDialog.otherUsername, myUsername: myProfile?.username ?? undefined }); toast.success(confirmDialog.type === 'reject' ? 'Request rejected' : 'Request cancelled'); }
-    catch { toast.error('Failed to update request'); } finally { setConfirmDialog(null); }
+    try { const newStatus = confirmDialog.type === 'reject' ? 'REJECTED' : 'CANCELLED'; await updateStatus({ requestId: confirmDialog.requestId, newStatus, otherUserId: confirmDialog.otherUserId, otherUsername: confirmDialog.otherUsername, myUsername: myProfile?.username ?? undefined }); toast.success(confirmDialog.type === 'reject' ? 'Solicitud rechazada' : 'Solicitud cancelada'); }
+    catch { toast.error('Error al actualizar la solicitud'); } finally { setConfirmDialog(null); }
   };
 
   const requests = activeTab === 'received' ? receivedRequests : sentRequests;
 
   return (
-    <div className="relative px-4 pt-14 pb-28 max-w-md mx-auto">
+    <div className="relative px-4 safe-page max-w-md mx-auto">
       <div className="page-vignette" />
       <div className="relative z-20 space-y-4">
-        <div className="text-center mb-2"><h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>Requests</h1></div>
+        <div className="text-center mb-2"><h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>Solicitudes</h1></div>
         <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid var(--surface-input-border)' }}>
           <button onClick={() => setActiveTab('received')} className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors"
             style={activeTab === 'received' ? { background: `linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))`, color: '#FFFFFF' } : { background: 'var(--surface-card)', color: 'var(--text-secondary)' }}>
-            <Inbox className="h-4 w-4" />Received
+            <Inbox className="h-4 w-4" />Recibidas
           </button>
           <button onClick={() => setActiveTab('sent')} className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors"
             style={activeTab === 'sent' ? { background: `linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))`, color: '#FFFFFF' } : { background: 'var(--surface-card)', color: 'var(--text-secondary)' }}>
-            <Send className="h-4 w-4" />Sent
+            <Send className="h-4 w-4" />Enviadas
           </button>
         </div>
         {isLoading ? (
@@ -51,7 +51,7 @@ const Requests = () => {
         ) : requests.length === 0 ? (
           <div className="premium-panel p-8 flex flex-col items-center text-center">
             {activeTab === 'received' ? <Inbox className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} /> : <Send className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />}
-            <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>No requests {activeTab === 'received' ? 'received' : 'sent'} yet.</p>
+            <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>{activeTab === 'received' ? 'No hay solicitudes recibidas.' : 'No hay solicitudes enviadas.'}</p>
           </div>
         ) : (
           <div className="space-y-3">{requests.map((request) => <TradeRequestCard key={request.id} request={request} type={activeTab} onClick={() => handleRequestClick(request.id)} onAccept={activeTab === 'received' ? () => handleAccept(request.id, request) : undefined} onReject={activeTab === 'received' ? () => handleReject(request.id, request) : undefined} onCancel={activeTab === 'sent' ? () => handleCancel(request.id, request) : undefined} isUpdating={isUpdating} />)}</div>
@@ -61,12 +61,12 @@ const Requests = () => {
       <AlertDialog open={confirmDialog?.open ?? false} onOpenChange={(open) => !open && setConfirmDialog(null)}>
         <AlertDialogContent style={{ background: 'var(--dialog-bg)', border: '1px solid var(--surface-input-border)' }}>
           <AlertDialogHeader>
-            <AlertDialogTitle style={{ color: 'var(--text-primary)' }}>{confirmDialog?.type === 'reject' ? 'Reject Request?' : 'Cancel Request?'}</AlertDialogTitle>
-            <AlertDialogDescription style={{ color: 'var(--text-secondary)' }}>{confirmDialog?.type === 'reject' ? 'Are you sure you want to reject this trade request?' : 'Are you sure you want to cancel this trade request?'}</AlertDialogDescription>
+            <AlertDialogTitle style={{ color: 'var(--text-primary)' }}>{confirmDialog?.type === 'reject' ? '¿Rechazar solicitud?' : '¿Cancelar solicitud?'}</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-secondary)' }}>{confirmDialog?.type === 'reject' ? '¿Seguro que quieres rechazar esta solicitud de intercambio?' : '¿Seguro que quieres cancelar esta solicitud de intercambio?'}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>No, go back</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmAction} className="btn-themed">Yes, {confirmDialog?.type === 'reject' ? 'reject' : 'cancel'}</AlertDialogAction>
+            <AlertDialogCancel className="min-h-11" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>No, volver</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmAction} className="min-h-11 btn-themed">Sí, {confirmDialog?.type === 'reject' ? 'rechazar' : 'cancelar'}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

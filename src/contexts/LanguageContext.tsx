@@ -57,6 +57,11 @@ const translations: Record<string, string> = {
   'album.loading': 'Cargando álbum...',
   'album.failed': 'Error al cargar los stickers.',
   'album.noStickersFound': 'No se encontraron stickers.',
+  'album.loadingDetail': 'Estamos preparando tu colección.',
+  'album.failedDetail': 'Revisa tu conexión e intenta cargar el álbum de nuevo.',
+  'album.retry': 'Reintentar',
+  'album.clearFilters': 'Limpiar filtros',
+  'album.noStickersHint': 'Ajusta la búsqueda o limpia los filtros para ver más resultados.',
   'album.searchPlaceholder': 'Buscar por código o equipo...',
   'album.allScopes': 'Todos',
   'album.teams': 'Equipos',
@@ -112,6 +117,8 @@ const translations: Record<string, string> = {
   'trading.noActiveTrades': 'No hay intercambios activos aún.',
   'trading.receivedRequests': 'Solicitudes Recibidas',
   'trading.findCollectors': 'Encuentra coleccionistas a través de amigos o universidad.',
+  'trading.exploreFriends': 'Buscar en amigos',
+  'trading.exploreUniversity': 'Buscar en universidad',
   'trading.discoverySubtitle': 'Descubre coleccionistas e intercambia láminas',
   'friends.suggestedDesc': 'Personas de tu universidad',
   'trading.rejectRequest': '¿Rechazar Solicitud?',
@@ -154,12 +161,18 @@ const translations: Record<string, string> = {
 
   // Friends
   'friends.title': 'Amigos',
+  'friends.subtitle': 'Encuentra y gestiona tu comunidad',
+  'friends.requestsTitle': 'Solicitudes de amistad ({count})',
+  'friends.wantsToBeFriend': 'Quiere agregarte como amigo',
   'friends.myFriends': 'Mis Amigos',
   'friends.searchUsers': 'Buscar Usuarios',
   'friends.searchPlaceholder': 'Buscar por nombre de usuario',
   'friends.noResults': 'No se encontraron usuarios.',
+  'friends.noResultsHint': 'Revisa el usuario o intenta con otra búsqueda.',
+  'friends.clearSearch': 'Limpiar búsqueda',
   'friends.noFriendsYet': 'Aún no tienes amigos.',
   'friends.searchToConnect': 'Busca coleccionistas para conectar.',
+  'friends.startSearch': 'Buscar coleccionistas',
   'friends.suggested': 'SUGERIDOS',
   'friends.add': 'Agregar',
   'friends.alreadyFriends': 'Amigos',
@@ -238,6 +251,12 @@ const translations: Record<string, string> = {
   'auth.mustAcceptTerms': 'Debes aceptar los Términos y Condiciones y la Política de Privacidad.',
 
   // Chat
+  'chat.conversations': 'Conversaciones',
+  'chat.emptyTitle': 'No hay chats aún',
+  'chat.emptyDesc': 'Los chats se desbloquean al aceptar una solicitud de intercambio.',
+  'chat.findTrade': 'Buscar intercambio',
+  'chat.unknownUser': 'Desconocido',
+  'chat.noMessagesYet': 'Sin mensajes aún',
   'chat.sayHello': '¡Saluda! 👋',
   'chat.placeholder': 'Escribe un mensaje...',
 
@@ -251,7 +270,10 @@ const translations: Record<string, string> = {
   'requestDetail.openChat': 'Abrir Chat',
   'requestDetail.requestedStickers': 'Stickers Solicitados ({count})',
   'requestDetail.noStickers': 'No hay stickers en esta solicitud.',
+  'requestDetail.noStickersHint': 'Vuelve a intercambio para revisar otras solicitudes activas.',
   'requestDetail.notFound': 'Solicitud no encontrada.',
+  'requestDetail.notFoundHint': 'Puede haber sido eliminada o ya no estar disponible.',
+  'requestDetail.backToTrading': 'Volver a intercambio',
   'requestDetail.accepted': 'Solicitud aceptada',
   'requestDetail.rejected': 'Solicitud rechazada',
   'requestDetail.cancelled': 'Solicitud cancelada',
@@ -325,6 +347,9 @@ const translations: Record<string, string> = {
   'common.send': 'Enviar',
   'common.cancel': 'Cancelar',
   'common.delete': 'Eliminar',
+  'common.backHome': 'Volver al inicio',
+  'notFound.title': 'Pantalla no disponible',
+  'notFound.message': 'Esta sección no existe o ya no está disponible.',
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);

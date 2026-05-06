@@ -49,20 +49,24 @@ const RequestDetail = () => {
     <div className="flex min-h-full flex-col page-bg">
       <header className="sticky top-0 z-10 px-4 pb-3 safe-header header-themed">
         <div className="flex items-center gap-3 max-w-2xl mx-auto">
-          <button onClick={() => navigate(-1)} className="rounded-full h-9 w-9 flex items-center justify-center" style={{ background: 'var(--surface-input)' }}>
+          <button onClick={() => navigate(-1)} className="rounded-full h-11 w-11 flex items-center justify-center" style={{ background: 'var(--surface-input)' }}>
             <ArrowLeft className="h-5 w-5" style={{ color: 'var(--icon-default)' }} />
           </button>
           <h1 className="text-[16px] font-semibold" style={{ color: 'var(--text-primary)' }}>{t('requestDetail.title')}</h1>
         </div>
       </header>
 
-      <main className="flex-1 px-4 pt-4 pb-24 max-w-md mx-auto w-full space-y-4">
+      <main className="flex-1 px-4 pt-4 safe-detail-bottom max-w-md mx-auto w-full space-y-4">
         {isLoading ? (
           <><Skeleton className="h-24 w-full rounded-[20px]" style={{ background: 'var(--surface-skeleton)' }} /><Skeleton className="h-48 w-full rounded-[20px]" style={{ background: 'var(--surface-skeleton)' }} /></>
         ) : !request ? (
           <div className="premium-panel p-8 flex flex-col items-center text-center">
             <Package className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
-            <p style={{ color: 'var(--text-secondary)' }}>{t('requestDetail.notFound')}</p>
+            <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>{t('requestDetail.notFound')}</p>
+            <p className="text-[12px] mt-2" style={{ color: 'var(--text-hint)' }}>{t('requestDetail.notFoundHint')}</p>
+            <button onClick={() => navigate('/trading')} className="mt-4 min-h-11 w-full rounded-xl text-sm font-semibold btn-themed">
+              {t('requestDetail.backToTrading')}
+            </button>
           </div>
         ) : (
           <>
@@ -92,13 +96,13 @@ const RequestDetail = () => {
               <div className="premium-panel p-4 space-y-3">
                 {isReceiver && (
                   <div className="flex gap-3">
-                    <button onClick={handleAccept} disabled={isUpdating} className="flex-1 h-10 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 btn-themed"><Check className="h-4 w-4" />{t('requestDetail.accept')}</button>
-                    <button onClick={() => setConfirmDialog({ open: true, type: 'reject' })} disabled={isUpdating} className="flex-1 h-10 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
+                    <button onClick={handleAccept} disabled={isUpdating} className="flex-1 h-11 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 btn-themed"><Check className="h-4 w-4" />{t('requestDetail.accept')}</button>
+                    <button onClick={() => setConfirmDialog({ open: true, type: 'reject' })} disabled={isUpdating} className="flex-1 h-11 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
                       style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}><X className="h-4 w-4" />{t('requestDetail.reject')}</button>
                   </div>
                 )}
                 {isSender && (
-                  <button onClick={() => setConfirmDialog({ open: true, type: 'cancel' })} disabled={isUpdating} className="w-full h-10 rounded-xl text-sm font-medium flex items-center justify-center transition-all active:scale-[0.98] disabled:opacity-50"
+                  <button onClick={() => setConfirmDialog({ open: true, type: 'cancel' })} disabled={isUpdating} className="w-full h-11 rounded-xl text-sm font-medium flex items-center justify-center transition-all active:scale-[0.98] disabled:opacity-50"
                     style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>{t('requestDetail.cancelRequest')}</button>
                 )}
               </div>
@@ -125,7 +129,11 @@ const RequestDetail = () => {
               ) : (
                 <div className="premium-panel p-8 flex flex-col items-center text-center">
                   <Package className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
-                  <p style={{ color: 'var(--text-secondary)' }}>{t('requestDetail.noStickers')}</p>
+                  <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>{t('requestDetail.noStickers')}</p>
+                  <p className="text-[12px] mt-2" style={{ color: 'var(--text-hint)' }}>{t('requestDetail.noStickersHint')}</p>
+                  <button onClick={() => navigate('/trading')} className="mt-4 min-h-11 w-full rounded-xl text-sm font-semibold btn-themed">
+                    {t('requestDetail.backToTrading')}
+                  </button>
                 </div>
               )}
             </div>
@@ -140,8 +148,8 @@ const RequestDetail = () => {
             <AlertDialogDescription style={{ color: 'var(--text-secondary)' }}>{t('requestDetail.confirmSure')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>{t('trading.noGoBack')}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmAction} className="btn-themed">{confirmDialog?.type === 'reject' ? t('requestDetail.yesReject') : t('requestDetail.yesCancel')}</AlertDialogAction>
+            <AlertDialogCancel className="min-h-11" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>{t('trading.noGoBack')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmAction} className="min-h-11 btn-themed">{confirmDialog?.type === 'reject' ? t('requestDetail.yesReject') : t('requestDetail.yesCancel')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

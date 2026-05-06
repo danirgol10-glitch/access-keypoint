@@ -41,7 +41,7 @@ const Auth = () => {
   if (loading) return <div className="app-screen flex items-center justify-center page-bg"><div className="animate-pulse" style={{ color: 'var(--text-secondary)' }}>{t('auth.loading')}</div></div>;
 
   return (
-    <div className="app-screen flex items-center justify-center page-bg p-4">
+    <div className="app-screen flex items-center justify-center page-bg safe-auth-screen">
       <div className="w-full max-w-md premium-panel premium-panel-gold p-6 space-y-6">
         <div className="text-center space-y-1">
           <h1 className="text-[22px] font-bold" style={{ color: 'var(--text-primary)' }}>{isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}</h1>

@@ -28,10 +28,10 @@ export function QuickDuplicateOnboarding({ open, onStart, onSkip }: QuickDuplica
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex-col gap-2 sm:flex-col">
-          <Button onClick={onStart} className="w-full">
+          <Button onClick={onStart} className="min-h-11 w-full">
             {t('onboarding.markNow')}
           </Button>
-          <Button variant="ghost" onClick={onSkip} className="w-full">
+          <Button variant="ghost" onClick={onSkip} className="min-h-11 w-full">
             {t('onboarding.skip')}
           </Button>
         </DialogFooter>

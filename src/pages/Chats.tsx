@@ -9,7 +9,7 @@ const Chats = () => {
   const { data: conversations = [], isLoading } = useConversations();
 
   return (
-    <div className="relative px-4 pt-14 pb-28 max-w-md mx-auto">
+    <div className="relative px-4 safe-page max-w-md mx-auto">
       <div className="page-vignette" />
       <div className="relative z-20 space-y-4">
         <div className="text-center mb-2">
@@ -22,6 +22,9 @@ const Chats = () => {
             <MessageCircle className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
             <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>No hay chats aún</p>
             <p className="text-[12px] mt-1" style={{ color: 'var(--text-hint)' }}>Los chats se desbloquean al aceptar una solicitud de intercambio.</p>
+            <button onClick={() => navigate('/trading')} className="mt-4 min-h-11 px-4 rounded-xl text-sm font-semibold btn-themed">
+              Buscar intercambio
+            </button>
           </div>
         ) : (
           <div className="space-y-2">

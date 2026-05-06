@@ -25,7 +25,7 @@ const Home = () => {
   const handleCelebrationFinished = useCallback(() => setCelebrating(false), []);
 
   return (
-    <div className="relative px-4 pt-14 pb-28 space-y-4 max-w-md mx-auto">
+    <div className="relative px-4 safe-page space-y-4 max-w-md mx-auto">
       <div className="page-vignette" />
 
       <div className="relative z-20 w-full flex items-center justify-between">

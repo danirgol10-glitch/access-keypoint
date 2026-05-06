@@ -64,7 +64,7 @@ export function BlockUserMenu({ userId, username }: BlockUserMenuProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="More options"><MoreVertical className="h-5 w-5" /></Button>
+          <Button variant="ghost" size="icon" className="h-11 w-11" aria-label="Más opciones"><MoreVertical className="h-5 w-5" /></Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setReportOpen(true)}>
@@ -90,8 +90,8 @@ export function BlockUserMenu({ userId, username }: BlockUserMenuProps) {
             <AlertDialogDescription>{t('block.confirmDesc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('block.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleBlock} disabled={isBlocking}>{t('block.confirm')}</AlertDialogAction>
+            <AlertDialogCancel className="min-h-11">{t('block.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBlock} disabled={isBlocking} className="min-h-11">{t('block.confirm')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -130,8 +130,8 @@ export function BlockUserMenu({ userId, username }: BlockUserMenuProps) {
             />
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setReportOpen(false)}>{t('report.cancel')}</Button>
-            <Button onClick={handleReport} disabled={!selectedReason || isReporting}>{t('report.submit')}</Button>
+            <Button variant="outline" className="min-h-11" onClick={() => setReportOpen(false)}>{t('report.cancel')}</Button>
+            <Button className="min-h-11" onClick={handleReport} disabled={!selectedReason || isReporting}>{t('report.submit')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

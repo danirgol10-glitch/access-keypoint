@@ -74,7 +74,7 @@ const Profile = () => {
 
 
   return (
-    <div className="relative px-4 pt-14 pb-28 max-w-md mx-auto">
+    <div className="relative px-4 safe-page max-w-md mx-auto">
       <div className="page-vignette" />
       <div className="relative z-20 space-y-6">
         <div className="text-center mb-2">
@@ -165,7 +165,7 @@ const Profile = () => {
           </button>
 
           <button onClick={() => { setShowDeleteDialog(true); setDeleteInput(''); setShowDeleteConfirm(false); }}
-            className="w-full h-10 flex items-center justify-center gap-2 rounded-xl text-xs font-medium transition-all duration-150 active:scale-[0.98]"
+            className="w-full h-11 flex items-center justify-center gap-2 rounded-xl text-xs font-medium transition-all duration-150 active:scale-[0.98]"
             style={{ background: 'transparent', border: '1px solid rgba(239,68,68,0.2)', color: 'hsl(0, 70%, 55%)' }}>
             <Trash2 className="w-3.5 h-3.5" />
             {t('profile.deleteAccount')}
@@ -183,11 +183,11 @@ const Profile = () => {
                 <DialogDescription style={{ color: 'var(--text-muted)' }}>{t('profile.deleteConfirmMessage')}</DialogDescription>
               </DialogHeader>
               <DialogFooter className="gap-2 sm:gap-0">
-                <Button variant="outline" onClick={() => setShowDeleteDialog(false)}
+                <Button variant="outline" className="min-h-11" onClick={() => setShowDeleteDialog(false)}
                   style={{ borderColor: 'var(--surface-card-border)', color: 'var(--text-primary)' }}>
                   {t('profile.cancel')}
                 </Button>
-                <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+                <Button variant="destructive" className="min-h-11" onClick={() => setShowDeleteConfirm(true)}>
                   {t('profile.deleteConfirmButton')}
                 </Button>
               </DialogFooter>
@@ -208,11 +208,12 @@ const Profile = () => {
                 style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
               />
               <DialogFooter className="gap-2 sm:gap-0">
-                <Button variant="outline" onClick={() => setShowDeleteDialog(false)} disabled={isDeleting}
+                <Button variant="outline" className="min-h-11" onClick={() => setShowDeleteDialog(false)} disabled={isDeleting}
                   style={{ borderColor: 'var(--surface-card-border)', color: 'var(--text-primary)' }}>
                   {t('profile.cancel')}
                 </Button>
                 <Button variant="destructive"
+                  className="min-h-11"
                   disabled={deleteInput !== 'ELIMINAR' || isDeleting}
                   onClick={handleDeleteAccount}>
                   {isDeleting ? t('profile.deleting') : t('profile.deleteConfirmButton')}

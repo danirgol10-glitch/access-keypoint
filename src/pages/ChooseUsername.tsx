@@ -45,11 +45,11 @@ const ChooseUsername = () => {
   };
 
   return (
-    <div className="app-screen flex items-center justify-center page-bg p-4">
+    <div className="app-screen flex items-center justify-center page-bg safe-auth-screen">
       <div className="w-full max-w-md premium-panel premium-panel-gold p-6 space-y-6">
         <div className="relative text-center space-y-1">
           <button type="button" onClick={async () => { await signOut(); navigate('/auth', { replace: true }); }}
-            className="absolute left-0 top-0 flex items-center gap-1 text-xs transition-colors hover:opacity-80" style={{ color: 'var(--text-secondary)' }}>
+            className="absolute left-0 top-0 flex min-h-11 items-center gap-1 text-xs transition-colors hover:opacity-80" style={{ color: 'var(--text-secondary)' }}>
             <ArrowLeft className="h-3.5 w-3.5" />{t('setup.back')}
           </button>
           <h1 className="text-[22px] font-bold" style={{ color: 'var(--text-primary)' }}>{t('setup.title')}</h1>

@@ -60,6 +60,14 @@ const Album = () => {
   const teamsForGroup = useMemo(() => { if (selectedGroup === 'all') return []; return teamsByGroup(selectedGroup); }, [selectedGroup, teamsByGroup]);
   const handleGroupChange = (value: string) => { setSelectedGroup(value); setSelectedTeam('all'); };
   const handleScopeChange = (value: string) => { setSelectedScope(value as ScopeFilter); setSelectedGroup('all'); setSelectedTeam('all'); };
+  const hasActiveFilters = Boolean(searchQuery) || selectedScope !== 'all' || selectedGroup !== 'all' || selectedTeam !== 'all' || selectedStatus !== 'all';
+  const clearFilters = () => {
+    setSearchQuery('');
+    setSelectedScope('all');
+    setSelectedGroup('all');
+    setSelectedTeam('all');
+    setSelectedStatus('all');
+  };
 
   const filteredStickers = useMemo(() => {
     if (!stickers) return [];
@@ -78,20 +86,35 @@ const Album = () => {
 
   const quickDuplicateCount = useMemo(() => Object.values(userStickers).filter((s) => s.status === 'DUPLICATE').length, [userStickers]);
 
-  if (isLoading) return <div className="min-h-page-state flex items-center justify-center p-6"><p className="animate-pulse" style={{ color: 'var(--text-secondary)' }}>{t('album.loading')}</p></div>;
-  if (error) return <div className="min-h-page-state flex items-center justify-center p-6"><p className="text-destructive">{t('album.failed')}</p></div>;
+  if (isLoading) return (
+    <div className="min-h-page-state flex items-center justify-center page-bg p-6">
+      <div className="premium-panel p-8 flex flex-col items-center text-center max-w-sm">
+        <p className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>{t('album.loading')}</p>
+        <p className="text-[12px] mt-2" style={{ color: 'var(--text-hint)' }}>{t('album.loadingDetail')}</p>
+      </div>
+    </div>
+  );
+  if (error) return (
+    <div className="min-h-page-state flex items-center justify-center page-bg p-6">
+      <div className="premium-panel p-8 flex flex-col items-center text-center max-w-sm">
+        <p className="text-[15px] font-semibold text-destructive">{t('album.failed')}</p>
+        <p className="text-[12px] mt-2" style={{ color: 'var(--text-hint)' }}>{t('album.failedDetail')}</p>
+        <Button onClick={() => window.location.reload()} className="mt-4 min-h-11 w-full">{t('album.retry')}</Button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="relative px-4 pt-14 pb-28 space-y-4 max-w-md mx-auto">
+    <div className="relative px-4 safe-page space-y-4 max-w-md mx-auto">
       <div className="page-vignette" />
       <QuickDuplicateOnboarding open={showOnboarding} onStart={handleStartQuickMode} onSkip={handleSkip} />
 
       {quickMode && (
-        <div className="sticky top-0 z-30 flex items-center justify-between py-2 px-4 -mx-4 -mt-4 mb-0 rounded-b-2xl header-themed">
+        <div className="sticky top-[var(--safe-area-inset-top)] z-30 flex items-center justify-between py-2 px-4 -mx-4 -mt-4 mb-0 rounded-b-2xl header-themed">
           <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
             {t('album.duplicatesSelected', { count: quickDuplicateCount, s: quickDuplicateCount !== 1 ? 's' : '' })}
           </span>
-          <Button size="sm" onClick={handleDoneQuickMode}>{t('album.done')}</Button>
+          <Button size="sm" className="min-h-11" onClick={handleDoneQuickMode}>{t('album.done')}</Button>
         </div>
       )}
 
@@ -112,8 +135,8 @@ const Album = () => {
 
           <div className="flex gap-2 flex-wrap">
             <Select value={selectedScope} onValueChange={handleScopeChange}>
-              <SelectTrigger className="flex-1 min-w-[100px] h-10 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
-                <SelectValue placeholder="Scope" />
+              <SelectTrigger className="flex-1 min-w-[100px] min-h-11 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+                <SelectValue placeholder={t('album.allScopes')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('album.allScopes')}</SelectItem>
@@ -124,8 +147,8 @@ const Album = () => {
 
             {selectedScope !== 'FWC' && groups.length > 0 && (
               <Select value={selectedGroup} onValueChange={handleGroupChange}>
-                <SelectTrigger className="flex-1 min-w-[100px] h-10 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
-                  <SelectValue placeholder="Group" />
+                <SelectTrigger className="flex-1 min-w-[100px] min-h-11 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+                  <SelectValue placeholder={t('album.allGroups')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t('album.allGroups')}</SelectItem>
@@ -136,8 +159,8 @@ const Album = () => {
 
             {selectedGroup !== 'all' && teamsForGroup.length > 0 && (
               <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-                <SelectTrigger className="flex-1 min-w-[120px] h-10 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
-                  <SelectValue placeholder="Team" />
+                <SelectTrigger className="flex-1 min-w-[120px] min-h-11 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+                  <SelectValue placeholder={t('album.allTeams')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">{t('album.allTeams')}</SelectItem>
@@ -147,8 +170,8 @@ const Album = () => {
             )}
 
             <Select value={selectedStatus} onValueChange={(v) => setSelectedStatus(v as StatusFilter)}>
-              <SelectTrigger className="flex-1 min-w-[100px] h-10 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
-                <SelectValue placeholder="Status" />
+              <SelectTrigger className="flex-1 min-w-[100px] min-h-11 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+                <SelectValue placeholder={t('album.allStatus')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('album.allStatus')}</SelectItem>
@@ -162,8 +185,12 @@ const Album = () => {
       )}
 
       {filteredStickers.length === 0 ? (
-        <div className="relative z-20 flex-1 flex items-center justify-center py-12">
-          <p style={{ color: 'var(--text-secondary)' }}>{t('album.noStickersFound')}</p>
+        <div className="relative z-20 premium-panel p-8 flex flex-col items-center justify-center text-center">
+          <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>{t('album.noStickersFound')}</p>
+          <p className="text-[12px] mt-2" style={{ color: 'var(--text-hint)' }}>{t('album.noStickersHint')}</p>
+          {hasActiveFilters && (
+            <Button onClick={clearFilters} className="mt-4 min-h-11 w-full">{t('album.clearFilters')}</Button>
+          )}
         </div>
       ) : (
         <div className="relative z-20 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">

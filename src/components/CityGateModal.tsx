@@ -40,10 +40,10 @@ const CityGateModal = () => {
         </DialogHeader>
         <div className="space-y-4 pt-2">
           <Select value={city} onValueChange={setCity}>
-            <SelectTrigger><SelectValue placeholder={t('cityGate.placeholder')} /></SelectTrigger>
+            <SelectTrigger className="min-h-11"><SelectValue placeholder={t('cityGate.placeholder')} /></SelectTrigger>
             <SelectContent>{COLOMBIAN_CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
           </Select>
-          <Button className="w-full" disabled={!city || saving} onClick={handleSave}>
+          <Button className="min-h-11 w-full" disabled={!city || saving} onClick={handleSave}>
             {saving ? t('cityGate.saving') : t('cityGate.continue')}
           </Button>
         </div>

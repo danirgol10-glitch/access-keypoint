@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Users, Search, UserPlus, User, ChevronRight, Sparkles, GraduationCap, Activity, Check, X, Bell } from 'lucide-react';
@@ -58,7 +58,7 @@ function UserRow({ username, detail, action, onAdd, isPending, chip, addLabel, p
         </span>
       )}
       {action === 'add' && (
-        <button onClick={onAdd} disabled={isPending} className="flex items-center gap-1 text-[12px] font-semibold px-3 py-1.5 rounded-xl flex-shrink-0 transition-all duration-150 active:scale-95 disabled:opacity-50 relative overflow-hidden btn-themed">
+        <button onClick={onAdd} disabled={isPending} className="flex min-h-11 items-center gap-1 text-[12px] font-semibold px-3 rounded-xl flex-shrink-0 transition-all duration-150 active:scale-95 disabled:opacity-50 relative overflow-hidden btn-themed">
           <span className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'var(--panel-gold-line)' }} />
           <UserPlus className="w-3.5 h-3.5" />
           {addLabel}
@@ -84,6 +84,7 @@ const Friends = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const { friendStats, isLoading: statsLoading } = useFriendAlbumStats();
   const sendRequest = useSendFriendRequest();
   const { results: searchResults, isSearching } = useUserSearch(searchQuery);
@@ -112,33 +113,33 @@ const Friends = () => {
   const labels = { add: t('friends.add'), pending: t('trading.pending'), friends: t('friends.alreadyFriends') };
 
   return (
-    <div className="min-h-full pb-28 page-bg">
+    <div className="min-h-full page-bg">
       <div className="pointer-events-none fixed top-0 left-0 right-0 h-32 z-10" style={{ background: `linear-gradient(to bottom, var(--overlay-gradient-start), transparent)` }} />
-      <div className="relative z-20 px-4 pt-14 space-y-4 max-w-md mx-auto">
+      <div className="relative z-20 px-4 safe-page space-y-4 max-w-md mx-auto">
         <div className="text-center mb-2">
           <h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>{t('friends.title')}</h1>
-          <p className="text-[13px] mt-1" style={{ color: 'var(--text-secondary)' }}>Find and manage your community</p>
+          <p className="text-[13px] mt-1" style={{ color: 'var(--text-secondary)' }}>{t('friends.subtitle')}</p>
         </div>
 
         {!incomingLoading && incomingRequests.length > 0 && (
           <PremiumCard>
-            <SectionHeader icon={Bell} title={`Friend Requests (${incomingRequests.length})`} />
+            <SectionHeader icon={Bell} title={t('friends.requestsTitle', { count: incomingRequests.length })} />
             <div className="space-y-2 mt-3">
               {incomingRequests.map((request) => (
                 <div key={request.id} className="flex items-center gap-3 p-3 rounded-[14px]"
                   style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
                   <AvatarCircle />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-semibold truncate" style={{ color: 'var(--text-primary)' }}>@{request.requester?.username ?? 'unknown'}</p>
-                    <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>Wants to be your friend</p>
+                    <p className="text-[14px] font-semibold truncate" style={{ color: 'var(--text-primary)' }}>@{request.requester?.username ?? t('common.unknown')}</p>
+                    <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>{t('friends.wantsToBeFriend')}</p>
                   </div>
                   <div className="flex gap-1.5 flex-shrink-0">
                     <button onClick={() => handleRespondToRequest(request.id, true)} disabled={respondToRequest.isPending}
-                      className="h-8 w-8 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50 btn-themed">
+                      className="h-11 w-11 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50 btn-themed">
                       <Check className="w-4 h-4" style={{ color: '#FFFFFF' }} />
                     </button>
                     <button onClick={() => handleRespondToRequest(request.id, false)} disabled={respondToRequest.isPending}
-                      className="h-8 w-8 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
+                      className="h-11 w-11 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
                       style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)' }}>
                       <X className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
                     </button>
@@ -153,14 +154,23 @@ const Friends = () => {
           <SectionHeader icon={Search} title={t('friends.searchUsers')} />
           <div className="relative mt-3">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
-            <input type="text" placeholder={t('friends.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+            <input ref={searchInputRef} type="text" placeholder={t('friends.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 text-base rounded-2xl outline-none transition-all duration-200"
               style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
               onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; e.currentTarget.style.boxShadow = `0 0 12px var(--input-focus-glow)`; }}
               onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--surface-input-border)'; e.currentTarget.style.boxShadow = 'none'; }} />
           </div>
           {isSearching && <div className="space-y-2 mt-3"><Skeleton className="h-14 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} /><Skeleton className="h-14 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} /></div>}
-          {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && <p className="text-[13px] text-center py-4" style={{ color: 'var(--text-secondary)' }}>{t('friends.noResults')}</p>}
+          {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
+            <div className="flex flex-col items-center py-5 text-center">
+              <p className="text-[13px] font-medium" style={{ color: 'var(--text-secondary)' }}>{t('friends.noResults')}</p>
+              <p className="text-[12px] mt-1" style={{ color: 'var(--text-hint)' }}>{t('friends.noResultsHint')}</p>
+              <button onClick={() => setSearchQuery('')} className="mt-4 min-h-11 px-4 rounded-xl text-sm font-semibold"
+                style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+                {t('friends.clearSearch')}
+              </button>
+            </div>
+          )}
           {searchResults.length > 0 && (
             <div className="space-y-2 mt-3">
               {searchResults.map((u) => (
@@ -187,6 +197,9 @@ const Friends = () => {
               <Users className="w-8 h-8" style={{ color: 'var(--icon-faint)' }} />
               <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>{t('friends.noFriendsYet')}</p>
               <p className="text-[12px]" style={{ color: 'var(--text-hint)' }}>{t('friends.searchToConnect')}</p>
+              <button onClick={() => searchInputRef.current?.focus()} className="mt-2 min-h-11 px-4 rounded-xl text-sm font-semibold btn-themed">
+                {t('friends.startSearch')}
+              </button>
             </div>
           ) : (
             <div className="space-y-2 mt-3">

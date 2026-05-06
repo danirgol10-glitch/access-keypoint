@@ -164,15 +164,15 @@ const LegalModal = ({ type, onClose }: LegalModalProps) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col" style={{ background: '#FFFFFF' }}>
-      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-white">
+      <div className="flex items-center justify-between px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] border-b border-gray-200 bg-white">
         <h2 className="text-[17px] font-bold text-gray-900">
           {type === 'terms' ? 'Términos y Condiciones' : 'Política de Privacidad'}
         </h2>
-        <button onClick={onClose} className="p-2 -mr-2 rounded-full transition-colors text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+        <button onClick={onClose} className="-mr-2 flex h-11 w-11 items-center justify-center rounded-full transition-colors text-gray-500 hover:text-gray-800 hover:bg-gray-100">
           <X className="w-5 h-5" />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto px-5 md:px-6 py-6 bg-white">
+      <div className="flex-1 overflow-y-auto px-5 md:px-6 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-white">
         <pre className="whitespace-pre-wrap text-[14px] leading-[1.7] font-sans text-gray-800">
           {content}
         </pre>

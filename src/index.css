@@ -518,6 +518,23 @@
     padding-bottom: var(--safe-area-inset-bottom);
   }
 
+  .safe-page {
+    padding-top: calc(3.5rem + var(--safe-area-inset-top));
+    padding-bottom: calc(7rem + var(--safe-area-inset-bottom));
+  }
+
+  .safe-auth-screen {
+    padding: calc(1rem + var(--safe-area-inset-top)) 1rem calc(1rem + var(--safe-area-inset-bottom));
+  }
+
+  .safe-detail-bottom {
+    padding-bottom: calc(6rem + var(--safe-area-inset-bottom));
+  }
+
+  .safe-fixed-action {
+    padding-bottom: calc(0.75rem + var(--safe-area-inset-bottom));
+  }
+
   .bottom-app-nav {
     bottom: var(--app-bottom-nav-total-height);
   }
