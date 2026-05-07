@@ -62,8 +62,9 @@ Preferred page root pattern:
   <div className="page-vignette" />
   ...
 </div>
+```
 
-##Completed phases merged into main
+## Completed phases merged into main
 Fase 1A: Premium global visual tokens.
 Fase 1B: Premium UI primitives.
 Fase 1C: Premium app shell and bottom navigation.
