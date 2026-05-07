@@ -1,7 +1,15 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type ElementType, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Activity, Bell, Check, ChevronRight, GraduationCap, Search, Sparkles, User, UserPlus, Users, X } from 'lucide-react';
+import { AppCard } from '@/components/ui/app-card';
+import { AvatarCircle } from '@/components/ui/avatar-circle';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { Input } from '@/components/ui/input';
+import { ListRow } from '@/components/ui/list-row';
+import { PageHeader } from '@/components/ui/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Search, UserPlus, User, ChevronRight, Sparkles, GraduationCap, Activity, Check, X, Bell } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFriendAlbumStats } from '@/hooks/useFriendAlbumStats';
 import { useSendFriendRequest, useIncomingRequests, useRespondToRequest } from '@/hooks/useFriendships';
@@ -9,74 +17,74 @@ import { useSuggestedFriends } from '@/hooks/useSuggestedFriends';
 import { useUserSearch } from '@/hooks/useUserSearch';
 import { toast } from '@/hooks/use-toast';
 
-function PremiumCard({ children }: { children: React.ReactNode }) {
+function SectionHeader({ icon: Icon, title, action }: { icon: ElementType; title: ReactNode; action?: ReactNode }) {
   return (
-    <div className="relative rounded-[20px] p-4 overflow-hidden"
-      style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
-      <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'var(--panel-gold-line)' }} />
-      {children}
-    </div>
-  );
-}
-
-function SectionHeader({ icon: Icon, title }: { icon: React.ElementType; title: string }) {
-  return (
-    <div className="flex items-center gap-2 mb-1">
-      <Icon className="w-[18px] h-[18px]" style={{ color: 'var(--icon-muted)' }} />
-      <span className="text-[16px] font-semibold" style={{ color: 'var(--text-primary)' }}>{title}</span>
-    </div>
-  );
-}
-
-function AvatarCircle() {
-  return (
-    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 avatar-themed">
-      <div className="w-full h-full rounded-full flex items-center justify-center avatar-themed-inner">
-        <User className="w-4 h-4" style={{ color: 'var(--icon-default)' }} />
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-[var(--surface-border)] bg-[var(--surface-input)] text-[var(--text-secondary)]">
+          <Icon className="size-4" />
+        </span>
+        <h2 className="truncate text-base font-semibold text-[var(--text-primary)]">{title}</h2>
       </div>
+      {action && <div className="shrink-0">{action}</div>}
+    </div>
+  );
+}
+
+function SummaryMetric({ icon: Icon, label, value }: { icon: ElementType; label: ReactNode; value: ReactNode }) {
+  return (
+    <div className="rounded-[var(--radius-lg)] border border-[var(--surface-border)] bg-[var(--surface-input)] p-3">
+      <div className="mb-2 flex items-center justify-between gap-2 text-[var(--text-secondary)]">
+        <Icon className="size-4" />
+        <span className="truncate text-[10px] font-semibold uppercase tracking-[0.12em]">{label}</span>
+      </div>
+      <p className="text-2xl font-bold leading-none text-[var(--text-primary)]">{value}</p>
     </div>
   );
 }
 
 function UserRow({ username, detail, action, onAdd, isPending, chip, addLabel, pendingLabel, friendsLabel }: {
   username: string | null; detail: string; action: 'add' | 'pending' | 'friends'; onAdd: () => void; isPending: boolean;
-  chip?: { label: string; icon: React.ElementType }; addLabel: string; pendingLabel: string; friendsLabel: string;
+  chip?: { label: string; icon: ElementType }; addLabel: string; pendingLabel: string; friendsLabel: string;
 }) {
-  return (
-    <div className="flex items-center gap-3 p-3 rounded-[14px] transition-all duration-150 active:scale-[0.98] active:opacity-80"
-      style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
-      <AvatarCircle />
-      <div className="flex-1 min-w-0">
-        <p className="text-[14px] font-semibold truncate" style={{ color: 'var(--text-primary)' }}>@{username}</p>
-        <p className="text-[12px] truncate" style={{ color: 'var(--text-muted)' }}>{detail}</p>
-      </div>
+  const initials = username?.slice(0, 2).toUpperCase();
+  const title = username ? `@${username}` : '@—';
+
+  const trailing = (
+    <div className="flex shrink-0 items-center gap-2">
       {chip && (
-        <span className="hidden sm:flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full flex-shrink-0"
-          style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-secondary)' }}>
-          <chip.icon className="w-3 h-3" />
+        <Badge variant="secondary" className="hidden items-center gap-1 whitespace-nowrap px-2 text-[10px] sm:flex">
+          <chip.icon className="size-3" />
           {chip.label}
-        </span>
+        </Badge>
       )}
       {action === 'add' && (
-        <button onClick={onAdd} disabled={isPending} className="flex min-h-11 items-center gap-1 text-[12px] font-semibold px-3 rounded-xl flex-shrink-0 transition-all duration-150 active:scale-95 disabled:opacity-50 relative overflow-hidden btn-themed">
-          <span className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: 'var(--panel-gold-line)' }} />
-          <UserPlus className="w-3.5 h-3.5" />
+        <Button type="button" onClick={onAdd} disabled={isPending} className="shrink-0 px-3 text-xs">
+          <UserPlus className="size-3.5" />
           {addLabel}
-        </button>
+        </Button>
       )}
       {action === 'pending' && (
-        <span className="text-[12px] font-medium px-3 py-1.5 rounded-xl flex-shrink-0"
-          style={{ background: 'var(--surface-input)', border: '1px dashed var(--surface-input-border)', color: 'var(--text-secondary)' }}>
+        <Badge variant="secondary" className="shrink-0 border-dashed">
           {pendingLabel}
-        </span>
+        </Badge>
       )}
       {action === 'friends' && (
-        <span className="text-[12px] font-medium px-3 py-1.5 rounded-xl flex-shrink-0"
-          style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)', color: 'var(--text-secondary)' }}>
+        <Badge variant="outline" className="shrink-0">
           {friendsLabel}
-        </span>
+        </Badge>
       )}
     </div>
+  );
+
+  return (
+    <ListRow
+      leading={<AvatarCircle initials={initials} icon={<User />} size="sm" />}
+      title={title}
+      subtitle={detail}
+      trailing={trailing}
+      className="bg-[var(--surface-card)]"
+    />
   );
 }
 
@@ -113,135 +121,181 @@ const Friends = () => {
   const labels = { add: t('friends.add'), pending: t('trading.pending'), friends: t('friends.alreadyFriends') };
 
   return (
-    <div className="min-h-full page-bg">
-      <div className="pointer-events-none fixed top-0 left-0 right-0 h-32 z-10" style={{ background: `linear-gradient(to bottom, var(--overlay-gradient-start), transparent)` }} />
-      <div className="relative z-20 px-4 safe-page space-y-4 max-w-md mx-auto">
-        <div className="text-center mb-2">
-          <h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>{t('friends.title')}</h1>
-          <p className="text-[13px] mt-1" style={{ color: 'var(--text-secondary)' }}>{t('friends.subtitle')}</p>
+    <div className="relative mx-auto max-w-lg space-y-4 px-4 safe-page">
+      <div className="page-vignette" />
+
+      <PageHeader title={t('friends.title')} subtitle={t('friends.subtitle')} className="relative z-20 px-0 pb-0 pt-0" />
+
+      <AppCard variant="hero" className="relative z-20 space-y-4 p-5">
+        <div className="space-y-1">
+          <p className="text-sm font-semibold text-[var(--text-primary)]">{t('friends.subtitle')}</p>
+          <p className="text-xs leading-5 text-[var(--text-secondary)]">{t('friends.searchToConnect')}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <SummaryMetric icon={Users} label={t('friends.myFriends')} value={statsLoading ? '…' : friendStats.length} />
+          <SummaryMetric icon={Bell} label={t('trading.pending')} value={incomingLoading ? '…' : incomingRequests.length} />
+          <SummaryMetric icon={Sparkles} label={t('friends.suggested')} value={suggestionsLoading ? '…' : suggestions.length} />
+        </div>
+      </AppCard>
+
+      {!incomingLoading && incomingRequests.length > 0 && (
+        <AppCard className="relative z-20 space-y-3 p-4">
+          <SectionHeader icon={Bell} title={t('friends.requestsTitle', { count: incomingRequests.length })} />
+          <div className="space-y-2">
+            {incomingRequests.map((request) => (
+              <ListRow
+                key={request.id}
+                leading={<AvatarCircle initials={request.requester?.username?.slice(0, 2).toUpperCase()} icon={<User />} size="sm" />}
+                title={`@${request.requester?.username ?? t('common.unknown')}`}
+                subtitle={t('friends.wantsToBeFriend')}
+                trailing={
+                  <div className="flex shrink-0 gap-1.5">
+                    <Button
+                      type="button"
+                      size="icon"
+                      aria-label={t('trade.accept')}
+                      onClick={() => handleRespondToRequest(request.id, true)}
+                      disabled={respondToRequest.isPending}
+                    >
+                      <Check className="size-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      aria-label={t('trade.reject')}
+                      onClick={() => handleRespondToRequest(request.id, false)}
+                      disabled={respondToRequest.isPending}
+                    >
+                      <X className="size-4" />
+                    </Button>
+                  </div>
+                }
+                className="bg-[var(--surface-card)]"
+              />
+            ))}
+          </div>
+        </AppCard>
+      )}
+
+      <AppCard className="relative z-20 space-y-3 p-4">
+        <SectionHeader icon={Search} title={t('friends.searchUsers')} />
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[var(--text-muted)]" />
+          <Input
+            ref={searchInputRef}
+            type="text"
+            placeholder={t('friends.searchPlaceholder')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 pr-4"
+          />
         </div>
 
-        {!incomingLoading && incomingRequests.length > 0 && (
-          <PremiumCard>
-            <SectionHeader icon={Bell} title={t('friends.requestsTitle', { count: incomingRequests.length })} />
-            <div className="space-y-2 mt-3">
-              {incomingRequests.map((request) => (
-                <div key={request.id} className="flex items-center gap-3 p-3 rounded-[14px]"
-                  style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
-                  <AvatarCircle />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-semibold truncate" style={{ color: 'var(--text-primary)' }}>@{request.requester?.username ?? t('common.unknown')}</p>
-                    <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>{t('friends.wantsToBeFriend')}</p>
-                  </div>
-                  <div className="flex gap-1.5 flex-shrink-0">
-                    <button onClick={() => handleRespondToRequest(request.id, true)} disabled={respondToRequest.isPending}
-                      className="h-11 w-11 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50 btn-themed">
-                      <Check className="w-4 h-4" style={{ color: '#FFFFFF' }} />
-                    </button>
-                    <button onClick={() => handleRespondToRequest(request.id, false)} disabled={respondToRequest.isPending}
-                      className="h-11 w-11 rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
-                      style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)' }}>
-                      <X className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </PremiumCard>
+        {isSearching && (
+          <div className="space-y-2">
+            <Skeleton className="h-16 w-full rounded-[var(--radius-lg)] bg-[var(--surface-skeleton)]" />
+            <Skeleton className="h-16 w-full rounded-[var(--radius-lg)] bg-[var(--surface-skeleton)]" />
+          </div>
         )}
 
-        <PremiumCard>
-          <SectionHeader icon={Search} title={t('friends.searchUsers')} />
-          <div className="relative mt-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} />
-            <input ref={searchInputRef} type="text" placeholder={t('friends.searchPlaceholder')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-base rounded-2xl outline-none transition-all duration-200"
-              style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; e.currentTarget.style.boxShadow = `0 0 12px var(--input-focus-glow)`; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--surface-input-border)'; e.currentTarget.style.boxShadow = 'none'; }} />
-          </div>
-          {isSearching && <div className="space-y-2 mt-3"><Skeleton className="h-14 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} /><Skeleton className="h-14 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} /></div>}
-          {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
-            <div className="flex flex-col items-center py-5 text-center">
-              <p className="text-[13px] font-medium" style={{ color: 'var(--text-secondary)' }}>{t('friends.noResults')}</p>
-              <p className="text-[12px] mt-1" style={{ color: 'var(--text-hint)' }}>{t('friends.noResultsHint')}</p>
-              <button onClick={() => setSearchQuery('')} className="mt-4 min-h-11 px-4 rounded-xl text-sm font-semibold"
-                style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+        {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
+          <EmptyState
+            className="py-6"
+            icon={<Search />}
+            title={t('friends.noResults')}
+            description={t('friends.noResultsHint')}
+            cta={
+              <Button type="button" variant="secondary" onClick={() => setSearchQuery('')}>
                 {t('friends.clearSearch')}
-              </button>
-            </div>
-          )}
-          {searchResults.length > 0 && (
-            <div className="space-y-2 mt-3">
-              {searchResults.map((u) => (
-                <UserRow key={u.id} username={u.username} detail={[u.city, u.university_name].filter(Boolean).join(' · ') || '—'}
-                  action={u.isFriend ? 'friends' : u.isPending ? 'pending' : 'add'} onAdd={() => handleAddFriend(u.username!)}
-                  isPending={sendRequest.isPending} addLabel={labels.add} pendingLabel={labels.pending} friendsLabel={labels.friends} />
-              ))}
-            </div>
-          )}
-        </PremiumCard>
-
-        <PremiumCard>
-          <div className="flex items-center justify-between">
-            <SectionHeader icon={Users} title={t('friends.myFriends')} />
-            <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full"
-              style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-secondary)' }}>
-              {statsLoading ? '…' : friendStats.length}
-            </span>
-          </div>
-          {statsLoading ? (
-            <div className="space-y-2 mt-3"><Skeleton className="h-16 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} /><Skeleton className="h-16 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} /></div>
-          ) : friendStats.length === 0 ? (
-            <div className="flex flex-col items-center py-8 gap-2">
-              <Users className="w-8 h-8" style={{ color: 'var(--icon-faint)' }} />
-              <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>{t('friends.noFriendsYet')}</p>
-              <p className="text-[12px]" style={{ color: 'var(--text-hint)' }}>{t('friends.searchToConnect')}</p>
-              <button onClick={() => searchInputRef.current?.focus()} className="mt-2 min-h-11 px-4 rounded-xl text-sm font-semibold btn-themed">
-                {t('friends.startSearch')}
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-2 mt-3">
-              {friendStats.map((friend) => (
-                <button key={friend.friendId} onClick={() => navigate(`/friend-profile/${friend.friendId}`)}
-                  className="w-full flex items-center gap-3 p-3 rounded-[14px] text-left transition-all duration-150 active:scale-[0.98] active:opacity-80"
-                  style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
-                  <AvatarCircle />
-                  <div className="flex-1 min-w-0 space-y-1.5">
-                    <span className="text-[14px] font-semibold truncate block" style={{ color: 'var(--text-primary)' }}>@{friend.username}</span>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--surface-card-border)' }}>
-                        <div className="h-full rounded-full transition-all" style={{ width: `${friend.progressPercent}%`, background: `linear-gradient(90deg, var(--progress-bar-from), var(--progress-bar-to))` }} />
-                      </div>
-                      <span className="text-[11px] font-medium w-9 text-right" style={{ color: 'var(--text-secondary)' }}>{friend.progressPercent.toFixed(0)}%</span>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
-                </button>
-              ))}
-            </div>
-          )}
-        </PremiumCard>
-
-        {suggestions.length > 0 && (
-          <PremiumCard>
-            <SectionHeader icon={Sparkles} title={t('friends.suggested')} />
-            <p className="text-[12px] -mt-1 mb-3" style={{ color: 'var(--text-muted)' }}>{t('friends.suggestedDesc')}</p>
-            {suggestionsLoading ? (
-              <Skeleton className="h-14 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} />
-            ) : (
-              <div className="space-y-2">
-                {suggestions.map((u) => (
-                  <UserRow key={u.id} username={u.username} detail={[u.city, u.university_name].filter(Boolean).join(' · ') || '—'}
-                    action="add" onAdd={() => handleAddFriend(u.username!)} isPending={sendRequest.isPending}
-                    chip={getSuggestionChip(u)} addLabel={labels.add} pendingLabel={labels.pending} friendsLabel={labels.friends} />
-                ))}
-              </div>
-            )}
-          </PremiumCard>
+              </Button>
+            }
+          />
         )}
-      </div>
+
+        {searchResults.length > 0 && (
+          <div className="space-y-2">
+            {searchResults.map((u) => (
+              <UserRow key={u.id} username={u.username} detail={[u.city, u.university_name].filter(Boolean).join(' · ') || '—'}
+                action={u.isFriend ? 'friends' : u.isPending ? 'pending' : 'add'} onAdd={() => handleAddFriend(u.username!)}
+                isPending={sendRequest.isPending} addLabel={labels.add} pendingLabel={labels.pending} friendsLabel={labels.friends} />
+            ))}
+          </div>
+        )}
+      </AppCard>
+
+      <AppCard className="relative z-20 space-y-3 p-4">
+        <SectionHeader
+          icon={Users}
+          title={t('friends.myFriends')}
+          action={
+            <Badge variant="secondary" className="min-w-8 justify-center">
+              {statsLoading ? '…' : friendStats.length}
+            </Badge>
+          }
+        />
+        {statsLoading ? (
+          <div className="space-y-2">
+            <Skeleton className="h-20 w-full rounded-[var(--radius-lg)] bg-[var(--surface-skeleton)]" />
+            <Skeleton className="h-20 w-full rounded-[var(--radius-lg)] bg-[var(--surface-skeleton)]" />
+          </div>
+        ) : friendStats.length === 0 ? (
+          <EmptyState
+            className="py-8"
+            icon={<Users />}
+            title={t('friends.noFriendsYet')}
+            description={t('friends.searchToConnect')}
+            cta={
+              <Button type="button" onClick={() => searchInputRef.current?.focus()}>
+                {t('friends.startSearch')}
+              </Button>
+            }
+          />
+        ) : (
+          <div className="space-y-2">
+            {friendStats.map((friend) => (
+              <ListRow
+                key={friend.friendId}
+                interactive
+                onClick={() => navigate(`/friend-profile/${friend.friendId}`)}
+                leading={<AvatarCircle initials={friend.username?.slice(0, 2).toUpperCase()} icon={<User />} size="sm" />}
+                title={`@${friend.username}`}
+                subtitle={
+                  <div className="mt-1 flex items-center gap-2">
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[var(--surface-card-border)]">
+                      <div
+                        className="h-full rounded-full bg-[linear-gradient(90deg,var(--progress-bar-from),var(--progress-bar-to))] transition-all"
+                        style={{ width: `${friend.progressPercent}%` }}
+                      />
+                    </div>
+                    <span className="w-9 text-right text-[11px] font-medium text-[var(--text-secondary)]">{friend.progressPercent.toFixed(0)}%</span>
+                  </div>
+                }
+                trailing={<ChevronRight className="size-4 text-[var(--text-faint)]" />}
+                className="bg-[var(--surface-card)]"
+              />
+            ))}
+          </div>
+        )}
+      </AppCard>
+
+      {suggestions.length > 0 && (
+        <AppCard className="relative z-20 space-y-3 p-4">
+          <SectionHeader icon={Sparkles} title={t('friends.suggested')} />
+          <p className="text-xs leading-5 text-[var(--text-secondary)]">{t('friends.suggestedDesc')}</p>
+          {suggestionsLoading ? (
+            <Skeleton className="h-16 w-full rounded-[var(--radius-lg)] bg-[var(--surface-skeleton)]" />
+          ) : (
+            <div className="space-y-2">
+              {suggestions.map((u) => (
+                <UserRow key={u.id} username={u.username} detail={[u.city, u.university_name].filter(Boolean).join(' · ') || '—'}
+                  action="add" onAdd={() => handleAddFriend(u.username!)} isPending={sendRequest.isPending}
+                  chip={getSuggestionChip(u)} addLabel={labels.add} pendingLabel={labels.pending} friendsLabel={labels.friends} />
+              ))}
+            </div>
+          )}
+        </AppCard>
+      )}
     </div>
   );
 };
