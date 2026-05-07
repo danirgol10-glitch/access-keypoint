@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react';
 import type { ComputedStatus } from '@/hooks/useUserStickers';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
 
 interface StickerCardProps {
   code: string;
@@ -15,56 +16,65 @@ const statusLabelKeys: Record<ComputedStatus, string> = {
   DUPLICATE: 'sticker.duplicate',
 };
 
+const statusClasses: Record<ComputedStatus, { card: string; check: string; code: string; team: string; badge: string }> = {
+  HAVE: {
+    card: 'border-2 border-[var(--sticker-owned-border)] bg-[var(--sticker-owned-bg)] shadow-control',
+    check: 'border-[var(--sticker-owned-border)] bg-[var(--sticker-owned-badge-bg)] text-[var(--sticker-owned-color)]',
+    code: 'text-[var(--sticker-owned-text)]',
+    team: 'text-[var(--sticker-owned-subtext)]',
+    badge: 'border-[var(--sticker-owned-border)] bg-[var(--sticker-owned-badge-bg)] text-[var(--sticker-owned-color)]',
+  },
+  DUPLICATE: {
+    card: 'border-2 border-[var(--sticker-duplicate-border)] bg-[var(--sticker-duplicate-bg)] shadow-control',
+    check: 'border-[var(--sticker-duplicate-border)] bg-[var(--sticker-duplicate-badge-bg)] text-[var(--sticker-duplicate-color)]',
+    code: 'text-[var(--sticker-duplicate-text)]',
+    team: 'text-[var(--sticker-duplicate-subtext)]',
+    badge: 'border-[var(--sticker-duplicate-border)] bg-[var(--sticker-duplicate-badge-bg)] text-[var(--sticker-duplicate-color)]',
+  },
+  NEED: {
+    card: 'border border-[var(--surface-card-border)] bg-[var(--surface-card)] shadow-control',
+    check: '',
+    code: 'text-[var(--text-primary)]',
+    team: 'text-[var(--text-muted)]',
+    badge: 'border-[var(--surface-input-border)] bg-[var(--surface-input)] text-[var(--text-secondary)]',
+  },
+};
+
 export function StickerCard({ code, teamName, status, onClick }: StickerCardProps) {
   const { t } = useLanguage();
   const isOwned = status === 'HAVE' || status === 'DUPLICATE';
 
-  const getCardStyle = () => {
-    if (status === 'HAVE') return { background: 'var(--sticker-owned-bg)', border: `2px solid var(--sticker-owned-border)` };
-    if (status === 'DUPLICATE') return { background: 'var(--sticker-duplicate-bg)', border: `2px solid var(--sticker-duplicate-border)` };
-    return { background: 'var(--surface-card)', border: '1.5px solid var(--surface-card-border)' };
-  };
-
-  const getBadgeStyle = () => {
-    if (status === 'HAVE') return { background: 'var(--sticker-owned-badge-bg)', color: 'var(--sticker-owned-color)' };
-    if (status === 'DUPLICATE') return { background: 'var(--sticker-duplicate-badge-bg)', color: 'var(--sticker-duplicate-color)' };
-    return { background: 'var(--surface-input)', color: 'var(--text-secondary)' };
-  };
-
-  const getTextColor = () => {
-    if (status === 'HAVE') return 'var(--sticker-owned-text)';
-    if (status === 'DUPLICATE') return 'var(--sticker-duplicate-text)';
-    return 'var(--text-primary)';
-  };
-
-  const getSubtextColor = () => {
-    if (status === 'HAVE') return 'var(--sticker-owned-subtext)';
-    if (status === 'DUPLICATE') return 'var(--sticker-duplicate-subtext)';
-    return 'var(--text-muted)';
-  };
+  const classes = statusClasses[status];
+  const statusLabel = t(statusLabelKeys[status]);
 
   return (
-    <button onClick={onClick}
-      className="relative aspect-[3/4] w-full rounded-[14px] p-2 flex flex-col items-center text-center transition-colors duration-150 active:scale-[0.96] focus:outline-none overflow-hidden"
-      style={getCardStyle()}>
-      {isOwned && (
-        <Check className="absolute top-1.5 right-1.5 shrink-0" size={12} strokeWidth={3}
-          style={{ color: status === 'HAVE' ? 'var(--sticker-owned-color)' : 'var(--sticker-duplicate-color)' }} />
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`${code}${teamName ? ` ${teamName}` : ''} ${statusLabel}`}
+      className={cn(
+        'tap-target pressable relative flex aspect-[3/4] w-full flex-col overflow-hidden rounded-[14px] p-2.5 text-left outline-none transition-[background-color,border-color,box-shadow,transform,opacity] [transition-duration:var(--motion-duration-base)] [transition-timing-function:var(--motion-ease-standard)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0',
+        classes.card,
       )}
-      <span className="font-semibold text-sm shrink-0 w-full truncate" style={{ color: getTextColor() }}>{code}</span>
+    >
+      <span className="pointer-events-none absolute inset-x-2 top-2 h-px rounded-full bg-white/20" />
+
+      {isOwned && (
+        <span className={cn('absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full border', classes.check)}>
+          <Check className="size-3" strokeWidth={3} />
+        </span>
+      )}
+
+      <span className={cn('w-full truncate pr-5 text-sm font-bold leading-tight', classes.code)}>{code}</span>
       <span
-        className="text-[10px] mt-1 w-full overflow-hidden flex-1 leading-tight"
-        style={{
-          color: getSubtextColor(),
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          minHeight: 0,
-        }}
+        className={cn('mt-1 line-clamp-2 min-h-0 w-full flex-1 overflow-hidden text-[10px] font-medium leading-tight', classes.team)}
       >
         {teamName ?? ''}
       </span>
-      <span className="mt-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0 max-w-full truncate" style={getBadgeStyle()}>{t(statusLabelKeys[status])}</span>
+
+      <span className={cn('mt-2 max-w-full shrink-0 truncate rounded-full border px-2 py-0.5 text-[10px] font-semibold leading-4', classes.badge)}>
+        {statusLabel}
+      </span>
     </button>
   );
 }
