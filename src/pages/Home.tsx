@@ -5,7 +5,13 @@ import { useAlbumStats } from '@/hooks/useAlbumStats';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ProgressRing } from '@/components/ProgressRing';
 import { CompletionCelebration } from '@/components/CompletionCelebration';
+import { AppCard } from '@/components/ui/app-card';
+import { AvatarCircle } from '@/components/ui/avatar-circle';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { PageHeader } from '@/components/ui/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StatTile } from '@/components/ui/stat-tile';
 import { Check, Copy, Search, User } from 'lucide-react';
 
 const Home = () => {
@@ -23,79 +29,113 @@ const Home = () => {
   }, [profile?.username]);
 
   const handleCelebrationFinished = useCallback(() => setCelebrating(false), []);
+  const profileInitials = profile?.username?.slice(0, 2).toUpperCase();
 
   return (
-    <div className="relative px-4 safe-page space-y-4 max-w-md mx-auto">
+    <div className="relative mx-auto max-w-lg space-y-4 px-4 safe-page">
       <div className="page-vignette" />
 
-      <div className="relative z-20 w-full flex items-center justify-between">
-        <button onClick={() => navigate('/profile')}
-          className="rounded-full h-12 w-12 flex items-center justify-center transition-all duration-150 active:scale-95"
-          style={{ border: '1px solid var(--surface-input-border)', background: 'var(--surface-card)' }}>
-          <User className="h-5 w-5" style={{ color: 'var(--icon-default)' }} />
-        </button>
-        <h1 className="text-sm font-bold tracking-[0.12em] uppercase" style={{ color: 'var(--text-primary)' }}>{t('home.progress')}</h1>
-        <div className="h-12 w-12" />
-      </div>
+      <PageHeader
+        title={t('home.progress')}
+        className="relative z-20 px-0 pb-1 pt-0"
+        action={
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Abrir perfil"
+            onClick={() => navigate('/profile')}
+            className="rounded-full p-0 hover:bg-transparent"
+          >
+            <AvatarCircle initials={profileInitials} icon={<User className="h-5 w-5" />} size="md" />
+          </Button>
+        }
+      />
 
       <div className="relative z-20 w-full">
         {statsLoading ? (
-          <div className="premium-panel premium-panel-gold p-8">
+          <AppCard variant="hero" className="p-8">
             <div className="flex flex-col items-center">
-              <Skeleton className="h-48 w-48 rounded-full" style={{ background: 'var(--surface-skeleton)' }} />
+              <Skeleton className="h-48 w-48 rounded-full bg-[var(--surface-skeleton)]" />
             </div>
-          </div>
+          </AppCard>
         ) : stats ? (
-          <div className="hero-gradient rounded-[20px] border-0">
+          <AppCard variant="hero" className="p-0">
             <div className="hero-vignette" />
             <div className="hero-noise" />
-            <div className="pt-7 pb-6 relative z-10 px-6">
+            <div className="relative z-10 px-6 pb-6 pt-7">
               {profileLoading ? (
-                <Skeleton className="h-4 w-24 mx-auto mb-3" style={{ background: 'var(--surface-skeleton)' }} />
+                <Skeleton className="mx-auto mb-3 h-4 w-24 bg-[var(--surface-skeleton)]" />
               ) : profile?.username ? (
-                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-center mb-4" style={{ color: 'var(--text-secondary)' }}>@{profile.username}</p>
+                <p className="mb-4 text-center text-[10px] font-semibold uppercase tracking-[0.25em] text-[var(--text-secondary)]">@{profile.username}</p>
               ) : null}
               <ProgressRing percent={stats.completionPercent} ownedCount={stats.ownedCount} totalStickers={stats.totalStickers} onComplete={handleCompletion} />
               <CompletionCelebration trigger={celebrating} onFinished={handleCelebrationFinished} />
             </div>
-          </div>
-        ) : null}
+          </AppCard>
+        ) : (
+          <EmptyState
+            icon={<Search />}
+            title="No pudimos cargar tu progreso"
+            description="Abre tu álbum para revisar tu colección e intentar de nuevo."
+            cta={
+              <Button type="button" onClick={() => navigate('/album')}>
+                {t('nav.album')}
+              </Button>
+            }
+          />
+        )}
       </div>
 
       <div className="relative z-20 w-full">
         {statsLoading ? (
-          <div className="premium-panel p-5">
-            <div className="grid grid-cols-3 gap-4">
+          <AppCard className="p-4">
+            <div className="grid grid-cols-3 gap-2">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex flex-col items-center">
-                  <Skeleton className="h-6 w-12 mb-1" style={{ background: 'var(--surface-skeleton)' }} />
-                  <Skeleton className="h-4 w-16" style={{ background: 'var(--surface-skeleton)' }} />
+                <div key={i} className="flex min-h-[104px] flex-col items-center justify-center rounded-[var(--radius-lg)] border border-[var(--surface-border)] bg-[var(--surface-input)] p-3">
+                  <Skeleton className="mb-2 h-7 w-12 bg-[var(--surface-skeleton)]" />
+                  <Skeleton className="h-4 w-16 bg-[var(--surface-skeleton)]" />
                 </div>
               ))}
             </div>
-          </div>
+          </AppCard>
         ) : stats ? (
-          <div className="premium-panel p-5">
-            <div className="grid grid-cols-3 divide-x" style={{ borderColor: 'var(--surface-divider)' }}>
-              <div className="flex flex-col items-center gap-1 px-2">
-                <Check className="w-4 h-4" style={{ color: 'hsl(var(--stat-owned-color))' }} />
-                <span className="text-2xl font-black" style={{ color: 'hsl(var(--stat-owned-number))' }}>{stats.ownedCount}</span>
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>{t('home.owned')}</span>
-              </div>
-              <div className="flex flex-col items-center gap-1 px-2">
-                <Search className="w-4 h-4" style={{ color: 'hsl(var(--stat-missing-color))' }} />
-                <span className="text-2xl font-black" style={{ color: 'var(--text-primary)' }}>{stats.missingCount}</span>
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>{t('home.missing')}</span>
-              </div>
-              <div className="flex flex-col items-center gap-1 px-2">
-                <Copy className="w-4 h-4" style={{ color: 'hsl(var(--stat-duplicate-color))' }} />
-                <span className="text-2xl font-black" style={{ color: 'hsl(var(--stat-duplicate-number))' }}>{stats.duplicateCount}</span>
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-muted)' }}>{t('home.dupes')}</span>
-              </div>
-            </div>
+          <div className="grid grid-cols-3 gap-2">
+            <StatTile
+              value={stats.ownedCount}
+              label={t('home.owned')}
+              icon={<Check />}
+              tone="success"
+              className="min-h-[104px] p-3"
+            />
+            <StatTile
+              value={stats.missingCount}
+              label={t('home.missing')}
+              icon={<Search />}
+              tone="warning"
+              className="min-h-[104px] p-3"
+            />
+            <StatTile
+              value={stats.duplicateCount}
+              label={t('home.dupes')}
+              icon={<Copy />}
+              tone="info"
+              className="min-h-[104px] p-3"
+            />
           </div>
         ) : null}
       </div>
+
+      {stats && (
+        <div className="relative z-20 grid grid-cols-2 gap-3">
+          <Button type="button" onClick={() => navigate('/album')}>
+            {t('nav.album')}
+          </Button>
+          <Button type="button" variant="secondary" onClick={() => navigate('/trading')}>
+            {t('nav.trading')}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
