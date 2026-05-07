@@ -1,51 +1,79 @@
 import { useNavigate } from 'react-router-dom';
-import { useConversations } from '@/hooks/useConversations';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { AvatarCircle } from '@/components/ui/avatar-circle';
+import { ListRow } from '@/components/ui/list-row';
+import { PageHeader } from '@/components/ui/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useConversations } from '@/hooks/useConversations';
 import { MessageCircle } from 'lucide-react';
 import { formatTimeAgoEs } from '@/lib/dateUtils';
 
 const Chats = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { data: conversations = [], isLoading } = useConversations();
 
   return (
-    <div className="relative px-4 safe-page max-w-md mx-auto">
+    <div className="relative mx-auto max-w-lg space-y-4 px-4 safe-page">
       <div className="page-vignette" />
-      <div className="relative z-20 space-y-4">
-        <div className="text-center mb-2">
-          <h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>Conversaciones</h1>
+
+      <PageHeader title={t('chat.conversations')} className="relative z-20 px-0 pb-0 pt-0" />
+
+      {isLoading ? (
+        <div className="relative z-20 space-y-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-[var(--radius-lg)] bg-[var(--surface-skeleton)]" />
+          ))}
         </div>
-        {isLoading ? (
-          <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-xl" style={{ background: 'var(--surface-skeleton)' }} />)}</div>
-        ) : conversations.length === 0 ? (
-          <div className="premium-panel p-8 flex flex-col items-center text-center">
-            <MessageCircle className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
-            <p className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>No hay chats aún</p>
-            <p className="text-[12px] mt-1" style={{ color: 'var(--text-hint)' }}>Los chats se desbloquean al aceptar una solicitud de intercambio.</p>
-            <button onClick={() => navigate('/trading')} className="mt-4 min-h-11 px-4 rounded-xl text-sm font-semibold btn-themed">
-              Buscar intercambio
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {conversations.map((convo) => (
-              <button key={convo.id} className="w-full flex items-center gap-3 p-4 rounded-[16px] text-left transition-all duration-150 active:scale-[0.98]"
-                style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }} onClick={() => navigate(`/chat/${convo.id}`)}>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[14px] truncate" style={{ color: 'var(--text-primary)' }}>@{convo.other_username ?? 'Desconocido'}</span>
+      ) : conversations.length === 0 ? (
+        <EmptyState
+          className="relative z-20"
+          icon={<MessageCircle />}
+          title={t('chat.emptyTitle')}
+          description={t('chat.emptyDesc')}
+          cta={
+            <Button type="button" onClick={() => navigate('/trading')}>
+              {t('chat.findTrade')}
+            </Button>
+          }
+        />
+      ) : (
+        <div className="relative z-20 space-y-2">
+          {conversations.map((convo) => {
+            const username = convo.other_username ?? t('chat.unknownUser');
+            const initials = convo.other_username?.slice(0, 2).toUpperCase();
+
+            return (
+              <ListRow
+                key={convo.id}
+                interactive
+                onClick={() => navigate(`/chat/${convo.id}`)}
+                leading={<AvatarCircle initials={initials} icon={<MessageCircle />} size="md" />}
+                title={`@${username}`}
+                subtitle={convo.last_message_text ?? t('chat.noMessagesYet')}
+                trailing={
+                  <div className="flex flex-col items-end gap-2">
+                    {convo.last_message_at && (
+                      <span className="whitespace-nowrap text-[11px] font-medium text-[var(--text-hint)]">
+                        {formatTimeAgoEs(convo.last_message_at)}
+                      </span>
+                    )}
                     {convo.unread_count > 0 && (
-                      <span className="text-[10px] font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1" style={{ background: 'hsl(var(--badge-bg))', color: '#FFFFFF' }}>{convo.unread_count}</span>
+                      <Badge className="flex h-6 min-w-6 justify-center px-1.5 text-[10px]">
+                        {convo.unread_count > 99 ? '99+' : convo.unread_count}
+                      </Badge>
                     )}
                   </div>
-                  <p className="text-[13px] truncate mt-1" style={{ color: 'var(--text-muted)' }}>{convo.last_message_text ?? 'Sin mensajes aún'}</p>
-                </div>
-                {convo.last_message_at && <span className="text-[11px] whitespace-nowrap" style={{ color: 'var(--text-hint)' }}>{formatTimeAgoEs(convo.last_message_at)}</span>}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+                }
+                className="bg-[var(--surface-card)]"
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
