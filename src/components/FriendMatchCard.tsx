@@ -1,6 +1,8 @@
 import { formatTimeAgoEs } from '@/lib/dateUtils';
 import { User, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { AvatarCircle } from '@/components/ui/avatar-circle';
+import { ListRow } from '@/components/ui/list-row';
 
 interface FriendMatchCardProps {
   username: string | null;
@@ -13,25 +15,24 @@ interface FriendMatchCardProps {
 export function FriendMatchCard({ username, matchCount, duplicateTotal, lastActiveAt, onView }: FriendMatchCardProps) {
   const { t } = useLanguage();
   const activeLabel = lastActiveAt ? t('match.active', { time: formatTimeAgoEs(lastActiveAt) }) : null;
+  const displayName = username ?? t('common.unknown');
+  const initials = username?.slice(0, 2).toUpperCase();
 
   return (
-    <button onClick={onView}
-      className="w-full flex items-center gap-3 p-3 rounded-[14px] text-left transition-all duration-150 active:scale-[0.98] active:opacity-80"
-      style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
-      <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 avatar-themed">
-        <div className="w-full h-full rounded-full flex items-center justify-center avatar-themed-inner">
-          <User className="w-4 h-4" style={{ color: 'var(--icon-default)' }} />
-        </div>
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-[14px] truncate" style={{ color: 'var(--text-primary)' }}>@{username ?? t('common.unknown')}</p>
-        <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
+    <ListRow
+      interactive
+      onClick={onView}
+      leading={<AvatarCircle initials={initials} icon={<User className="h-4 w-4" />} size="md" />}
+      title={`@${displayName}`}
+      subtitle={
+        <>
           {matchCount > 0 ? t('match.hasStickers', { count: matchCount, s: matchCount !== 1 ? 's' : '' }) : t('match.noMatching')}
           {duplicateTotal !== undefined && duplicateTotal > 0 && <span> · {t('match.dupes', { count: duplicateTotal })}</span>}
-        </p>
-        {activeLabel && <p className="text-[11px]" style={{ color: 'var(--text-hint)' }}>{activeLabel}</p>}
-      </div>
-      <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--text-faint)' }} />
-    </button>
+          {activeLabel && <span className="block text-[var(--text-hint)]">{activeLabel}</span>}
+        </>
+      }
+      trailing={<ChevronRight className="h-4 w-4" />}
+      className="bg-[var(--surface-card)]"
+    />
   );
 }
