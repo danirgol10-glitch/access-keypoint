@@ -3,16 +3,20 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUniversities } from '@/hooks/useUniversities';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTheme, THEMES, type AppTheme } from '@/contexts/ThemeContext';
+import { useTheme, THEMES } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { COLOMBIAN_CITIES } from '@/constants/cities';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { LogOut, Check, Trash2, FileText, Shield } from 'lucide-react';
+import { ChevronRight, Check, FileText, GraduationCap, LogOut, MapPin, Palette, Shield, Trash2, User } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { AppCard } from '@/components/ui/app-card';
+import { AvatarCircle } from '@/components/ui/avatar-circle';
+import { ListRow } from '@/components/ui/list-row';
+import { PageHeader } from '@/components/ui/page-header';
 import { LegalModal } from '@/components/LegalContent';
 
 const Profile = () => {
@@ -72,34 +76,49 @@ const Profile = () => {
     }
   };
 
+  const username = profile?.username ?? 'desconocido';
+  const profileInitials = profile?.username?.slice(0, 2).toUpperCase();
 
   return (
-    <div className="relative px-4 safe-page max-w-md mx-auto">
+    <div className="relative mx-auto max-w-lg space-y-4 px-4 safe-page">
       <div className="page-vignette" />
-      <div className="relative z-20 space-y-6">
-        <div className="text-center mb-2">
-          <h1 className="text-[22px] font-bold tracking-wide" style={{ color: 'var(--text-primary)' }}>{t('profile.yourProfile')}</h1>
-          {profileLoading ? (
-            <Skeleton className="h-5 w-36 mx-auto mt-2" style={{ background: 'var(--surface-skeleton)' }} />
-          ) : (
-            <p className="text-[15px] font-semibold mt-2" style={{ color: 'var(--text-primary)' }}>@{profile?.username ?? 'desconocido'}</p>
-          )}
-        </div>
+      <PageHeader title={t('profile.title')} className="relative z-20 px-0 pb-0 pt-0" />
 
-        <div className="premium-panel premium-panel-gold p-4 space-y-3">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('profile.city')}</label>
+      <AppCard variant="hero" className="relative z-20 p-5">
+        <div className="flex items-center gap-4">
+          <AvatarCircle initials={profileInitials} icon={<User />} size="lg" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">{t('profile.yourProfile')}</p>
+            {profileLoading ? (
+              <Skeleton className="mt-2 h-5 w-36" />
+            ) : (
+              <p className="mt-1 truncate text-lg font-bold text-[var(--text-primary)]">@{username}</p>
+            )}
+          </div>
+        </div>
+      </AppCard>
+
+      <AppCard className="relative z-20 space-y-4 p-4">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">
+            <MapPin className="h-4 w-4" />
+            {t('profile.city')}
+          </div>
           <Select value={profile?.city ?? ''} onValueChange={handleCityChange} disabled={savingCity || profileLoading}>
-            <SelectTrigger className="w-full h-12 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+            <SelectTrigger className="min-h-12 w-full text-base">
               <SelectValue placeholder={t('profile.addCity')} />
             </SelectTrigger>
             <SelectContent>{COLOMBIAN_CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
           </Select>
         </div>
 
-        <div className="premium-panel p-4 space-y-3">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('profile.university')}</label>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">
+            <GraduationCap className="h-4 w-4" />
+            {t('profile.university')}
+          </div>
           <Select value={profile?.university_id ?? 'none'} onValueChange={handleUniversityChange} disabled={savingUni || uniLoading || !profile?.city}>
-            <SelectTrigger className="w-full h-12 text-base rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
+            <SelectTrigger className="min-h-12 w-full text-base">
               <SelectValue placeholder={!profile?.city ? t('profile.setCityFirst') : t('profile.addUniversity')} />
             </SelectTrigger>
             <SelectContent>
@@ -107,17 +126,21 @@ const Profile = () => {
               {universities.map((u) => <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>)}
             </SelectContent>
           </Select>
-          {!profile?.city && <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{t('profile.setCityFirst')}</p>}
+          {!profile?.city && <p className="text-xs leading-5 text-[var(--text-muted)]">{t('profile.setCityFirst')}</p>}
         </div>
+      </AppCard>
 
-        <div className="premium-panel p-4 space-y-3">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('profile.theme')}</label>
+      <AppCard className="relative z-20 space-y-4 p-4">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">
+          <Palette className="h-4 w-4" />
+          {t('profile.theme')}
+        </div>
           <div className="grid grid-cols-2 gap-3">
             {THEMES.map((t_item) => {
               const isActive = theme === t_item.id;
               return (
-                <button key={t_item.id} onClick={() => setTheme(t_item.id)}
-                  className="relative rounded-2xl p-3 text-left transition-all duration-200 active:scale-[0.97]"
+                <button key={t_item.id} type="button" onClick={() => setTheme(t_item.id)}
+                  className="tap-target pressable relative min-h-[76px] rounded-[var(--radius-lg)] p-3 text-left shadow-control outline-none transition-[border-color,box-shadow,transform,opacity] [transition-duration:var(--motion-duration-base)] [transition-timing-function:var(--motion-ease-standard)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
                   style={{ background: t_item.preview.bg, border: isActive ? `2px solid ${t_item.preview.accent}` : '2px solid var(--surface-card-border)' }}>
                   {isActive && (
                     <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: t_item.preview.accent }}>
@@ -135,56 +158,51 @@ const Profile = () => {
               );
             })}
           </div>
-        </div>
+      </AppCard>
 
 
-        {/* Legal section */}
-        <div className="premium-panel p-4 space-y-3">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('profile.legal')}</label>
-          <button onClick={() => setLegalModal('terms')}
-            className="w-full h-12 flex items-center gap-3 px-4 rounded-xl text-sm font-medium transition-all duration-150 active:scale-[0.98]"
-            style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
-            <FileText className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-            {t('profile.termsAndConditions')}
-          </button>
-          <button onClick={() => setLegalModal('privacy')}
-            className="w-full h-12 flex items-center gap-3 px-4 rounded-xl text-sm font-medium transition-all duration-150 active:scale-[0.98]"
-            style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
-            <Shield className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-            {t('profile.privacyPolicy')}
-          </button>
-        </div>
+      <AppCard className="relative z-20 space-y-3 p-4">
+        <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">{t('profile.legal')}</div>
+        <ListRow
+          interactive
+          leading={<FileText className="h-4 w-4 text-[var(--text-secondary)]" />}
+          title={t('profile.termsAndConditions')}
+          trailing={<ChevronRight className="h-4 w-4" />}
+          onClick={() => setLegalModal('terms')}
+        />
+        <ListRow
+          interactive
+          leading={<Shield className="h-4 w-4 text-[var(--text-secondary)]" />}
+          title={t('profile.privacyPolicy')}
+          trailing={<ChevronRight className="h-4 w-4" />}
+          onClick={() => setLegalModal('privacy')}
+        />
+      </AppCard>
 
 
-        <div className="pt-2 space-y-3">
-          <button onClick={handleSignOut}
-            className="w-full h-12 flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-150 active:scale-[0.98]"
-            style={{ background: 'var(--surface-card)', border: '1px solid rgba(239,68,68,0.3)', color: 'hsl(0, 84%, 60%)' }}>
-            <LogOut className="w-4 h-4" />
-            {t('profile.logout')}
-          </button>
+      <AppCard className="relative z-20 space-y-3 p-4">
+        <Button type="button" variant="outline" className="w-full border-destructive/30 text-destructive hover:border-destructive/40 hover:text-destructive" onClick={handleSignOut}>
+          <LogOut className="w-4 h-4" />
+          {t('profile.logout')}
+        </Button>
 
-          <button onClick={() => { setShowDeleteDialog(true); setDeleteInput(''); setShowDeleteConfirm(false); }}
-            className="w-full h-11 flex items-center justify-center gap-2 rounded-xl text-xs font-medium transition-all duration-150 active:scale-[0.98]"
-            style={{ background: 'transparent', border: '1px solid rgba(239,68,68,0.2)', color: 'hsl(0, 70%, 55%)' }}>
-            <Trash2 className="w-3.5 h-3.5" />
-            {t('profile.deleteAccount')}
-          </button>
-        </div>
-      </div>
+        <Button type="button" variant="destructive" className="w-full" onClick={() => { setShowDeleteDialog(true); setDeleteInput(''); setShowDeleteConfirm(false); }}>
+          <Trash2 className="w-4 h-4" />
+          {t('profile.deleteAccount')}
+        </Button>
+      </AppCard>
 
       {/* Delete Account Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="rounded-2xl" style={{ background: 'var(--surface-card)', border: '1px solid var(--surface-card-border)' }}>
+        <DialogContent className="rounded-[var(--radius-xl)]">
           {!showDeleteConfirm ? (
             <>
               <DialogHeader>
-                <DialogTitle style={{ color: 'var(--text-primary)' }}>{t('profile.deleteConfirmTitle')}</DialogTitle>
-                <DialogDescription style={{ color: 'var(--text-muted)' }}>{t('profile.deleteConfirmMessage')}</DialogDescription>
+                <DialogTitle>{t('profile.deleteConfirmTitle')}</DialogTitle>
+                <DialogDescription>{t('profile.deleteConfirmMessage')}</DialogDescription>
               </DialogHeader>
-              <DialogFooter className="gap-2 sm:gap-0">
-                <Button variant="outline" className="min-h-11" onClick={() => setShowDeleteDialog(false)}
-                  style={{ borderColor: 'var(--surface-card-border)', color: 'var(--text-primary)' }}>
+              <DialogFooter className="gap-2 sm:gap-2">
+                <Button variant="outline" className="min-h-11" onClick={() => setShowDeleteDialog(false)}>
                   {t('profile.cancel')}
                 </Button>
                 <Button variant="destructive" className="min-h-11" onClick={() => setShowDeleteConfirm(true)}>
@@ -195,8 +213,8 @@ const Profile = () => {
           ) : (
             <>
               <DialogHeader>
-                <DialogTitle style={{ color: 'var(--text-primary)' }}>{t('profile.deleteConfirmTitle')}</DialogTitle>
-                <DialogDescription style={{ color: 'var(--text-muted)' }}>
+                <DialogTitle>{t('profile.deleteConfirmTitle')}</DialogTitle>
+                <DialogDescription>
                   {t('profile.deleteTypingPrompt')}
                 </DialogDescription>
               </DialogHeader>
@@ -205,11 +223,9 @@ const Profile = () => {
                 onChange={(e) => setDeleteInput(e.target.value)}
                 placeholder="ELIMINAR"
                 className="rounded-xl"
-                style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
               />
-              <DialogFooter className="gap-2 sm:gap-0">
-                <Button variant="outline" className="min-h-11" onClick={() => setShowDeleteDialog(false)} disabled={isDeleting}
-                  style={{ borderColor: 'var(--surface-card-border)', color: 'var(--text-primary)' }}>
+              <DialogFooter className="gap-2 sm:gap-2">
+                <Button variant="outline" className="min-h-11" onClick={() => setShowDeleteDialog(false)} disabled={isDeleting}>
                   {t('profile.cancel')}
                 </Button>
                 <Button variant="destructive"
