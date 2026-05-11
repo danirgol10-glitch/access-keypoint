@@ -8,10 +8,15 @@ import { useFriendHelpfulStickers } from '@/hooks/useFriendHelpfulStickers';
 import { useTradeRequests } from '@/hooks/useTradeRequests';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { BlockUserMenu } from '@/components/BlockUserMenu';
+import { AppCard } from '@/components/ui/app-card';
+import { AvatarCircle } from '@/components/ui/avatar-circle';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { EmptyState } from '@/components/ui/empty-state';
+import { PageHeader } from '@/components/ui/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
-import { ArrowLeft, Package, Loader2 } from 'lucide-react';
+import { Loader2, Package, User } from 'lucide-react';
 
 const FriendDetail = () => {
   const { friendId } = useParams<{ friendId: string }>();
@@ -43,66 +48,75 @@ const FriendDetail = () => {
   const selectedCount = selectedStickers.size;
 
   return (
-    <div className="flex min-h-full flex-col page-bg">
-      <header className="sticky top-0 z-10 px-4 pb-3 safe-header header-themed">
-        <div className="flex items-center gap-3 max-w-2xl mx-auto">
-          <button onClick={() => navigate(-1)} className="rounded-full h-11 w-11 flex items-center justify-center" style={{ background: 'var(--surface-input)' }}>
-            <ArrowLeft className="h-5 w-5" style={{ color: 'var(--icon-default)' }} />
-          </button>
-          <div className="flex-1">
-            {profileLoading ? <Skeleton className="h-6 w-32" style={{ background: 'var(--surface-skeleton)' }} /> : (
-              <div>
-                <h1 className="text-[16px] font-semibold" style={{ color: 'var(--text-primary)' }}>@{friendProfile?.username ?? t('common.unknown')}</h1>
-                {friendProfile?.last_active_at && <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{t('match.active', { time: formatTimeAgoEs(friendProfile.last_active_at) })}</p>}
-              </div>
+    <div className="relative mx-auto max-w-lg space-y-4 px-4 safe-page">
+      <div className="page-vignette" />
+      <PageHeader
+        title={profileLoading ? t('common.unknown') : `@${friendProfile?.username ?? t('common.unknown')}`}
+        showBackButton
+        onBack={() => navigate(-1)}
+        action={friendId ? <BlockUserMenu userId={friendId} username={friendProfile?.username ?? null} /> : undefined}
+        className="relative z-20 px-0 pb-0 pt-0"
+      />
+
+      <AppCard variant="hero" className="relative z-20 p-5">
+        <div className="flex items-center gap-4">
+          <AvatarCircle initials={friendProfile?.username?.slice(0, 2).toUpperCase()} icon={<User />} size="lg" />
+          <div className="min-w-0 flex-1">
+            {profileLoading ? (
+              <Skeleton className="h-5 w-36 bg-[var(--surface-skeleton)]" />
+            ) : (
+              <h2 className="truncate text-lg font-bold text-[var(--text-primary)]">@{friendProfile?.username ?? t('common.unknown')}</h2>
+            )}
+            {friendProfile?.last_active_at && <p className="mt-1 text-xs text-[var(--text-muted)]">{t('match.active', { time: formatTimeAgoEs(friendProfile.last_active_at) })}</p>}
+            {isLoading ? (
+              <Skeleton className="mt-3 h-4 w-44 bg-[var(--surface-skeleton)]" />
+            ) : (
+              <p className="mt-3 text-sm text-[var(--text-secondary)]">{t('friendDetail.hasStickers', { count, s: count !== 1 ? 's' : '' })}</p>
             )}
           </div>
-          {friendId && <BlockUserMenu userId={friendId} username={friendProfile?.username ?? null} />}
         </div>
-      </header>
+      </AppCard>
 
-      <main className="flex-1 px-4 pt-4 pb-40 max-w-md mx-auto w-full space-y-4">
-        <div className="text-center py-2">
-          {isLoading ? <Skeleton className="h-5 w-48 mx-auto" style={{ background: 'var(--surface-skeleton)' }} /> : (
-            <p style={{ color: 'var(--text-secondary)' }}>{t('friendDetail.hasStickers', { count, s: count !== 1 ? 's' : '' })}</p>
-          )}
-        </div>
-
+      <section className="relative z-20 pb-40">
         {isLoading ? (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">{[1, 2, 3, 4, 5, 6].map((i) => <Skeleton key={i} className="aspect-[3/4] rounded-[14px]" style={{ background: 'var(--surface-skeleton)' }} />)}</div>
-        ) : count === 0 ? (
-          <div className="premium-panel p-8 flex flex-col items-center text-center">
-            <Package className="h-12 w-12 mb-3" style={{ color: 'var(--icon-faint)' }} />
-            <p className="text-[14px] mb-2" style={{ color: 'var(--text-secondary)' }}>{t('friendDetail.noMatch')}</p>
-            <p className="text-[12px]" style={{ color: 'var(--text-hint)' }}>{t('friendDetail.askFriend', { username: friendProfile?.username ?? t('common.unknown') })}</p>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => <Skeleton key={i} className="aspect-[3/4] rounded-[14px] bg-[var(--surface-skeleton)]" />)}
           </div>
+        ) : count === 0 ? (
+          <EmptyState
+            icon={<Package />}
+            title={t('friendDetail.noMatch')}
+            description={t('friendDetail.askFriend', { username: friendProfile?.username ?? t('common.unknown') })}
+          />
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
             {helpfulStickers.map((sticker) => {
               const isSelected = selectedStickers.has(sticker.id);
               return (
                 <button key={sticker.id} onClick={() => toggleSticker(sticker.id)}
-                  className="relative aspect-[3/4] rounded-[14px] p-2 flex flex-col items-center justify-center text-center transition-all duration-150 active:scale-[0.96]"
-                  style={{ background: isSelected ? 'var(--surface-card-hover)' : 'var(--surface-card)', border: isSelected ? `1px solid var(--sticker-selected)` : '1px solid var(--surface-card-border)' }}>
-                  <div className="absolute top-2 right-2">
+                  className={[
+                    'tap-target pressable relative flex aspect-[3/4] flex-col items-center justify-center rounded-[14px] border p-2 text-center shadow-control outline-none transition-[background-color,border-color,box-shadow,transform,opacity]',
+                    '[transition-duration:var(--motion-duration-base)] [transition-timing-function:var(--motion-ease-standard)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0',
+                    isSelected ? 'border-[var(--sticker-selected)] bg-[var(--surface-card-hover)]' : 'border-[var(--surface-card-border)] bg-[var(--surface-card)]',
+                  ].join(' ')}>
+                  <div className="absolute right-2 top-2">
                     <Checkbox checked={isSelected} onCheckedChange={() => toggleSticker(sticker.id)} onClick={(e) => e.stopPropagation()} />
                   </div>
-                  <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{sticker.code}</span>
-                  {sticker.team_name && <span className="text-[10px] mt-1 truncate w-full px-1" style={{ color: 'var(--text-muted)' }}>{sticker.team_name}</span>}
+                  <span className="text-sm font-semibold text-[var(--text-primary)]">{sticker.code}</span>
+                  {sticker.team_name && <span className="mt-1 w-full truncate px-1 text-[10px] text-[var(--text-muted)]">{sticker.team_name}</span>}
                 </button>
               );
             })}
           </div>
         )}
-      </main>
+      </section>
 
       {count > 0 && (
-        <div className="fixed left-0 right-0 bottom-app-nav z-20 px-4 py-3 header-themed" style={{ borderTop: '1px solid var(--surface-divider)' }}>
-          <div className="max-w-md mx-auto">
-            <button className="w-full h-11 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50 btn-themed"
-              disabled={selectedCount === 0 || isCreating} onClick={handleRequestClick}>
-              {isCreating ? (<><Loader2 className="h-4 w-4 animate-spin mr-2 inline" />{t('friendDetail.sending')}</>) : selectedCount === 0 ? t('friendDetail.selectStickers') : t('friendDetail.request', { count: selectedCount })}
-            </button>
+        <div className="fixed left-0 right-0 bottom-app-nav z-20 border-t border-[var(--surface-divider)] px-4 py-3 header-themed">
+          <div className="mx-auto max-w-lg">
+            <Button className="w-full" disabled={selectedCount === 0 || isCreating} onClick={handleRequestClick}>
+              {isCreating ? (<><Loader2 className="h-4 w-4 animate-spin" />{t('friendDetail.sending')}</>) : selectedCount === 0 ? t('friendDetail.selectStickers') : t('friendDetail.request', { count: selectedCount })}
+            </Button>
           </div>
         </div>
       )}
