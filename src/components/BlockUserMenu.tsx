@@ -14,8 +14,10 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { MoreVertical, ShieldBan, ShieldCheck, Flag } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface BlockUserMenuProps { userId: string; username: string | null; }
 
@@ -36,6 +38,7 @@ export function BlockUserMenu({ userId, username }: BlockUserMenuProps) {
   const [selectedReason, setSelectedReason] = useState<ReportReason | null>(null);
   const [reportMessage, setReportMessage] = useState('');
   const blocked = isBlocked(userId);
+  const displayUsername = username ?? t('common.unknown');
 
   const handleBlock = async () => {
     try { await block(userId); toast({ title: t('block.blocked') }); setConfirmOpen(false); navigate(-1); }
@@ -64,7 +67,7 @@ export function BlockUserMenu({ userId, username }: BlockUserMenuProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-11 w-11" aria-label="Más opciones"><MoreVertical className="h-5 w-5" /></Button>
+          <Button type="button" variant="ghost" size="icon" className="h-11 w-11" aria-label="Más opciones"><MoreVertical className="h-5 w-5" /></Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setReportOpen(true)}>
@@ -86,7 +89,7 @@ export function BlockUserMenu({ userId, username }: BlockUserMenuProps) {
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('block.confirmTitle', { username: username ?? 'this user' })}</AlertDialogTitle>
+            <AlertDialogTitle>{t('block.confirmTitle', { username: displayUsername })}</AlertDialogTitle>
             <AlertDialogDescription>{t('block.confirmDesc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -100,38 +103,32 @@ export function BlockUserMenu({ userId, username }: BlockUserMenuProps) {
       <Dialog open={reportOpen} onOpenChange={(open) => { setReportOpen(open); if (!open) { setSelectedReason(null); setReportMessage(''); } }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t('report.title', { username: username ?? 'this user' })}</DialogTitle>
-            <DialogDescription className="sr-only">Select a reason to report this user</DialogDescription>
+            <DialogTitle>{t('report.title', { username: displayUsername })}</DialogTitle>
+            <DialogDescription className="sr-only">Selecciona un motivo para reportar a este usuario</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
             {REPORT_REASONS.map((r) => (
-              <button
+              <Button
                 key={r.value}
+                type="button"
+                variant={selectedReason === r.value ? 'default' : 'outline'}
                 onClick={() => setSelectedReason(r.value)}
-                className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors"
-                style={{
-                  background: selectedReason === r.value
-                    ? 'linear-gradient(135deg, var(--btn-gradient-from), var(--btn-gradient-to))'
-                    : 'var(--surface-input)',
-                  color: selectedReason === r.value ? '#FFFFFF' : 'var(--text-primary)',
-                  border: `1px solid ${selectedReason === r.value ? 'transparent' : 'var(--surface-input-border)'}`,
-                }}
+                className={cn('w-full justify-start text-left', selectedReason === r.value && 'shadow-glow')}
               >
                 {t(r.labelKey)}
-              </button>
+              </Button>
             ))}
-            <textarea
+            <Textarea
               placeholder={t('report.optionalMessage')}
               value={reportMessage}
               onChange={(e) => setReportMessage(e.target.value)}
               rows={3}
-              className="w-full px-4 py-3 rounded-xl text-base outline-none resize-none"
-              style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
+              className="resize-none"
             />
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" className="min-h-11" onClick={() => setReportOpen(false)}>{t('report.cancel')}</Button>
-            <Button className="min-h-11" onClick={handleReport} disabled={!selectedReason || isReporting}>{t('report.submit')}</Button>
+            <Button type="button" variant="outline" className="min-h-11" onClick={() => setReportOpen(false)}>{t('report.cancel')}</Button>
+            <Button type="button" className="min-h-11" onClick={handleReport} disabled={!selectedReason || isReporting}>{t('report.submit')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
