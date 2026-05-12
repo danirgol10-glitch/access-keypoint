@@ -171,7 +171,7 @@ const Album = () => {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-secondary)]">Total</p>
             <p className="mt-2 text-4xl font-bold leading-none text-[var(--text-primary)]">{albumSummary.total}</p>
           </div>
-          <div className="rounded-full border border-[var(--surface-border)] bg-[var(--surface-input)] px-3 py-1 text-xs font-semibold text-[var(--text-secondary)]">
+          <div className="shrink-0 rounded-full border border-[var(--surface-border)] bg-[var(--surface-input)] px-3 py-1 text-xs font-semibold text-[var(--text-secondary)]">
             {filteredStickers.length}/{albumSummary.total}
           </div>
         </div>
@@ -195,9 +195,9 @@ const Album = () => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <Select value={selectedScope} onValueChange={handleScopeChange}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder={t('album.allScopes')} />
               </SelectTrigger>
               <SelectContent>
@@ -209,7 +209,7 @@ const Album = () => {
 
             {selectedScope !== 'FWC' && groups.length > 0 && (
               <Select value={selectedGroup} onValueChange={handleGroupChange}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={t('album.allGroups')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -221,7 +221,7 @@ const Album = () => {
 
             {selectedGroup !== 'all' && teamsForGroup.length > 0 && (
               <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={t('album.allTeams')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -232,7 +232,7 @@ const Album = () => {
             )}
 
             <Select value={selectedStatus} onValueChange={(v) => setSelectedStatus(v as StatusFilter)}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder={t('album.allStatus')} />
               </SelectTrigger>
               <SelectContent>

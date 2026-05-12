@@ -33,12 +33,10 @@ function SectionHeader({ icon: Icon, title, action }: { icon: ElementType; title
 
 function SummaryMetric({ icon: Icon, label, value }: { icon: ElementType; label: ReactNode; value: ReactNode }) {
   return (
-    <div className="rounded-[var(--radius-lg)] border border-[var(--surface-border)] bg-[var(--surface-input)] p-3">
-      <div className="mb-2 flex items-center justify-between gap-2 text-[var(--text-secondary)]">
-        <Icon className="size-4" />
-        <span className="truncate text-[10px] font-semibold uppercase tracking-[0.12em]">{label}</span>
-      </div>
+    <div className="flex min-h-[88px] flex-col items-center justify-center gap-1.5 rounded-[var(--radius-lg)] border border-[var(--surface-border)] bg-[var(--surface-input)] px-2 py-3 text-center">
+      <Icon className="size-3.5 shrink-0 text-[var(--text-secondary)]" />
       <p className="text-2xl font-bold leading-none text-[var(--text-primary)]">{value}</p>
+      <span className="w-full text-[11px] font-semibold leading-tight text-[var(--text-secondary)]">{label}</span>
     </div>
   );
 }
@@ -132,9 +130,9 @@ const Friends = () => {
           <p className="text-xs leading-5 text-[var(--text-secondary)]">{t('friends.searchToConnect')}</p>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          <SummaryMetric icon={Users} label={t('friends.myFriends')} value={statsLoading ? '…' : friendStats.length} />
-          <SummaryMetric icon={Bell} label={t('trading.pending')} value={incomingLoading ? '…' : incomingRequests.length} />
-          <SummaryMetric icon={Sparkles} label={t('friends.suggested')} value={suggestionsLoading ? '…' : suggestions.length} />
+          <SummaryMetric icon={Users} label="Amigos" value={statsLoading ? '…' : friendStats.length} />
+          <SummaryMetric icon={Bell} label="Pendientes" value={incomingLoading ? '…' : incomingRequests.length} />
+          <SummaryMetric icon={Sparkles} label="Sugeridos" value={suggestionsLoading ? '…' : suggestions.length} />
         </div>
       </AppCard>
 
