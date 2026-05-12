@@ -163,17 +163,18 @@ const LegalModal = ({ type, onClose }: LegalModalProps) => {
   const content = type === 'terms' ? TERMS_CONTENT : PRIVACY_CONTENT;
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col" style={{ background: '#FFFFFF' }}>
-      <div className="flex items-center justify-between px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] border-b border-gray-200 bg-white">
-        <h2 className="text-[17px] font-bold text-gray-900">
+    <div className="app-full-screen page-bg fixed inset-0 z-[100] flex flex-col">
+      <div className="page-vignette" />
+      <div className="relative z-10 flex items-center justify-between border-b border-[var(--surface-divider)] bg-[var(--surface-glass)] px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] backdrop-blur-xl">
+        <h2 className="text-[17px] font-bold text-[var(--text-primary)]">
           {type === 'terms' ? 'Términos y Condiciones' : 'Política de Privacidad'}
         </h2>
-        <button onClick={onClose} className="-mr-2 flex h-11 w-11 items-center justify-center rounded-full transition-colors text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+        <button onClick={onClose} className="-mr-2 flex h-11 w-11 items-center justify-center rounded-full bg-[var(--surface-input)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0">
           <X className="w-5 h-5" />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto px-5 md:px-6 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-white">
-        <pre className="whitespace-pre-wrap text-[14px] leading-[1.7] font-sans text-gray-800">
+      <div className="relative z-10 flex-1 overflow-y-auto px-5 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] [-webkit-overflow-scrolling:touch] md:px-6">
+        <pre className="whitespace-pre-wrap rounded-[var(--radius-xl)] border border-[var(--surface-border)] bg-[var(--surface-card)] p-4 font-sans text-[14px] leading-[1.7] text-[var(--text-secondary)] shadow-card">
           {content}
         </pre>
       </div>

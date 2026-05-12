@@ -7,6 +7,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUniversities } from '@/hooks/useUniversities';
 import { COLOMBIAN_CITIES } from '@/constants/cities';
+import { AppCard } from '@/components/ui/app-card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
@@ -45,53 +48,72 @@ const ChooseUsername = () => {
   };
 
   return (
-    <div className="app-screen flex items-center justify-center page-bg safe-auth-screen">
-      <div className="w-full max-w-md premium-panel premium-panel-gold p-6 space-y-6">
-        <div className="relative text-center space-y-1">
-          <button type="button" onClick={async () => { await signOut(); navigate('/auth', { replace: true }); }}
-            className="absolute left-0 top-0 flex min-h-11 items-center gap-1 text-xs transition-colors hover:opacity-80" style={{ color: 'var(--text-secondary)' }}>
-            <ArrowLeft className="h-3.5 w-3.5" />{t('setup.back')}
-          </button>
-          <h1 className="text-[22px] font-bold" style={{ color: 'var(--text-primary)' }}>{t('setup.title')}</h1>
-          <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>{t('setup.subtitle')}</p>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('setup.username')}</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }}>@</span>
-              <input type="text" placeholder={t('setup.usernamePlaceholder')} value={username} onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
-                className="w-full h-11 pl-8 pr-4 text-base rounded-xl outline-none"
-                style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }} maxLength={20} />
+    <div className="app-screen page-bg safe-auth-screen relative flex items-center justify-center overflow-x-hidden overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
+      <div className="page-vignette" />
+      <div className="relative z-20 w-full max-w-md space-y-4">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={async () => { await signOut(); navigate('/auth', { replace: true }); }}
+          className="min-h-11 px-0 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        >
+          <ArrowLeft className="h-4 w-4" />{t('setup.back')}
+        </Button>
+
+        <AppCard variant="hero" className="space-y-2 p-5 text-center">
+          <div className="mx-auto mb-3 flex size-14 items-center justify-center rounded-full border border-[var(--trade-green-border)] bg-[var(--trade-green-soft)] text-xl font-black text-primary shadow-glow">
+            @
+          </div>
+          <h1 className="text-[22px] font-bold text-[var(--text-primary)]">{t('setup.title')}</h1>
+          <p className="text-sm leading-5 text-[var(--text-secondary)]">{t('setup.subtitle')}</p>
+        </AppCard>
+
+        <AppCard className="space-y-6 p-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">{t('setup.username')}</label>
+              <div className="relative">
+                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-base font-semibold text-[var(--text-muted)]">@</span>
+                <Input
+                  type="text"
+                  placeholder={t('setup.usernamePlaceholder')}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
+                  className="pl-8"
+                  maxLength={20}
+                />
+              </div>
+              <p className="text-[11px] leading-5 text-[var(--text-hint)]">{t('setup.usernameHint')}</p>
             </div>
-            <p className="text-[11px]" style={{ color: 'var(--text-hint)' }}>{t('setup.usernameHint')}</p>
-          </div>
-          <div className="space-y-2">
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('setup.city')}</label>
-            <Select value={city} onValueChange={handleCityChange}>
-              <SelectTrigger className="h-11 rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
-                <SelectValue placeholder={t('setup.cityPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>{COLOMBIAN_CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('setup.university')}</label>
-            <Select value={universityId} onValueChange={setUniversityId} disabled={!city || uniLoading}>
-              <SelectTrigger className="h-11 rounded-xl" style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}>
-                <SelectValue placeholder={!city ? t('setup.uniCityFirst') : t('setup.uniPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">{t('setup.noneStudent')}</SelectItem>
-                {universities.map((u) => <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50 btn-themed"
-            disabled={isSubmitting || username.length < 3 || !city}>
-            {isSubmitting ? t('setup.saving') : t('setup.continue')}
-          </button>
-        </form>
+
+            <div className="space-y-2">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">{t('setup.city')}</label>
+              <Select value={city} onValueChange={handleCityChange}>
+                <SelectTrigger className="min-h-11">
+                  <SelectValue placeholder={t('setup.cityPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>{COLOMBIAN_CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">{t('setup.university')}</label>
+              <Select value={universityId} onValueChange={setUniversityId} disabled={!city || uniLoading}>
+                <SelectTrigger className="min-h-11">
+                  <SelectValue placeholder={!city ? t('setup.uniCityFirst') : t('setup.uniPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{t('setup.noneStudent')}</SelectItem>
+                  {universities.map((u) => <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button type="submit" className="w-full" disabled={isSubmitting || username.length < 3 || !city}>
+              {isSubmitting ? t('setup.saving') : t('setup.continue')}
+            </Button>
+          </form>
+        </AppCard>
       </div>
     </div>
   );
