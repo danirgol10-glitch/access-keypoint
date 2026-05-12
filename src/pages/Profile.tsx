@@ -3,13 +3,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useUniversities } from '@/hooks/useUniversities';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTheme, THEMES } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { COLOMBIAN_CITIES } from '@/constants/cities';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { ChevronRight, Check, FileText, GraduationCap, LogOut, MapPin, Palette, Shield, Trash2, User } from 'lucide-react';
+import { ChevronRight, FileText, GraduationCap, LogOut, MapPin, Shield, Trash2, User } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,7 +23,6 @@ const Profile = () => {
   const { profile, isLoading: profileLoading, refetchProfile } = useUserProfile();
   const { universities, isLoading: uniLoading } = useUniversities(profile?.city ?? null);
   const { t } = useLanguage();
-  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const [savingCity, setSavingCity] = useState(false);
   const [savingUni, setSavingUni] = useState(false);
@@ -129,37 +127,6 @@ const Profile = () => {
           {!profile?.city && <p className="text-xs leading-5 text-[var(--text-muted)]">{t('profile.setCityFirst')}</p>}
         </div>
       </AppCard>
-
-      <AppCard className="relative z-20 space-y-4 p-4">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">
-          <Palette className="h-4 w-4" />
-          {t('profile.theme')}
-        </div>
-          <div className={THEMES.length === 1 ? 'grid grid-cols-1 gap-3' : 'grid grid-cols-2 gap-3'}>
-            {THEMES.map((t_item) => {
-              const isActive = theme === t_item.id;
-              return (
-                <button key={t_item.id} type="button" onClick={() => setTheme(t_item.id)}
-                  className="tap-target pressable relative min-h-[76px] rounded-[var(--radius-lg)] p-3 text-left shadow-control outline-none transition-[border-color,box-shadow,transform,opacity] [transition-duration:var(--motion-duration-base)] [transition-timing-function:var(--motion-ease-standard)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
-                  style={{ background: t_item.preview.bg, border: isActive ? `2px solid ${t_item.preview.accent}` : '2px solid var(--surface-card-border)' }}>
-                  {isActive && (
-                    <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: t_item.preview.accent }}>
-                      <Check className="w-3 h-3 text-white" />
-                    </div>
-                  )}
-                  <div className="flex gap-1.5 mb-2">
-                    <div className="w-4 h-4 rounded-md" style={{ background: t_item.preview.card }} />
-                    <div className="w-4 h-4 rounded-md" style={{ background: t_item.preview.accent }} />
-                  </div>
-                  <span className="text-[11px] font-bold" style={{ color: t_item.id === 'world-cup-2026' ? '#1A1A1A' : 'rgba(255,255,255,0.9)' }}>
-                    {t_item.labelEs}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-      </AppCard>
-
 
       <AppCard className="relative z-20 space-y-3 p-4">
         <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">{t('profile.legal')}</div>
