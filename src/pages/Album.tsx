@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useStickers, useGroupsAndTeams } from '@/hooks/useStickers';
-import { useUserStickers, useCycleStickerStatus, getComputedStatus, type ComputedStatus } from '@/hooks/useUserStickers';
+import { useUserStickers, useCycleStickerStatus, useSetStickerStatus, getComputedStatus, type ComputedStatus } from '@/hooks/useUserStickers';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -28,6 +28,7 @@ const Album = () => {
   const { groups, teamsByGroup } = useGroupsAndTeams(stickers);
   const { data: userStickers = {} } = useUserStickers();
   const cycleStickerStatus = useCycleStickerStatus();
+  const setStickerStatus = useSetStickerStatus();
   const { profile } = useUserProfile();
   const { t } = useLanguage();
 
@@ -55,7 +56,7 @@ const Album = () => {
     const status = getComputedStatus(userStickers, stickerId);
     if (status === 'NEED') { cycleStickerStatus.mutate({ stickerId, currentStatus: 'NEED' }); }
     else if (status === 'HAVE') { cycleStickerStatus.mutate({ stickerId, currentStatus: 'HAVE' }); }
-    else { supabase.from('user_stickers').update({ status: 'HAVE', updated_at: new Date().toISOString() }).eq('user_id', user!.id).eq('sticker_id', stickerId).then(() => { queryClient.invalidateQueries({ queryKey: ['user-stickers', user!.id] }); }); }
+    else { setStickerStatus.mutate({ stickerId, status: 'HAVE' }); }
   };
 
   const handleStickerClick = (stickerId: string, currentStatus: ComputedStatus) => {
@@ -269,7 +270,7 @@ const Album = () => {
           ) : undefined}
         />
       ) : (
-        <div className="relative z-20 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+        <div className="relative z-20 grid grid-cols-3 gap-3">
           {filteredStickers.map((sticker) => {
             const computedStatus = getComputedStatus(userStickers, sticker.id);
             return <StickerCard key={sticker.id} code={sticker.code} teamName={sticker.team_name} status={computedStatus} onClick={() => handleStickerClick(sticker.id, computedStatus)} />;

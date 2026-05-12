@@ -135,7 +135,7 @@ const Profile = () => {
           <Palette className="h-4 w-4" />
           {t('profile.theme')}
         </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className={THEMES.length === 1 ? 'grid grid-cols-1 gap-3' : 'grid grid-cols-2 gap-3'}>
             {THEMES.map((t_item) => {
               const isActive = theme === t_item.id;
               return (
