@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Home, Image, Handshake, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,7 @@ const WC2026_TAB_COLORS = ['#00B5E2', '#8CC63F', '#F15A29', '#6A5ACD'];
 
 const MainLayout = () => {
   const location = useLocation();
+  const mainRef = useRef<HTMLElement | null>(null);
   const { unreadCount } = useNotifications();
   const { data: conversations = [] } = useConversations();
   const chatUnreadCount = conversations.reduce((sum, c) => sum + c.unread_count, 0);
@@ -27,22 +28,36 @@ const MainLayout = () => {
   const { t } = useLanguage();
   const { theme } = useTheme();
   const isWC2026 = theme === 'world-cup-2026';
+  const isChatDetail = location.pathname.startsWith('/chat/');
 
   useEffect(() => {
     touch();
   }, [location.pathname, touch]);
 
-  const isChatDetail = location.pathname.startsWith('/chat/');
+  useEffect(() => {
+    if (isChatDetail) return;
+    mainRef.current?.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [isChatDetail, location.pathname]);
 
   return (
     <div className="app-full-screen flex flex-col overflow-hidden page-bg">
       <main
+        ref={mainRef}
         className={cn(
           "min-h-0 flex-1 w-full max-w-full overflow-x-hidden overscroll-contain [-webkit-overflow-scrolling:touch]",
           isChatDetail ? "overflow-hidden" : "overflow-y-auto"
         )}
       >
-        <Outlet />
+        {isChatDetail ? (
+          <Outlet />
+        ) : (
+          <div
+            key={location.pathname}
+            className="min-h-full w-full animate-in fade-in-0 slide-in-from-bottom-1 [animation-duration:var(--motion-duration-fast)] [animation-timing-function:var(--motion-ease-standard)] motion-reduce:animate-none"
+          >
+            <Outlet />
+          </div>
+        )}
       </main>
 
       <nav

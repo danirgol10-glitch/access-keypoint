@@ -12,12 +12,45 @@ export interface UserSticker {
   updated_at: string;
 }
 
+type UserStickersById = Record<string, UserSticker>;
+
+const userStickersQueryKey = (userId?: string) => ['user-stickers', userId] as const;
+
+const getNextStickerStatus = (currentStatus: ComputedStatus): ComputedStatus => {
+  if (currentStatus === 'NEED') return 'HAVE';
+  if (currentStatus === 'HAVE') return 'DUPLICATE';
+  return 'NEED';
+};
+
+const applyStatusToCache = (
+  currentStickers: UserStickersById | undefined,
+  userId: string,
+  stickerId: string,
+  nextStatus: ComputedStatus,
+): UserStickersById => {
+  const nextStickers: UserStickersById = { ...(currentStickers ?? {}) };
+
+  if (nextStatus === 'NEED') {
+    delete nextStickers[stickerId];
+    return nextStickers;
+  }
+
+  nextStickers[stickerId] = {
+    user_id: userId,
+    sticker_id: stickerId,
+    status: nextStatus,
+    updated_at: new Date().toISOString(),
+  };
+
+  return nextStickers;
+};
+
 export function useUserStickers() {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['user-stickers', user?.id],
-    queryFn: async (): Promise<Record<string, UserSticker>> => {
+    queryKey: userStickersQueryKey(user?.id),
+    queryFn: async (): Promise<UserStickersById> => {
       if (!user) return {};
 
       const { data, error } = await supabase
@@ -31,7 +64,7 @@ export function useUserStickers() {
       return (data ?? []).reduce((acc, item) => {
         acc[item.sticker_id] = item as UserSticker;
         return acc;
-      }, {} as Record<string, UserSticker>);
+      }, {} as UserStickersById);
     },
     enabled: !!user,
   });
@@ -44,6 +77,7 @@ export function useCycleStickerStatus() {
   return useMutation({
     mutationFn: async ({ stickerId, currentStatus }: { stickerId: string; currentStatus: ComputedStatus }) => {
       if (!user) throw new Error('Not authenticated');
+      const updatedAt = new Date().toISOString();
 
       // Cycle: NEED -> HAVE -> DUPLICATE -> NEED
       if (currentStatus === 'NEED') {
@@ -55,7 +89,7 @@ export function useCycleStickerStatus() {
               user_id: user.id,
               sticker_id: stickerId,
               status: 'HAVE',
-              updated_at: new Date().toISOString(),
+              updated_at: updatedAt,
             },
             { onConflict: 'user_id,sticker_id' }
           );
@@ -64,7 +98,7 @@ export function useCycleStickerStatus() {
         // Update to DUPLICATE
         const { error } = await supabase
           .from('user_stickers')
-          .update({ status: 'DUPLICATE', updated_at: new Date().toISOString() })
+          .update({ status: 'DUPLICATE', updated_at: updatedAt })
           .eq('user_id', user.id)
           .eq('sticker_id', stickerId);
         if (error) throw error;
@@ -78,15 +112,82 @@ export function useCycleStickerStatus() {
         if (error) throw error;
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-stickers', user?.id] });
+    onMutate: async ({ stickerId, currentStatus }) => {
+      if (!user) return undefined;
+
+      const queryKey = userStickersQueryKey(user.id);
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousStickers = queryClient.getQueryData<UserStickersById>(queryKey);
+      const nextStatus = getNextStickerStatus(currentStatus);
+
+      queryClient.setQueryData<UserStickersById>(queryKey, (currentStickers) =>
+        applyStatusToCache(currentStickers, user.id, stickerId, nextStatus)
+      );
+
+      return { previousStickers, queryKey };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.queryKey) {
+        queryClient.setQueryData(context.queryKey, context.previousStickers ?? {});
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: userStickersQueryKey(user?.id) });
+    },
+  });
+}
+
+export function useSetStickerStatus() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ stickerId, status }: { stickerId: string; status: StickerStatus }) => {
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('user_stickers')
+        .upsert(
+          {
+            user_id: user.id,
+            sticker_id: stickerId,
+            status,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id,sticker_id' }
+        );
+
+      if (error) throw error;
+    },
+    onMutate: async ({ stickerId, status }) => {
+      if (!user) return undefined;
+
+      const queryKey = userStickersQueryKey(user.id);
+      await queryClient.cancelQueries({ queryKey });
+
+      const previousStickers = queryClient.getQueryData<UserStickersById>(queryKey);
+
+      queryClient.setQueryData<UserStickersById>(queryKey, (currentStickers) =>
+        applyStatusToCache(currentStickers, user.id, stickerId, status)
+      );
+
+      return { previousStickers, queryKey };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.queryKey) {
+        queryClient.setQueryData(context.queryKey, context.previousStickers ?? {});
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: userStickersQueryKey(user?.id) });
     },
   });
 }
 
 // Helper to compute status from user_stickers data
 export function getComputedStatus(
-  userStickers: Record<string, UserSticker>,
+  userStickers: UserStickersById,
   stickerId: string
 ): ComputedStatus {
   const record = userStickers[stickerId];

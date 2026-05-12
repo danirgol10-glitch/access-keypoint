@@ -59,20 +59,29 @@ export function StickerCard({ code, teamName, status, onClick }: StickerCardProp
     >
       <span className="pointer-events-none absolute inset-x-2 top-2 h-px rounded-full bg-white/20" />
 
-      {isOwned && (
-        <span className={cn('absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full border', classes.check)}>
-          <Check className="size-3" strokeWidth={3} />
+      <div className="relative z-10 flex w-full items-start justify-between gap-1.5">
+        <span
+          className={cn(
+            'min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-extrabold leading-tight tracking-normal',
+            code.length > 6 && 'text-[11px]',
+            classes.code
+          )}
+        >
+          {code}
         </span>
-      )}
-
-      <span className={cn('w-full truncate pr-5 text-sm font-bold leading-tight', classes.code)}>{code}</span>
+        {isOwned && (
+          <span className={cn('mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border', classes.check)}>
+            <Check className="size-3" strokeWidth={3} />
+          </span>
+        )}
+      </div>
       <span
         className={cn('mt-1 line-clamp-2 min-h-0 w-full flex-1 overflow-hidden text-[10px] font-medium leading-tight', classes.team)}
       >
         {teamName ?? ''}
       </span>
 
-      <span className={cn('mt-2 max-w-full shrink-0 truncate rounded-full border px-2 py-0.5 text-[10px] font-semibold leading-4', classes.badge)}>
+      <span className={cn('mt-1.5 w-full shrink-0 truncate whitespace-nowrap rounded-full border px-1.5 py-0.5 text-center text-[9px] font-semibold leading-4', classes.badge)}>
         {statusLabel}
       </span>
     </button>
