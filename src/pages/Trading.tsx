@@ -162,8 +162,8 @@ const Trading = () => {
               />
             </SheetTrigger>
             <SheetContent side="right" className="w-full border-l border-[var(--surface-divider)] page-bg sm:max-w-md">
-              <SheetHeader>
-                <SheetTitle>{t('home.friendsWhoCanHelp')}</SheetTitle>
+              <SheetHeader className="pr-14 text-left">
+                <SheetTitle className="text-left text-xl leading-tight">{t('home.friendsWhoCanHelp')}</SheetTitle>
               </SheetHeader>
               <div className="sheet-scroll-area mt-4 space-y-3 overflow-y-auto">
                 {friendsMatchesLoading ? (
@@ -215,8 +215,8 @@ const Trading = () => {
               />
             </SheetTrigger>
             <SheetContent side="right" className="w-full border-l border-[var(--surface-divider)] page-bg sm:max-w-md">
-              <SheetHeader>
-                <SheetTitle>{t('home.uniWhoCanHelp')}</SheetTitle>
+              <SheetHeader className="pr-14 text-left">
+                <SheetTitle className="text-left text-xl leading-tight">{t('home.uniWhoCanHelp')}</SheetTitle>
               </SheetHeader>
               <div className="sheet-scroll-area mt-4 space-y-3 overflow-y-auto">
                 {!universityId ? (
