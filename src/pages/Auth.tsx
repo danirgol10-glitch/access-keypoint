@@ -4,7 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
+import { AppCard } from '@/components/ui/app-card';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { LegalModal } from '@/components/LegalContent';
 
 const authSchema = z.object({ email: z.string().email('Please enter a valid email address'), password: z.string().min(6, 'Password must be at least 6 characters') });
@@ -38,63 +42,86 @@ const Auth = () => {
     finally { setIsSubmitting(false); }
   };
 
-  if (loading) return <div className="app-screen flex items-center justify-center page-bg"><div className="animate-pulse" style={{ color: 'var(--text-secondary)' }}>{t('auth.loading')}</div></div>;
+  if (loading) return (
+    <div className="app-screen page-bg safe-auth-screen relative flex items-center justify-center">
+      <div className="page-vignette" />
+      <AppCard variant="hero" className="relative z-20 w-full max-w-md space-y-4 p-6 text-center">
+        <Skeleton className="mx-auto h-12 w-12 rounded-full bg-[var(--surface-skeleton)]" />
+        <div className="animate-pulse text-sm font-medium text-[var(--text-secondary)]">{t('auth.loading')}</div>
+      </AppCard>
+    </div>
+  );
 
   return (
-    <div className="app-screen flex items-center justify-center page-bg safe-auth-screen">
-      <div className="w-full max-w-md premium-panel premium-panel-gold p-6 space-y-6">
-        <div className="text-center space-y-1">
-          <h1 className="text-[22px] font-bold" style={{ color: 'var(--text-primary)' }}>{isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}</h1>
-          <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>{isLogin ? t('auth.loginSubtitle') : t('auth.signupSubtitle')}</p>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('auth.email')}</label>
-            <input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
-              className="w-full h-11 px-4 text-base rounded-xl outline-none transition-all duration-200"
-              style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--surface-input-border)'; }} />
+    <div className="app-screen page-bg safe-auth-screen relative flex items-center justify-center overflow-x-hidden overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
+      <div className="page-vignette" />
+      <div className="relative z-20 w-full max-w-md space-y-4">
+        <AppCard variant="hero" className="p-5 text-center">
+          <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full border border-[var(--trade-green-border)] bg-[var(--trade-green-soft)] text-xl font-black text-primary shadow-glow">
+            11
           </div>
-          <div className="space-y-2">
-            <label className="text-[11px] font-semibold uppercase tracking-[0.15em]" style={{ color: 'var(--text-muted)' }}>{t('auth.password')}</label>
-            <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete={isLogin ? 'current-password' : 'new-password'}
-              className="w-full h-11 px-4 text-base rounded-xl outline-none transition-all duration-200"
-              style={{ background: 'var(--surface-input)', border: '1px solid var(--surface-input-border)', color: 'var(--text-primary)' }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--input-focus-color)'; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--surface-input-border)'; }} />
-          </div>
+          <h1 className="text-[22px] font-bold text-[var(--text-primary)]">{isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}</h1>
+          <p className="mt-2 text-sm leading-5 text-[var(--text-secondary)]">{isLogin ? t('auth.loginSubtitle') : t('auth.signupSubtitle')}</p>
+        </AppCard>
 
-          {!isLogin && (
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="terms"
-                checked={acceptedTerms}
-                onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
-                className="mt-0.5"
+        <AppCard className="space-y-6 p-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">{t('auth.email')}</label>
+              <Input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
               />
-              <label htmlFor="terms" className="text-[12px] leading-relaxed cursor-pointer" style={{ color: 'var(--text-secondary)' }}>
-                {t('auth.acceptTermsPrefix')}{' '}
-                <button type="button" onClick={() => setLegalModal('terms')} className="underline font-medium" style={{ color: 'hsl(var(--primary))' }}>
-                  {t('auth.termsLink')}
-                </button>{' '}
-                {t('auth.and')}{' '}
-                <button type="button" onClick={() => setLegalModal('privacy')} className="underline font-medium" style={{ color: 'hsl(var(--primary))' }}>
-                  {t('auth.privacyLink')}
-                </button>
-              </label>
             </div>
-          )}
 
-          <button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold transition-all duration-150 active:scale-[0.98] disabled:opacity-50 btn-themed" disabled={isSubmitting || (!isLogin && !acceptedTerms)}>
-            {isSubmitting ? t('auth.pleaseWait') : isLogin ? t('auth.signIn') : t('auth.signUp')}
-          </button>
-        </form>
-        <div className="text-center">
-          <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-sm transition-colors" style={{ color: 'var(--text-secondary)' }}>
-            {isLogin ? t('auth.noAccount') : t('auth.hasAccount')}
-          </button>
-        </div>
+            <div className="space-y-2">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--text-muted)]">{t('auth.password')}</label>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete={isLogin ? 'current-password' : 'new-password'}
+              />
+            </div>
+
+            {!isLogin && (
+              <div className="flex items-start gap-3 rounded-[var(--radius-lg)] border border-[var(--surface-border)] bg-[var(--surface-input)] p-3">
+                <Checkbox
+                  id="terms"
+                  checked={acceptedTerms}
+                  onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
+                  className="mt-0.5"
+                />
+                <label htmlFor="terms" className="cursor-pointer text-[12px] leading-relaxed text-[var(--text-secondary)]">
+                  {t('auth.acceptTermsPrefix')}{' '}
+                  <button type="button" onClick={() => setLegalModal('terms')} className="font-semibold text-primary underline-offset-4 hover:underline">
+                    {t('auth.termsLink')}
+                  </button>{' '}
+                  {t('auth.and')}{' '}
+                  <button type="button" onClick={() => setLegalModal('privacy')} className="font-semibold text-primary underline-offset-4 hover:underline">
+                    {t('auth.privacyLink')}
+                  </button>
+                </label>
+              </div>
+            )}
+
+            <Button type="submit" className="w-full" disabled={isSubmitting || (!isLogin && !acceptedTerms)}>
+              {isSubmitting ? t('auth.pleaseWait') : isLogin ? t('auth.signIn') : t('auth.signUp')}
+            </Button>
+          </form>
+
+          <div className="text-center">
+            <Button type="button" variant="ghost" onClick={() => setIsLogin(!isLogin)} className="w-full">
+              {isLogin ? t('auth.noAccount') : t('auth.hasAccount')}
+            </Button>
+          </div>
+        </AppCard>
       </div>
 
       {legalModal && <LegalModal type={legalModal} onClose={() => setLegalModal(null)} />}
