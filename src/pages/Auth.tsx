@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LegalModal } from '@/components/LegalContent';
 
-const authSchema = z.object({ email: z.string().email('Please enter a valid email address'), password: z.string().min(6, 'Password must be at least 6 characters') });
+const authSchema = z.object({ email: z.string().email('Ingresa un correo válido'), password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres') });
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);

@@ -93,7 +93,7 @@ const FriendDetail = () => {
             {helpfulStickers.map((sticker) => {
               const isSelected = selectedStickers.has(sticker.id);
               return (
-                <button key={sticker.id} onClick={() => toggleSticker(sticker.id)}
+                <button key={sticker.id} type="button" onClick={() => toggleSticker(sticker.id)}
                   className={[
                     'tap-target pressable relative flex aspect-[3/4] flex-col items-center justify-center rounded-[14px] border p-2 text-center shadow-control outline-none transition-[background-color,border-color,box-shadow,transform,opacity]',
                     '[transition-duration:var(--motion-duration-base)] [transition-timing-function:var(--motion-ease-standard)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0',
@@ -112,7 +112,7 @@ const FriendDetail = () => {
       </section>
 
       {count > 0 && (
-        <div className="fixed left-0 right-0 bottom-app-nav z-20 border-t border-[var(--surface-divider)] px-4 py-3 header-themed">
+        <div className="fixed left-0 right-0 bottom-app-nav z-20 border-t border-[var(--surface-divider)] bg-[var(--surface-glass-strong)] px-4 py-3 shadow-card backdrop-blur-xl">
           <div className="mx-auto max-w-lg">
             <Button className="w-full" disabled={selectedCount === 0 || isCreating} onClick={handleRequestClick}>
               {isCreating ? (<><Loader2 className="h-4 w-4 animate-spin" />{t('friendDetail.sending')}</>) : selectedCount === 0 ? t('friendDetail.selectStickers') : t('friendDetail.request', { count: selectedCount })}
